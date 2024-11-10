@@ -1,0 +1,25 @@
+{
+  "app": {
+    "address": "0.0.0.0:3002",
+    "label": "wallet"
+  },
+  "http": {
+    "timeout": "2s"
+  },
+  "redis": {
+    "address": "0.0.0.0:6379",
+    "poolsize": 100
+  },
+  "postgre": {
+    "address": "0.0.0.0",
+    "port": "15432",
+    "username": "admin",
+    "password": "adminadmin",
+    "dbname": "fastcampus_membership",
+    "sslmode": "disable",
+    "maxopenconn": "50",
+    "maxidleconn": "50",
+    "connmaxidletime": "1000",
+    "connmaxlifetime": "1000"
+  }
+}
