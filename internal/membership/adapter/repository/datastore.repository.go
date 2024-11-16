@@ -22,6 +22,7 @@ func (r *DatastoreRepository) InsertUserInfoIntoDB(ctx context.Context, payload 
 	// insert user info
 
 	// insert user auth
+	return nil
 }
 
 func (r *DatastoreRepository) GetUserInfoFromDB(ctx context.Context, accountNumber string) (data model.UserProfileInfo, err error) {
