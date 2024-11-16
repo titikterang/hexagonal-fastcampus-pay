@@ -3,10 +3,12 @@ package config
 import "time"
 
 type Config struct {
-	App     AppConfig     `json:"app" mapstructure:"app"`
-	Http    HttpConfig    `json:"http" mapstructure:"http"`
-	Redis   RedisConfig   `json:"redis" mapstructure:"redis"`
-	Postgre PostgreConfig `json:"postgre" mapstructure:"postgre"`
+	App           AppConfig     `json:"app" mapstructure:"app"`
+	Http          HttpConfig    `json:"http" mapstructure:"http"`
+	Redis         RedisConfig   `json:"redis" mapstructure:"redis"`
+	Postgre       PostgreConfig `json:"postgre" mapstructure:"postgre"`
+	PostgreMaster PostgreConfig `json:"postgre_master" mapstructure:"postgre_master"`
+	PostgreSlave  PostgreConfig `json:"postgre_slave" mapstructure:"postgre_slave"`
 }
 
 type PostgreConfig struct {

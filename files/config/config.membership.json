@@ -1,7 +1,7 @@
 {
   "app": {
     "address": "0.0.0.0:3002",
-    "label": "wallet"
+    "label": "membership"
   },
   "http": {
     "timeout": "2s"

@@ -1,0 +1,33 @@
+{
+  "app": {
+    "address": "0.0.0.0:3003",
+    "label": "banking"
+  },
+  "http": {
+    "timeout": "2s"
+  },
+  "postgre_master": {
+    "address": "localhost",
+    "port": "15432",
+    "username": "admin",
+    "password": "password",
+    "dbname": "fastcampus_banking",
+    "sslmode": "disable",
+    "maxopenconn": "50",
+    "maxidleconn": "50",
+    "connmaxidletime": "1000",
+    "connmaxlifetime": "1000"
+  },
+  "postgre_slave": {
+    "address": "localhost",
+    "port": "15432",
+    "username": "admin",
+    "password": "password",
+    "dbname": "fastcampus_banking",
+    "sslmode": "disable",
+    "maxopenconn": "50",
+    "maxidleconn": "50",
+    "connmaxidletime": "1000",
+    "connmaxlifetime": "1000"
+  }
+}
