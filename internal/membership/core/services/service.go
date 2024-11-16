@@ -28,5 +28,6 @@ func (s *MembershipService) SubmitLogin(ctx context.Context, payload model.Login
 }
 
 func (s *MembershipService) SubmitLogout(ctx context.Context, uuid string) error {
+
 	return nil
 }
