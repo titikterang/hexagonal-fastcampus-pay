@@ -20,20 +20,38 @@ func (h Handler) GetUserInfo(ctx context.Context, payload *membership.UserInfoPa
 }
 
 func (h Handler) SubmitLogin(ctx context.Context, request *membership.LoginRequest) (*membership.LoginResponse, error) {
-	_, err := h.membershipService.SubmitLogin(ctx, model.LoginInfo{
+	resp, err := h.membershipService.SubmitLogin(ctx, model.LoginInfo{
 		Username: request.GetUsername(),
 		Password: request.GetPassword(),
 	})
-	return nil, err
+	return &membership.LoginResponse{
+		Success:      resp.Success,
+		LoginMessage: resp.Message,
+		Uuid:         resp.UUID,
+	}, err
 }
 
 func (h Handler) SubmitLogout(ctx context.Context, request *membership.LogoutRequest) (*membership.LogoutResponse, error) {
-	//TODO implement me
-	return nil, nil
-
+	err := h.membershipService.SubmitLogout(ctx, request.GetUuid())
+	return &membership.LogoutResponse{
+		Message: "Logout Success",
+	}, err
 }
 
 func (h Handler) SubmitRegistration(ctx context.Context, request *membership.RegistrationRequest) (*membership.RegistrationResponse, error) {
-	//TODO implement me
-	return nil, nil
+	accno, err := h.membershipService.SubmitRegisterUser(ctx, model.RegistrationPayload{
+		LoginInfo: model.LoginInfo{
+			Username: request.GetUsername(),
+			Password: request.GetPassword(),
+		},
+		UserProfileInfo: model.UserProfileInfo{
+			Email:    request.GetEmail(),
+			Fullname: request.GetFullname(),
+		},
+	})
+	return &membership.RegistrationResponse{
+		AccountNumber: accno,
+		Success:       err == nil,
+		ErrorMessage:  err.Error(),
+	}, err
 }

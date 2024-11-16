@@ -31,8 +31,8 @@ type DBInterface interface {
 	QueryRowxContext(ctx context.Context, query string, args ...interface{}) *sqlx.Row
 	Queryx(query string, args ...interface{}) (*sqlx.Rows, error)
 	QueryxContext(ctx context.Context, query string, args ...interface{}) (*sqlx.Rows, error)
-	Rebind(query string) string
-	Select(dest interface{}, query string, args ...interface{}) error
+	//Rebind(query string) string
+	//Select(dest interface{}, query string, args ...interface{}) error
 	SelectContext(ctx context.Context, dest interface{}, query string, args ...interface{}) error
-	Unsafe() *sqlx.DB
+	//Unsafe() *sqlx.DB
 }

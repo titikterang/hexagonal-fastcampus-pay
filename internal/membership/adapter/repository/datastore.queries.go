@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	// prepare tables if not exists
 	prepareSchema = `create table if not exists user_auth
 			(
 				account_number varchar(100) not null

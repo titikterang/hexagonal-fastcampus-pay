@@ -18,3 +18,9 @@ type UserProfileInfo struct {
 	Fullname      string `json:"fullname" db:"fullname"`
 	Status        string `json:"status" db:"status"`
 }
+
+type RegistrationPayload struct {
+	LoginInfo
+	UserProfileInfo
+	Hash string
+}

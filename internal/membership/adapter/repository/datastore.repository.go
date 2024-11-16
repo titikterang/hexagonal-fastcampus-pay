@@ -14,8 +14,14 @@ func (r *DatastoreRepository) UpdateUserSessionIntoCache(ctx context.Context) {
 
 }
 
-func (r *DatastoreRepository) InsertUserInfoIntoDB(ctx context.Context) {
+func (r *DatastoreRepository) InsertUserInfoIntoDB(ctx context.Context, payload model.RegistrationPayload) error {
+	// begin query TX
 
+	// commit & rolback if err
+
+	// insert user info
+
+	// insert user auth
 }
 
 func (r *DatastoreRepository) GetUserInfoFromDB(ctx context.Context, accountNumber string) (data model.UserProfileInfo, err error) {

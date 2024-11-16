@@ -6,8 +6,8 @@ import (
 )
 
 type MembershipServiceAdapter interface {
-	SubmitRegisterUser(ctx context.Context)
+	SubmitRegisterUser(ctx context.Context, payload model.RegistrationPayload) (string, error)
 	GetUserInfo(ctx context.Context, accountNumber string) (model.UserProfileInfo, error)
 	SubmitLogin(ctx context.Context, payload model.LoginInfo) (model.LoginResponse, error)
-	SubmitLogout(ctx context.Context)
+	SubmitLogout(ctx context.Context, uuid string) error
 }
