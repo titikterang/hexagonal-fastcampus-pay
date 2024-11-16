@@ -1,0 +1,6 @@
+FROM busybox
+
+COPY ./bin/membership membership
+COPY ./files/config/config.membership.json ./files/config/config.membership.json
+
+CMD [ "./membership" ]

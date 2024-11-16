@@ -40,3 +40,10 @@ test:
 lint:
 	@echo "install golangci-lint from here https://golangci-lint.run/usage/install/ ...."
 	@golangci-lint run ./... > .golint.txt
+
+build-membership:
+	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build -o ./bin/membership ./cmd/membership/*
+
+run-membership: build-membership
+	@echo "run container ..."
+	@docker-compose -f docker-compose.membership.yaml up --force-recreate

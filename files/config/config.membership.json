@@ -7,14 +7,14 @@
     "timeout": "2s"
   },
   "redis": {
-    "address": "0.0.0.0:6379",
+    "address": "membership_redis:6379",
     "poolsize": 100
   },
   "postgre": {
-    "address": "0.0.0.0",
-    "port": "15432",
-    "username": "admin",
-    "password": "adminadmin",
+    "address": "membership_db",
+    "port": "5432",
+    "username": "postgres",
+    "password": "password",
     "dbname": "fastcampus_membership",
     "sslmode": "disable",
     "maxopenconn": "50",

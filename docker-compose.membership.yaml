@@ -1,0 +1,31 @@
+# FOR LOCAL DEVELOPMENT ONLY
+version: '3.7'
+services:
+  membership_db:
+    image: postgres:12
+    container_name: membership_db
+    ports:
+      - 15432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=fastcampus_membership
+  membership_redis:
+    image: redis:7
+    container_name: membership_redis
+    ports:
+      - 26379:6379
+    logging:
+      driver: none
+  membership_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.membership
+    container_name: membership_backend
+    volumes:
+      - ./files/config/config.membership.json:/files/config/config.membership.json
+    ports:
+      - 3002:3002
+    depends_on:
+      - membership_db
+      - membership_redis
