@@ -13,10 +13,23 @@ type Database struct {
 }
 
 func InitDBConnection(cfg *config.Config) *Database {
-	fmt.Printf("%#v\n\n\n", cfg)
 	return &Database{
 		cfg: cfg,
 	}
+}
+
+func (d *Database) InitiateSlaveConnection() (DBInterface, error) {
+	cfg := d.cfg.PostgreSlave
+	connectionStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		cfg.Address, cfg.Port, cfg.Username, cfg.Password, cfg.Dbname, cfg.Sslmode)
+	return d.connect(connectionStr)
+}
+
+func (d *Database) InitiateMasterConnection() (DBInterface, error) {
+	cfg := d.cfg.PostgreMaster
+	connectionStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		cfg.Address, cfg.Port, cfg.Username, cfg.Password, cfg.Dbname, cfg.Sslmode)
+	return d.connect(connectionStr)
 }
 
 func (d *Database) InitiateConnection() (DBInterface, error) {

@@ -22,11 +22,34 @@
 > - transfer into different bank account, send request to banking service
 > - transfer within fastcampus pay, handled by transfer service
 >
-3. Topup / Deposit
-   a.
+2. Topup / Deposit
+> a. Check destination account status
+> 
+> b. Submit deposit via other bank virtual account
+> 
+> c. Got callback to banking service
+> 
+> d. Banking service will trigger transfer service to move some amount from corporate account number to user account number
+
 3. Payment
+> a. Check source account status
+>
+> b. Check destination account status
+>
+> c. validate balance on source account
+>
+> d. execute payment
+> - payment into different bank account, send request to banking service
+> - payment within fastcampus pay, handled by payment service
+>
 
-4.
+4. Settlement Flow
+> a. on every transction could have some transaction fee
+> 
+> b. settlement service will calculate transaction fee if exist
+> 
+> c. settlement service will also create a cash movement record to be used as a trasnsaction journal
+> 
+> d. if we need to fetch mutation report, it will be provided by settlement service
 
-# Money Service
 ---------------------------------

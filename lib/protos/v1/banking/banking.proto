@@ -1,0 +1,117 @@
+syntax = "proto3";
+package fastcampus.banking.v1;
+option go_package = "github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/banking;banking";
+
+import "lib/protos/google/api/annotations.proto";
+import "lib/protos/protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Fast Campus Pay (Banking API Endpoint)";
+    version: "1.0";
+    contact: {
+      name: "Fast Campus Payment";
+      url: "https://github.com/titikterang";
+      email: "azwar.nrst@gmail.com";
+    };
+  };
+
+  schemes: HTTP;
+  consumes: "application/json";
+  produces: "application/json";
+};
+
+service BankingService {
+  // Transfer Antar Bank
+  rpc SubmitTransfer(BankTransferRequest) returns (BankTransferResponse) {
+    option (google.api.http) = {
+      post: "/v1/banking/transfer",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Transfer Bank";
+      operation_id: "SubmitTransfer";
+      tags: "banking";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+
+  // Payment Antar Bank
+  rpc SubmitPayment(BankPaymentRequest) returns (BankPaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/banking/payment",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Payment Antar Bank";
+      operation_id: "SubmitPayment";
+      tags: "banking";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+
+  // Payment Antar Bank
+  rpc SubmitDeposit(DepositRequest) returns (DepositResponse) {
+    option (google.api.http) = {
+      post: "/v1/banking/deposit",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Submit Deposit";
+      operation_id: "SubmitDeposit";
+      tags: "banking";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+}
+
+message BankTransferRequest {
+  string request_id = 1;
+  string account_number_source = 2;
+  string account_number_destination = 3;
+  int64 amount = 4;
+}
+
+message BankTransferResponse {
+  string message = 1;
+  bool status = 2;
+}
+
+message BankPaymentRequest {
+  string payment_id = 1;
+  string account_number_source = 2;
+  string account_number_destination = 3;
+  int64 amount = 4;
+}
+
+message BankPaymentResponse {
+  string message = 1;
+  bool status = 2;
+  string payment_id = 3;
+}
+
+message DepositRequest {
+  string request_id = 1;
+  string account_number = 2;
+  int64 amount = 3;
+}
+
+message DepositResponse {
+  string message = 1;
+  bool status = 2;
+}

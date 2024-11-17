@@ -9,6 +9,9 @@ type DatastoreRepositoryAdapter interface {
 	// to redis
 	GetUserSessionFromCache(ctx context.Context)
 	UpdateUserSessionIntoCache(ctx context.Context)
+	// cek user info from redis
+	GetUserInfoFromCache(ctx context.Context, accountNumber string) (model.UserProfileInfo, error)
+	UpdateUserInfoOnCache(ctx context.Context, data model.UserProfileInfo) error
 
 	// to postgres
 	InsertUserInfoIntoDB(ctx context.Context, payload model.RegistrationPayload) error

@@ -1,0 +1,38 @@
+{
+  "app": {
+    "address": "0.0.0.0:3004",
+    "label": "money"
+  },
+  "http": {
+    "timeout": "2s"
+  },
+  "redis": {
+    "address": "localhost:6379",
+    "poolsize": 100
+  },
+  "postgre_master": {
+    "address": "localhost",
+    "port": "15432",
+    "username": "admin",
+    "password": "password",
+    "dbname": "fastcampus_money",
+    "sslmode": "disable",
+    "maxopenconn": "50",
+    "maxidleconn": "50",
+    "connmaxidletime": "1000",
+    "connmaxlifetime": "1000"
+  },
+  "postgre_slave": {
+    "address": "localhost",
+    "port": "15432",
+    "username": "admin",
+    "password": "password",
+    "dbname": "fastcampus_money",
+    "sslmode": "disable",
+    "maxopenconn": "50",
+    "maxidleconn": "50",
+    "connmaxidletime": "1000",
+    "connmaxlifetime": "1000"
+  },
+  "external_api": {}
+}
