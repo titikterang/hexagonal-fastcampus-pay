@@ -1,5 +1,5 @@
 syntax = "proto3";
-package fastcampus.wmembership.v1;
+package fastcampus.membership.v1;
 option go_package = "github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/membership;membership";
 
 import "lib/protos/google/api/annotations.proto";

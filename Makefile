@@ -38,6 +38,20 @@ lint:
 build-membership:
 	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build -o ./bin/membership ./cmd/membership/*
 
+build-banking:
+	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build -o ./bin/banking ./cmd/banking/*
+
+build-money:
+	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build -o ./bin/money ./cmd/money/*
+
 run-membership: build-membership
 	@echo "RUN Membership DB & Backend Service ..."
 	@docker-compose -f docker-compose.membership.yaml up --force-recreate
+
+run-banking: build-banking
+	@echo "RUN Banking DB & Backend Service ..."
+	@docker-compose -f docker-compose.banking.yaml up --force-recreate
+
+run-money: build-money
+	@echo "RUN Money DB & Backend Service ..."
+	@docker-compose -f docker-compose.money.yaml up --force-recreate
