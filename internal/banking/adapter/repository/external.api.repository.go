@@ -11,7 +11,6 @@ import (
 
 func (r *BankingRepository) GetAccountInfo(ctx context.Context, accountNumber string) (model.UserProfileInfo, error) {
 	// get account info from membership service
-
 	url := r.cfg.ExternalAPI.MembershipService + "v1/membership/info?account_number=" + accountNumber
 	method := "GET"
 
@@ -22,8 +21,7 @@ func (r *BankingRepository) GetAccountInfo(ctx context.Context, accountNumber st
 		return returnData, err
 	}
 
-	client := &http.Client{}
-	res, err := client.Do(req)
+	res, err := r.httpClient.Do(req)
 	if err != nil {
 		log.Err(err).Msg("GetAccountInfo.http.DoRequest")
 		return returnData, err

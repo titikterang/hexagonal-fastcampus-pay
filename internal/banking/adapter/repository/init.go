@@ -7,6 +7,7 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
 	"net/http"
+	"time"
 )
 
 type BankingRepository struct {
@@ -23,6 +24,14 @@ func NewBankingRepository(cfg *config.Config, masterClient, slaveClient postgre.
 		dbClientMaster: masterClient,
 		dbClientSlave:  slaveClient,
 		queries:        statementQueries{},
+		httpClient: &http.Client{
+			Timeout: 10 * time.Second,
+			Transport: &http.Transport{
+				MaxIdleConnsPerHost: 10,
+				IdleConnTimeout:     10 * time.Second,
+				MaxIdleConns:        100,
+			},
+		},
 	}
 	err := repo.initDBSchema(context.TODO())
 	if err != nil {
