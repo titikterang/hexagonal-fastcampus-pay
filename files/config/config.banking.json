@@ -29,5 +29,8 @@
     "maxidleconn": "50",
     "connmaxidletime": "1000",
     "connmaxlifetime": "1000"
+  },
+  "external_api": {
+    "membership": "http://localhost:3002/"
   }
 }

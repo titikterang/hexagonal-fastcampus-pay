@@ -6,6 +6,7 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/banking/core/ports"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
+	"net/http"
 )
 
 type BankingRepository struct {
@@ -13,6 +14,7 @@ type BankingRepository struct {
 	dbClientMaster postgre.DBInterface
 	dbClientSlave  postgre.DBInterface
 	queries        statementQueries
+	httpClient     *http.Client
 }
 
 func NewBankingRepository(cfg *config.Config, masterClient, slaveClient postgre.DBInterface) ports.BankingRepositoryAdapter {

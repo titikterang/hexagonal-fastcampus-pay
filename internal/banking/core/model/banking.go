@@ -3,9 +3,10 @@ package model
 import "time"
 
 const (
-	MovementDeposit  = "deposit"
-	MovementPayment  = "payment"
-	MovementTransfer = "transfer"
+	MovementDeposit       = "deposit"
+	MovementDepositReject = "deposit_reject"
+	MovementPayment       = "payment"
+	MovementTransfer      = "transfer"
 )
 
 type BankingCashHistory struct {

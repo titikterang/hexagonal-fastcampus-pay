@@ -2,6 +2,10 @@ package model
 
 import "time"
 
+const (
+	DefaultUserInfoTTL = 5 * time.Second
+)
+
 // UserAuthInfo - used by secondary ports
 type UserAuthInfo struct {
 	AccountNumber string    `json:"account_number" db:"account_number"`
