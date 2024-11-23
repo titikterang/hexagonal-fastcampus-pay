@@ -25,6 +25,7 @@ const OperationMoneyServiceUpdateUserBalance = "/fastcampus.money.v1.MoneyServic
 
 type MoneyServiceHTTPServer interface {
 	// GetUserBalance balance return as string
+	// /v1/money/balance?account_number=1234
 	GetUserBalance(context.Context, *UserBalancePayload) (*UserBalanceResponse, error)
 	// GetUserBalancePrivate balance will be represented as money
 	GetUserBalancePrivate(context.Context, *UserBalancePayload) (*UserBalancePrivateResponse, error)

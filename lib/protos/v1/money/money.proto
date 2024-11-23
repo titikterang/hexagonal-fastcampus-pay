@@ -25,6 +25,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 
 service MoneyService {
   // balance return as string
+  // /v1/money/balance?account_number=1234
   rpc GetUserBalance(UserBalancePayload) returns (UserBalanceResponse) {
     option (google.api.http) = {
       get: "/v1/money/balance",
@@ -95,6 +96,7 @@ message UserBalancePrivateResponse {
 message UpdateBalancePayload {
   string account_number = 1;
   google.type.Money amount = 2;
+  string request_id = 3;
 }
 
 message UpdateBalanceResponse {

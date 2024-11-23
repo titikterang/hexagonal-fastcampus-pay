@@ -19,10 +19,10 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationMembershipServiceGetUserInfo = "/fastcampus.wmembership.v1.MembershipService/GetUserInfo"
-const OperationMembershipServiceSubmitLogin = "/fastcampus.wmembership.v1.MembershipService/SubmitLogin"
-const OperationMembershipServiceSubmitLogout = "/fastcampus.wmembership.v1.MembershipService/SubmitLogout"
-const OperationMembershipServiceSubmitRegistration = "/fastcampus.wmembership.v1.MembershipService/SubmitRegistration"
+const OperationMembershipServiceGetUserInfo = "/fastcampus.membership.v1.MembershipService/GetUserInfo"
+const OperationMembershipServiceSubmitLogin = "/fastcampus.membership.v1.MembershipService/SubmitLogin"
+const OperationMembershipServiceSubmitLogout = "/fastcampus.membership.v1.MembershipService/SubmitLogout"
+const OperationMembershipServiceSubmitRegistration = "/fastcampus.membership.v1.MembershipService/SubmitRegistration"
 
 type MembershipServiceHTTPServer interface {
 	GetUserInfo(context.Context, *UserInfoPayload) (*UserInfoResponse, error)

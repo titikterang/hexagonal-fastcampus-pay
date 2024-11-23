@@ -2,7 +2,7 @@ package common
 
 import (
 	"github.com/shopspring/decimal"
-	money "google.golang.org/genproto/googleapis/type/money"
+	"google.golang.org/genproto/googleapis/type/money"
 	"math"
 	"strings"
 )

@@ -29,6 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MoneyServiceClient interface {
 	// balance return as string
+	// /v1/money/balance?account_number=1234
 	GetUserBalance(ctx context.Context, in *UserBalancePayload, opts ...grpc.CallOption) (*UserBalanceResponse, error)
 	// balance will be represented as money
 	GetUserBalancePrivate(ctx context.Context, in *UserBalancePayload, opts ...grpc.CallOption) (*UserBalancePrivateResponse, error)
@@ -79,6 +80,7 @@ func (c *moneyServiceClient) UpdateUserBalance(ctx context.Context, in *UpdateBa
 // for forward compatibility
 type MoneyServiceServer interface {
 	// balance return as string
+	// /v1/money/balance?account_number=1234
 	GetUserBalance(context.Context, *UserBalancePayload) (*UserBalanceResponse, error)
 	// balance will be represented as money
 	GetUserBalancePrivate(context.Context, *UserBalancePayload) (*UserBalancePrivateResponse, error)
