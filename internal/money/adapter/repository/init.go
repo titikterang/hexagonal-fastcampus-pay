@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"context"
 	"github.com/go-redis/redis/v8"
+	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/ports"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
@@ -23,14 +25,14 @@ func NewMoneyRepository(cfg *config.Config, redisClient *redis.Client, masterCli
 		queries:        statementQueries{},
 		redisClient:    redisClient,
 	}
-	//err := repo.initDBSchema(context.TODO())
-	//if err != nil {
-	//	log.Err(err)
-	//}
-	//
-	//err = repo.prepareStatements()
-	//if err != nil {
-	//	log.Err(err)
-	//}
+	err := repo.initDBSchema(context.TODO())
+	if err != nil {
+		log.Err(err)
+	}
+
+	err = repo.prepareStatements()
+	if err != nil {
+		log.Err(err)
+	}
 	return repo
 }

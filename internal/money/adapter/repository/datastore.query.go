@@ -29,7 +29,7 @@ type statementQueries struct {
 func (r *MoneyRepository) prepareStatements() error {
 	stmtNamed, err := r.dbClientMaster.PrepareNamed(insertCashMovement)
 	if err != nil {
-		log.Error().Msgf("prepare statement GetUserInfo err ", err.Error())
+		log.Error().Msgf("prepare statement GetUserInfo err %#v", err.Error())
 		return err
 	}
 	r.queries.InsertCashMovement = stmtNamed
@@ -40,7 +40,7 @@ func (r *MoneyRepository) prepareStatements() error {
 func (r *MoneyRepository) initDBSchema(ctx context.Context) error {
 	res := r.dbClientMaster.MustExecContext(ctx, prepareSchema)
 	if _, err := res.RowsAffected(); err != nil {
-		log.Error().Msgf("failed prepare schema", err.Error())
+		log.Error().Msgf("failed prepare schema, %#v", err.Error())
 		return err
 	}
 	return nil

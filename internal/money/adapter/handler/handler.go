@@ -27,16 +27,20 @@ func (h *Handler) UpdateUserBalance(ctx context.Context, data *money.UpdateBalan
 	if err != nil {
 		return &money.UpdateBalanceResponse{
 			AccountNumber: data.GetAccountNumber(),
-			Success:       err == nil,
+			Success:       false,
 			Message:       err.Error(),
 		}, err
 	}
 
 	finalAmount, err := h.moneyService.GetUserBalance(ctx, data.GetAccountNumber())
+	var msg string
+	if err != nil {
+		msg = err.Error()
+	}
 	return &money.UpdateBalanceResponse{
 		AccountNumber: data.GetAccountNumber(),
 		Success:       err == nil,
-		Message:       err.Error(),
 		Balance:       finalAmount,
+		Message:       msg,
 	}, err
 }

@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
@@ -13,7 +14,23 @@ import (
 // PublicGetUserBalance - only get from redis
 // deps, redis get
 func (s *MoneyService) PublicGetUserBalance(ctx context.Context, accountNumber string) (string, error) {
-	return s.repository.GetSnapshot(ctx, accountNumber)
+	// if empty, then recalculate
+	res, err := s.repository.GetSnapshot(ctx, accountNumber)
+	if err != nil {
+		s.updateSnapshoot(ctx, accountNumber)
+		return s.repository.GetSnapshot(ctx, accountNumber)
+	}
+
+	return res, err
+}
+
+func (s *MoneyService) updateSnapshoot(ctx context.Context, accountNumber string) {
+	finalAmount, err := s.GetUserBalance(ctx, accountNumber)
+	if err != nil {
+		log.Error().Msgf("failed to get user balance, %#v", err)
+		return
+	}
+	_ = s.repository.UpdateSnapshot(ctx, accountNumber, common.MoneyToString(finalAmount))
 }
 
 // GetUserBalance - get from redis and re calculate
@@ -70,7 +87,6 @@ func (s *MoneyService) UpdateUserBalance(ctx context.Context, requestID, account
 	}
 
 	// update snapshoot
-	finalAmount, err := s.GetUserBalance(ctx, accountNumber)
-	_ = s.repository.UpdateSnapshot(ctx, accountNumber, finalAmount.String())
+	s.updateSnapshoot(ctx, accountNumber)
 	return nil
 }
