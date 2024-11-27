@@ -5,16 +5,17 @@ import (
 	"encoding/json"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/banking/core/model"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
 	"io"
 	"net/http"
 )
 
-func (r *BankingRepository) GetAccountInfo(ctx context.Context, accountNumber string) (model.UserProfileInfo, error) {
+func (r *BankingRepository) GetAccountInfo(ctx context.Context, accountNumber string) (types.UserProfileInfo, error) {
 	// get account info from membership service
 	url := r.cfg.ExternalAPI.MembershipService + "v1/membership/info?account_number=" + accountNumber
 	method := "GET"
 
-	var returnData model.UserProfileInfo
+	var returnData types.UserProfileInfo
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
 		log.Err(err).Msg("GetAccountInfo.http.NewRequest")
@@ -38,10 +39,10 @@ func (r *BankingRepository) GetAccountInfo(ctx context.Context, accountNumber st
 	err = json.Unmarshal(body, &result)
 	if err != nil {
 		log.Err(err).Msg("GetAccountInfo.Unmarshal")
-		return model.UserProfileInfo{}, err
+		return types.UserProfileInfo{}, err
 	}
 
-	return model.UserProfileInfo{
+	return types.UserProfileInfo{
 		AccountNumber: result.AccountNumber,
 		Email:         result.Email,
 		Fullname:      result.Fullname,

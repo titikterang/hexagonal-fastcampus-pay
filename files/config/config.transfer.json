@@ -38,12 +38,14 @@
       "localhost:9092"
     ],
     "max_poll_record": 1000,
-    "consumer_group": "fastcampus-banking",
+    "consumer_group": "fastcampus-transfer",
     "consumer_topics": {
-      "transfer_service": "TransferExecution",
+      "money_service": "MoneyServiceReply",
+      "banking_service": "BankingServiceCallbackReply"
     },
     "producer_topics": {
-      "transfer_service": "BankingServiceCallbackReply"
+      "money_service": "TransactionBalanceValidation",
+      "banking_service": "TransferExecution"
     }
   }
 }
