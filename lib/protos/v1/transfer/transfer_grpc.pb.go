@@ -19,130 +19,130 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	BankingService_SubmitTransferBalance_FullMethodName = "/fastcampus.transfer.v1.BankingService/SubmitTransferBalance"
-	BankingService_GetTransferHistory_FullMethodName    = "/fastcampus.transfer.v1.BankingService/GetTransferHistory"
+	TransferService_SubmitTransferBalance_FullMethodName = "/fastcampus.transfer.v1.TransferService/SubmitTransferBalance"
+	TransferService_GetTransferHistory_FullMethodName    = "/fastcampus.transfer.v1.TransferService/GetTransferHistory"
 )
 
-// BankingServiceClient is the client API for BankingService service.
+// TransferServiceClient is the client API for TransferService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type BankingServiceClient interface {
+type TransferServiceClient interface {
 	// Transfer Balance Antar Account
 	SubmitTransferBalance(ctx context.Context, in *TransferBalanceRequest, opts ...grpc.CallOption) (*TransferBalanceResponse, error)
 	GetTransferHistory(ctx context.Context, in *TransferHistoryRequest, opts ...grpc.CallOption) (*TransferHistoryResponse, error)
 }
 
-type bankingServiceClient struct {
+type transferServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewBankingServiceClient(cc grpc.ClientConnInterface) BankingServiceClient {
-	return &bankingServiceClient{cc}
+func NewTransferServiceClient(cc grpc.ClientConnInterface) TransferServiceClient {
+	return &transferServiceClient{cc}
 }
 
-func (c *bankingServiceClient) SubmitTransferBalance(ctx context.Context, in *TransferBalanceRequest, opts ...grpc.CallOption) (*TransferBalanceResponse, error) {
+func (c *transferServiceClient) SubmitTransferBalance(ctx context.Context, in *TransferBalanceRequest, opts ...grpc.CallOption) (*TransferBalanceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(TransferBalanceResponse)
-	err := c.cc.Invoke(ctx, BankingService_SubmitTransferBalance_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, TransferService_SubmitTransferBalance_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *bankingServiceClient) GetTransferHistory(ctx context.Context, in *TransferHistoryRequest, opts ...grpc.CallOption) (*TransferHistoryResponse, error) {
+func (c *transferServiceClient) GetTransferHistory(ctx context.Context, in *TransferHistoryRequest, opts ...grpc.CallOption) (*TransferHistoryResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(TransferHistoryResponse)
-	err := c.cc.Invoke(ctx, BankingService_GetTransferHistory_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, TransferService_GetTransferHistory_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// BankingServiceServer is the server API for BankingService service.
-// All implementations must embed UnimplementedBankingServiceServer
+// TransferServiceServer is the server API for TransferService service.
+// All implementations must embed UnimplementedTransferServiceServer
 // for forward compatibility
-type BankingServiceServer interface {
+type TransferServiceServer interface {
 	// Transfer Balance Antar Account
 	SubmitTransferBalance(context.Context, *TransferBalanceRequest) (*TransferBalanceResponse, error)
 	GetTransferHistory(context.Context, *TransferHistoryRequest) (*TransferHistoryResponse, error)
-	mustEmbedUnimplementedBankingServiceServer()
+	mustEmbedUnimplementedTransferServiceServer()
 }
 
-// UnimplementedBankingServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedBankingServiceServer struct {
+// UnimplementedTransferServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedTransferServiceServer struct {
 }
 
-func (UnimplementedBankingServiceServer) SubmitTransferBalance(context.Context, *TransferBalanceRequest) (*TransferBalanceResponse, error) {
+func (UnimplementedTransferServiceServer) SubmitTransferBalance(context.Context, *TransferBalanceRequest) (*TransferBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitTransferBalance not implemented")
 }
-func (UnimplementedBankingServiceServer) GetTransferHistory(context.Context, *TransferHistoryRequest) (*TransferHistoryResponse, error) {
+func (UnimplementedTransferServiceServer) GetTransferHistory(context.Context, *TransferHistoryRequest) (*TransferHistoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTransferHistory not implemented")
 }
-func (UnimplementedBankingServiceServer) mustEmbedUnimplementedBankingServiceServer() {}
+func (UnimplementedTransferServiceServer) mustEmbedUnimplementedTransferServiceServer() {}
 
-// UnsafeBankingServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to BankingServiceServer will
+// UnsafeTransferServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TransferServiceServer will
 // result in compilation errors.
-type UnsafeBankingServiceServer interface {
-	mustEmbedUnimplementedBankingServiceServer()
+type UnsafeTransferServiceServer interface {
+	mustEmbedUnimplementedTransferServiceServer()
 }
 
-func RegisterBankingServiceServer(s grpc.ServiceRegistrar, srv BankingServiceServer) {
-	s.RegisterService(&BankingService_ServiceDesc, srv)
+func RegisterTransferServiceServer(s grpc.ServiceRegistrar, srv TransferServiceServer) {
+	s.RegisterService(&TransferService_ServiceDesc, srv)
 }
 
-func _BankingService_SubmitTransferBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TransferService_SubmitTransferBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TransferBalanceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BankingServiceServer).SubmitTransferBalance(ctx, in)
+		return srv.(TransferServiceServer).SubmitTransferBalance(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BankingService_SubmitTransferBalance_FullMethodName,
+		FullMethod: TransferService_SubmitTransferBalance_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BankingServiceServer).SubmitTransferBalance(ctx, req.(*TransferBalanceRequest))
+		return srv.(TransferServiceServer).SubmitTransferBalance(ctx, req.(*TransferBalanceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BankingService_GetTransferHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TransferService_GetTransferHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TransferHistoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BankingServiceServer).GetTransferHistory(ctx, in)
+		return srv.(TransferServiceServer).GetTransferHistory(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: BankingService_GetTransferHistory_FullMethodName,
+		FullMethod: TransferService_GetTransferHistory_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BankingServiceServer).GetTransferHistory(ctx, req.(*TransferHistoryRequest))
+		return srv.(TransferServiceServer).GetTransferHistory(ctx, req.(*TransferHistoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// BankingService_ServiceDesc is the grpc.ServiceDesc for BankingService service.
+// TransferService_ServiceDesc is the grpc.ServiceDesc for TransferService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var BankingService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "fastcampus.transfer.v1.BankingService",
-	HandlerType: (*BankingServiceServer)(nil),
+var TransferService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "fastcampus.transfer.v1.TransferService",
+	HandlerType: (*TransferServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "SubmitTransferBalance",
-			Handler:    _BankingService_SubmitTransferBalance_Handler,
+			Handler:    _TransferService_SubmitTransferBalance_Handler,
 		},
 		{
 			MethodName: "GetTransferHistory",
-			Handler:    _BankingService_GetTransferHistory_Handler,
+			Handler:    _TransferService_GetTransferHistory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

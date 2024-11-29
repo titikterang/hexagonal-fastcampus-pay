@@ -6,14 +6,8 @@ import (
 	"github.com/twmb/franz-go/pkg/kgo"
 )
 
-type FastCampusPayConsumer struct {
-	cfg    *config.Config
-	client KafkaClientInterface
-}
-
-func InitKafkaClient(cfg *config.Config) (*FastCampusPayConsumer, error) {
+func InitKafkaClient(cfg *config.Config) (KafkaClientInterface, error) {
 	var (
-		consumer  FastCampusPayConsumer
 		err       error
 		topicList []string
 	)
@@ -22,7 +16,6 @@ func InitKafkaClient(cfg *config.Config) (*FastCampusPayConsumer, error) {
 		topicList = append(topicList, v)
 	}
 
-	consumer.cfg = cfg
 	consumerOptions := []kgo.Opt{
 		kgo.SeedBrokers(cfg.Kafka.Hosts...),
 		kgo.ConsumerGroup(cfg.Kafka.ConsumerGroup),
@@ -33,15 +26,11 @@ func InitKafkaClient(cfg *config.Config) (*FastCampusPayConsumer, error) {
 		kgo.AllowAutoTopicCreation(),
 	}
 
-	consumer.client, err = kgo.NewClient(consumerOptions...)
+	client, err := kgo.NewClient(consumerOptions...)
 	if err != nil {
 		log.Error().Msgf("kgo.NewClient err %#v ", err)
-		return &consumer, err
+		return client, err
 	}
 
-	return &consumer, nil
-}
-
-func (c *FastCampusPayConsumer) CloseClient() {
-	c.client.Close()
+	return client, nil
 }

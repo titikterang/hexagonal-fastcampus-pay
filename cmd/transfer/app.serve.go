@@ -8,14 +8,16 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	gorHdl "github.com/gorilla/handlers"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
-	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/banking"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/transfer"
 )
 
 func startService(cfg *config.Config) {
-	handler, err := initHandler(cfg)
+	handler, consumer, err := initHandler(cfg)
 	if err != nil {
 		log.Fatal("failed initiate NewHandler: %v", err)
 	}
+
+	go consumer.StartConsumer()
 
 	httpOpts := []http.ServerOption{
 		http.Timeout(cfg.Http.Timeout),
@@ -38,8 +40,7 @@ func startService(cfg *config.Config) {
 		httpOpts...,
 	)
 
-	banking.RegisterBankingServiceHTTPServer(httpServer, handler)
-
+	transfer.RegisterTransferServiceHTTPServer(httpServer, handler)
 	server := kratos.New(
 		kratos.Name(cfg.App.Label),
 		kratos.Server(

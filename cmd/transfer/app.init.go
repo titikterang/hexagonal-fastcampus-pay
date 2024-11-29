@@ -7,25 +7,40 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/services"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
 )
 
-func initHandler(cfg *config.Config) (*handler.Handler, error) {
+func initHandler(cfg *config.Config) (*handler.Handler, *handler.ConsumerHandler, error) {
 	masterClient, err := InitDBMaster(cfg)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	slaveClient, err := InitDBSlave(cfg)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	repo := repository.NewBankingRepository(cfg, masterClient, slaveClient)
-	hdl, err := handler.NewHandler(cfg, services.NewService(cfg, repo))
+	// init kafka client
+	client, err := kafka.InitKafkaClient(cfg)
 	if err != nil {
-		return nil, err
+		if err != nil {
+			log.Fatal("failed initiate NewHandler: %v", err)
+		}
 	}
 
-	return hdl, nil
+	repo := repository.NewTransferRepository(cfg, masterClient, slaveClient, client)
+	svc := services.NewService(cfg, repo)
+
+	hdl, err := handler.NewHandler(cfg, svc)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	consHandler, err := handler.NewConsumer(cfg, client, svc)
+	if err != nil {
+		return nil, nil, err
+	}
+	return hdl, consHandler, nil
 }
 
 func InitDBMaster(cfg *config.Config) (postgre.DBInterface, error) {

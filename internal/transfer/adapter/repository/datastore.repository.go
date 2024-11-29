@@ -1,1 +1,89 @@
 package repository
+
+import (
+	"context"
+	"github.com/rs/zerolog/log"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
+	"time"
+)
+
+func (r *TransferRepository) SaveTransferHistory(ctx context.Context, data model.TransferInfo) error {
+	trx, err := r.dbClientMaster.Beginx()
+	if err != nil {
+		log.Err(err)
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			err = trx.Rollback()
+		} else {
+			err = trx.Commit()
+		}
+	}()
+
+	_, err = r.queries.InsertTransferHistory.ExecContext(ctx, map[string]interface{}{
+		"transaction_id":             data.TransactionId,
+		"transfer_date":              time.Now().Format(time.DateOnly),
+		"amount":                     data.Amount,
+		"source_account_number":      data.SourceAccountNumber,
+		"destination_account_number": data.DestinationAccountNumber,
+		"transfer_type":              data.TransferType,
+		"bank_code":                  data.BankCode,
+		"status":                     model.TransferStatusPending,
+		"created_at":                 time.Now(),
+		"updated_at":                 time.Now(),
+		"message":                    "Sending transfer balance",
+	})
+	return err
+}
+
+func (r *TransferRepository) UpdateTransferHistory(ctx context.Context, status, ID string) error {
+	trx, err := r.dbClientMaster.Beginx()
+	if err != nil {
+		log.Err(err)
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			err = trx.Rollback()
+		} else {
+			err = trx.Commit()
+		}
+	}()
+
+	_, err = r.queries.UpdateTransferStatus.ExecContext(ctx, map[string]interface{}{
+		"status":  status,
+		"updated": time.Now(),
+		"id":      ID,
+	})
+	return err
+}
+
+func (r *TransferRepository) GetTransferHistory(ctx context.Context, filter string) ([]model.TransferInfo, error) {
+	var (
+		resultSet = []model.TransferInfoDB{}
+		data      = []model.TransferInfo{}
+	)
+	err := r.queries.GetTransferHistory.SelectContext(ctx, &resultSet, map[string]interface{}{
+		"transfer_date": filter,
+	})
+
+	for _, v := range resultSet {
+		data = append(data, model.TransferInfo{
+			TransactionId:            v.TransactionId,
+			TransferDate:             v.TransferDate,
+			Amount:                   v.Amount,
+			SourceAccountNumber:      v.SourceAccountNumber,
+			DestinationAccountNumber: v.DestinationAccountNumber,
+			TransferType:             v.TransferType,
+			BankCode:                 v.BankCode,
+			Status:                   v.Status,
+			CreatedAt:                v.CreatedAt,
+			UpdatedAt:                v.UpdatedAt,
+			Message:                  v.Message,
+		})
+	}
+	return data, err
+}

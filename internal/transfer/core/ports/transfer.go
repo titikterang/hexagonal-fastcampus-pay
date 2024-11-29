@@ -1,13 +1,17 @@
 package ports
 
-import "context"
+import (
+	"context"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
+)
 
-type TransferServiceAdapter interface {
-	// handler rest api
-	SubmitTransferBalance(ctx context.Context) error
-	GetTransferHistory(ctx context.Context) error
+type TransferServiceAPIAdapter interface {
+	SubmitTransferBalance(ctx context.Context, data model.TransferInfo) (string, error)
+	GetTransferHistory(ctx context.Context, filter string) ([]model.TransferInfo, error)
+}
 
-	// handler consumer
-	HandleTransactionValidationReply(ctx context.Context) error
-	HandleBankCallbackReply(ctx context.Context) error
+type TransferServiceConsumerAdapter interface {
+	HandleTransactionValidationReply(ctx context.Context, reply types.TransactionValidateReplyInfo) error
+	HandleBankCallbackReply(ctx context.Context, reply types.TransferExternalBankReply) error
 }

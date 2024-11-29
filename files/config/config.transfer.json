@@ -11,7 +11,7 @@
     "port": "15432",
     "username": "admin",
     "password": "password",
-    "dbname": "fastcampus_banking",
+    "dbname": "fastcampus_transfer",
     "sslmode": "disable",
     "maxopenconn": "50",
     "maxidleconn": "50",
@@ -23,7 +23,7 @@
     "port": "15432",
     "username": "admin",
     "password": "password",
-    "dbname": "fastcampus_banking",
+    "dbname": "fastcampus_transfer",
     "sslmode": "disable",
     "maxopenconn": "50",
     "maxidleconn": "50",
@@ -35,7 +35,7 @@
   },
   "kafka_config": {
     "hosts": [
-      "localhost:9092"
+      "localhost:9094"
     ],
     "max_poll_record": 1000,
     "consumer_group": "fastcampus-transfer",

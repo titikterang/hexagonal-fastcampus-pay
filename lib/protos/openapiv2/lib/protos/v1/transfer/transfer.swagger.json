@@ -11,7 +11,7 @@
   },
   "tags": [
     {
-      "name": "BankingService"
+      "name": "TransferService"
     }
   ],
   "schemes": [
@@ -136,6 +136,9 @@
         "accountCode": {
           "type": "string",
           "format": "int64"
+        },
+        "transferType": {
+          "$ref": "#/definitions/v1TransferType"
         }
       }
     },
@@ -168,6 +171,15 @@
           }
         }
       }
+    },
+    "v1TransferType": {
+      "type": "string",
+      "enum": [
+        "UNSPECIFIED",
+        "BETWEEN_ACCOUNT",
+        "BETWEEN_BANK"
+      ],
+      "default": "UNSPECIFIED"
     }
   }
 }

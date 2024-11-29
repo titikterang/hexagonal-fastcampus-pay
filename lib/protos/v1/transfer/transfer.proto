@@ -21,7 +21,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   produces: "application/json";
 };
 
-service BankingService {
+service TransferService {
   // Transfer Balance Antar Account
   rpc SubmitTransferBalance(TransferBalanceRequest) returns (TransferBalanceResponse) {
     option (google.api.http) = {
@@ -59,11 +59,18 @@ service BankingService {
   }
 }
 
+enum TransferType {
+  UNSPECIFIED = 0;
+  BETWEEN_ACCOUNT = 1;
+  BETWEEN_BANK = 2;
+}
+
 message TransferBalanceRequest {
   string source_account_number = 1;
   int64  amount = 2;
   string destination_account = 3;
   int64 account_code = 4;
+  TransferType transfer_type = 5;
 }
 
 message TransferBalanceResponse  {

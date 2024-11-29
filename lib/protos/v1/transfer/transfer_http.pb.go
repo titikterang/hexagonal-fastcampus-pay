@@ -19,22 +19,22 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationBankingServiceGetTransferHistory = "/fastcampus.transfer.v1.BankingService/GetTransferHistory"
-const OperationBankingServiceSubmitTransferBalance = "/fastcampus.transfer.v1.BankingService/SubmitTransferBalance"
+const OperationTransferServiceGetTransferHistory = "/fastcampus.transfer.v1.TransferService/GetTransferHistory"
+const OperationTransferServiceSubmitTransferBalance = "/fastcampus.transfer.v1.TransferService/SubmitTransferBalance"
 
-type BankingServiceHTTPServer interface {
+type TransferServiceHTTPServer interface {
 	GetTransferHistory(context.Context, *TransferHistoryRequest) (*TransferHistoryResponse, error)
 	// SubmitTransferBalance Transfer Balance Antar Account
 	SubmitTransferBalance(context.Context, *TransferBalanceRequest) (*TransferBalanceResponse, error)
 }
 
-func RegisterBankingServiceHTTPServer(s *http.Server, srv BankingServiceHTTPServer) {
+func RegisterTransferServiceHTTPServer(s *http.Server, srv TransferServiceHTTPServer) {
 	r := s.Route("/")
-	r.POST("/v1/transfer/balance", _BankingService_SubmitTransferBalance0_HTTP_Handler(srv))
-	r.GET("/v1/transfer/history", _BankingService_GetTransferHistory0_HTTP_Handler(srv))
+	r.POST("/v1/transfer/balance", _TransferService_SubmitTransferBalance0_HTTP_Handler(srv))
+	r.GET("/v1/transfer/history", _TransferService_GetTransferHistory0_HTTP_Handler(srv))
 }
 
-func _BankingService_SubmitTransferBalance0_HTTP_Handler(srv BankingServiceHTTPServer) func(ctx http.Context) error {
+func _TransferService_SubmitTransferBalance0_HTTP_Handler(srv TransferServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in TransferBalanceRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -43,7 +43,7 @@ func _BankingService_SubmitTransferBalance0_HTTP_Handler(srv BankingServiceHTTPS
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationBankingServiceSubmitTransferBalance)
+		http.SetOperation(ctx, OperationTransferServiceSubmitTransferBalance)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.SubmitTransferBalance(ctx, req.(*TransferBalanceRequest))
 		})
@@ -56,13 +56,13 @@ func _BankingService_SubmitTransferBalance0_HTTP_Handler(srv BankingServiceHTTPS
 	}
 }
 
-func _BankingService_GetTransferHistory0_HTTP_Handler(srv BankingServiceHTTPServer) func(ctx http.Context) error {
+func _TransferService_GetTransferHistory0_HTTP_Handler(srv TransferServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in TransferHistoryRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationBankingServiceGetTransferHistory)
+		http.SetOperation(ctx, OperationTransferServiceGetTransferHistory)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.GetTransferHistory(ctx, req.(*TransferHistoryRequest))
 		})
@@ -75,24 +75,24 @@ func _BankingService_GetTransferHistory0_HTTP_Handler(srv BankingServiceHTTPServ
 	}
 }
 
-type BankingServiceHTTPClient interface {
+type TransferServiceHTTPClient interface {
 	GetTransferHistory(ctx context.Context, req *TransferHistoryRequest, opts ...http.CallOption) (rsp *TransferHistoryResponse, err error)
 	SubmitTransferBalance(ctx context.Context, req *TransferBalanceRequest, opts ...http.CallOption) (rsp *TransferBalanceResponse, err error)
 }
 
-type BankingServiceHTTPClientImpl struct {
+type TransferServiceHTTPClientImpl struct {
 	cc *http.Client
 }
 
-func NewBankingServiceHTTPClient(client *http.Client) BankingServiceHTTPClient {
-	return &BankingServiceHTTPClientImpl{client}
+func NewTransferServiceHTTPClient(client *http.Client) TransferServiceHTTPClient {
+	return &TransferServiceHTTPClientImpl{client}
 }
 
-func (c *BankingServiceHTTPClientImpl) GetTransferHistory(ctx context.Context, in *TransferHistoryRequest, opts ...http.CallOption) (*TransferHistoryResponse, error) {
+func (c *TransferServiceHTTPClientImpl) GetTransferHistory(ctx context.Context, in *TransferHistoryRequest, opts ...http.CallOption) (*TransferHistoryResponse, error) {
 	var out TransferHistoryResponse
 	pattern := "/v1/transfer/history"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationBankingServiceGetTransferHistory))
+	opts = append(opts, http.Operation(OperationTransferServiceGetTransferHistory))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -101,11 +101,11 @@ func (c *BankingServiceHTTPClientImpl) GetTransferHistory(ctx context.Context, i
 	return &out, nil
 }
 
-func (c *BankingServiceHTTPClientImpl) SubmitTransferBalance(ctx context.Context, in *TransferBalanceRequest, opts ...http.CallOption) (*TransferBalanceResponse, error) {
+func (c *TransferServiceHTTPClientImpl) SubmitTransferBalance(ctx context.Context, in *TransferBalanceRequest, opts ...http.CallOption) (*TransferBalanceResponse, error) {
 	var out TransferBalanceResponse
 	pattern := "/v1/transfer/balance"
 	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationBankingServiceSubmitTransferBalance))
+	opts = append(opts, http.Operation(OperationTransferServiceSubmitTransferBalance))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
