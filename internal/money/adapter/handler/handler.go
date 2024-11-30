@@ -15,7 +15,7 @@ func (h *Handler) GetUserBalance(ctx context.Context, data *money.UserBalancePay
 }
 
 func (h *Handler) GetUserBalancePrivate(ctx context.Context, data *money.UserBalancePayload) (*money.UserBalancePrivateResponse, error) {
-	amount, err := h.moneyService.GetUserBalance(ctx, data.GetAccountNumber())
+	amount, _, err := h.moneyService.GetUserBalance(ctx, data.GetAccountNumber())
 	return &money.UserBalancePrivateResponse{
 		AccountNumber: data.GetAccountNumber(),
 		Balance:       amount,
@@ -32,7 +32,7 @@ func (h *Handler) UpdateUserBalance(ctx context.Context, data *money.UpdateBalan
 		}, err
 	}
 
-	finalAmount, err := h.moneyService.GetUserBalance(ctx, data.GetAccountNumber())
+	finalAmount, _, err := h.moneyService.GetUserBalance(ctx, data.GetAccountNumber())
 	var msg string
 	if err != nil {
 		msg = err.Error()

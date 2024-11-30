@@ -10,6 +10,15 @@ type Config struct {
 	PostgreMaster PostgreConfig     `json:"postgre_master" mapstructure:"postgre_master"`
 	PostgreSlave  PostgreConfig     `json:"postgre_slave" mapstructure:"postgre_slave"`
 	ExternalAPI   ExternalAPIConfig `json:"external_api" mapstructure:"external_api"`
+	Kafka         KafkaConfig       `json:"kafka_config" mapstructure:"kafka_config"`
+}
+
+type KafkaConfig struct {
+	Hosts          []string          `json:"hosts" mapstructure:"hosts"`
+	MaxPollRecord  int               `json:"max_poll_record" mapstructure:"max_poll_record"`
+	ConsumerGroup  string            `json:"consumer_group" mapstructure:"max_poll_record"`
+	ConsumerTopics map[string]string `json:"consumer_topics" mapstructure:"consumer_topics"`
+	ProducerTopics map[string]string `json:"producer_topics" mapstructure:"producer_topics"`
 }
 
 type ExternalAPIConfig struct {

@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func (r *BankingRepository) GetAccountInfo(ctx context.Context, accountNumber string) (types.UserProfileInfo, error) {
+func (r *TransferRepository) GetAccountInfo(ctx context.Context, accountNumber string) (types.UserProfileInfo, error) {
 	// get account info from membership service
 	url := r.cfg.ExternalAPI.MembershipService + "v1/membership/info?account_number=" + accountNumber
 	method := "GET"

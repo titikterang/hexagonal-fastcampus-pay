@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+const (
+	TopicTrxValidate = "transaction_validate"
+	TopicMoneyDLQ    = "dead_letter_queue"
+)
+
 type CashMovementInfo struct {
 	RequestID     string
 	AccountNumber string

@@ -1,0 +1,90 @@
+syntax = "proto3";
+package fastcampus.transfer.v1;
+option go_package = "github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/transfer;transfer";
+
+import "lib/protos/google/api/annotations.proto";
+import "lib/protos/protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Fast Campus Pay (Transfer API Endpoint)";
+    version: "1.0";
+    contact: {
+      name: "Fast Campus Payment";
+      url: "https://github.com/titikterang";
+      email: "azwar.nrst@gmail.com";
+    };
+  };
+
+  schemes: HTTP;
+  consumes: "application/json";
+  produces: "application/json";
+};
+
+service TransferService {
+  // Transfer Balance Antar Account
+  rpc SubmitTransferBalance(TransferBalanceRequest) returns (TransferBalanceResponse) {
+    option (google.api.http) = {
+      post: "/v1/transfer/balance",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Transfer User Balance";
+      operation_id: "SubmitTransfer";
+      tags: "transfer";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+
+  rpc GetTransferHistory(TransferHistoryRequest) returns (TransferHistoryResponse) {
+    option (google.api.http) = {
+      get: "/v1/transfer/history",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get Transfer History";
+      operation_id: "GetTransferHistory";
+      tags: "transfer";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+}
+
+enum TransferType {
+  UNSPECIFIED = 0;
+  BETWEEN_ACCOUNT = 1;
+  BETWEEN_BANK = 2;
+}
+
+message TransferBalanceRequest {
+  string source_account_number = 1;
+  int64  amount = 2;
+  string destination_account = 3;
+  int64 account_code = 4;
+  TransferType transfer_type = 5;
+  string request_id = 6;
+}
+
+message TransferBalanceResponse  {
+  string message = 1;
+  string status = 2;
+  string trx_id = 3;
+  int64 amount = 4;
+}
+
+message TransferHistoryRequest {
+  string date = 1;
+}
+
+message TransferHistoryResponse {
+  repeated  TransferBalanceResponse transfer_history = 1;
+}

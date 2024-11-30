@@ -8,7 +8,7 @@
   },
   "redis": {
     "address": "localhost:6379",
-    "poolsize": 100
+    "poolsize": 5
   },
   "postgre": {
     "address": "localhost",

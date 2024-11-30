@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-redis/redis/v8"
-	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/adapter/handler"
-	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/adapter/repository"
-	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/services"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/adapter/handler"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/adapter/repository"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/services"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
@@ -31,8 +31,9 @@ func initHandler(cfg *config.Config) (*handler.Handler, *handler.ConsumerHandler
 		}
 	}
 
-	repo := repository.NewMoneyRepository(cfg, redisClient, masterClient, slaveClient, client)
+	repo := repository.NewTransferRepository(cfg, redisClient, masterClient, slaveClient, client)
 	svc := services.NewService(cfg, repo)
+
 	hdl, err := handler.NewHandler(cfg, svc)
 	if err != nil {
 		return nil, nil, err

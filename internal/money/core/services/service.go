@@ -7,7 +7,9 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
 	"google.golang.org/genproto/googleapis/type/money"
+	"strconv"
 	"time"
 )
 
@@ -25,7 +27,7 @@ func (s *MoneyService) PublicGetUserBalance(ctx context.Context, accountNumber s
 }
 
 func (s *MoneyService) updateSnapshoot(ctx context.Context, accountNumber string) {
-	finalAmount, err := s.GetUserBalance(ctx, accountNumber)
+	finalAmount, _, err := s.GetUserBalance(ctx, accountNumber)
 	if err != nil {
 		log.Error().Msgf("failed to get user balance, %#v", err)
 		return
@@ -35,10 +37,10 @@ func (s *MoneyService) updateSnapshoot(ctx context.Context, accountNumber string
 
 // GetUserBalance - get from redis and re calculate
 // deps redis hgetall
-func (s *MoneyService) GetUserBalance(ctx context.Context, accountNumber string) (*money.Money, error) {
+func (s *MoneyService) GetUserBalance(ctx context.Context, accountNumber string) (*money.Money, decimal.Decimal, error) {
 	data, err := s.repository.GetCashMovementFromCache(ctx, accountNumber)
 	if err != nil {
-		return nil, err
+		return nil, decimal.Decimal{}, err
 	}
 
 	var amount decimal.Decimal
@@ -46,7 +48,7 @@ func (s *MoneyService) GetUserBalance(ctx context.Context, accountNumber string)
 		amount = amount.Add(v.Amount)
 	}
 
-	return common.DecimalToMoney(amount), nil
+	return common.DecimalToMoney(amount), amount, nil
 }
 
 // append into db cash movement, append to redis cash movement, update snapshoot
@@ -89,4 +91,26 @@ func (s *MoneyService) UpdateUserBalance(ctx context.Context, requestID, account
 	// update snapshoot
 	s.updateSnapshoot(ctx, accountNumber)
 	return nil
+}
+
+func (s *MoneyService) HandleTransactionValidation(ctx context.Context, data types.TransactionValidateInfo) error {
+	// get current balance
+	_, balance, err := s.GetUserBalance(ctx, data.SourceAccountNumber)
+	if err != nil {
+		log.Error().Msgf("failed to get user balance %#v", err)
+	}
+
+	// compare balance
+	requestTrx := decimal.NewFromInt(data.Amount)
+	sufficient := requestTrx.GreaterThanOrEqual(balance)
+
+	// set reply
+	err = s.repository.PublishMoneyValidationMessageReply(ctx, types.TransactionValidateReplyInfo{
+		ReplyID:                 strconv.FormatInt(time.Now().UnixNano(), 10),
+		AvailableBalance:        balance.IntPart(),
+		BalanceSufficient:       sufficient,
+		TransactionValidateInfo: data,
+	})
+
+	return err
 }

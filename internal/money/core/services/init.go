@@ -7,10 +7,10 @@ import (
 
 type MoneyService struct {
 	config     *config.Config
-	repository ports.MoneyDataStoreAdapter
+	repository ports.MoneyRepositoryAdapter
 }
 
-func NewService(cfg *config.Config, repository ports.MoneyDataStoreAdapter) ports.MoneyServiceAdapter {
+func NewService(cfg *config.Config, repository ports.MoneyRepositoryAdapter) *MoneyService {
 	return &MoneyService{
 		config:     cfg,
 		repository: repository,

@@ -7,7 +7,7 @@
     "timeout": "2s"
   },
   "redis": {
-    "address": "localhost:6379",
+    "address": "localhost:26379",
     "poolsize": 100
   },
   "postgre_master": {
@@ -34,5 +34,20 @@
     "connmaxidletime": "1000",
     "connmaxlifetime": "1000"
   },
-  "external_api": {}
+  "external_api": {},
+  "kafka_config": {
+    "hosts": [
+      "localhost:9094"
+    ],
+    "max_poll_record": 1000,
+    "consumer_group": "fastcampus-money",
+    "consumer_topics": {
+      "transaction_validate": "TransactionBalanceValidation",
+      "dead_letter_queue": "MoneyServiceReplyDLQ"
+    },
+    "producer_topics": {
+      "transaction_validate": "MoneyServiceReply",
+      "dead_letter_queue": "MoneyServiceReplyDLQ"
+    }
+  }
 }
