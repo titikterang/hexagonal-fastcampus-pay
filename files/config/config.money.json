@@ -7,8 +7,8 @@
     "timeout": "2s"
   },
   "redis": {
-    "address": "localhost:6379",
-    "poolsize": 5
+    "address": "localhost:26379",
+    "poolsize": 100
   },
   "postgre_master": {
     "address": "localhost",

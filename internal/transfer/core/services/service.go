@@ -46,11 +46,13 @@ func (s *TransferService) SubmitTransferBalance(ctx context.Context, data model.
 		data.Message = "account status is inactive"
 	}
 
+	log.Info().Msg("save history ...")
 	err := s.repository.SaveTransferHistory(ctx, data)
 	if !eligible {
 		return data.TransactionId, errors.New("account status isn't eligible to do transfer balance")
 	}
 
+	log.Info().Msg("done save history ...")
 	err = s.repository.PublishTransferValidateRequest(ctx, types.TransactionValidateInfo{
 		TransactionID:       data.TransactionId,
 		Amount:              data.Amount,

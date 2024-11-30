@@ -36,6 +36,9 @@ func (r *TransferRepository) SaveTransferHistory(ctx context.Context, data model
 		"updated_at":                 time.Now(),
 		"message":                    data.Message,
 	})
+	if err != nil {
+		log.Error().Msgf("err save history %#v", err)
+	}
 	return err
 }
 

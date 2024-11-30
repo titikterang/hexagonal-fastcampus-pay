@@ -10,6 +10,7 @@ import (
 )
 
 func (r *TransferRepository) PublishTransferValidateRequest(ctx context.Context, info types.TransactionValidateInfo) error {
+	log.Info().Msgf("PublishTransferValidateRequest -> " + r.topicProducerMoney)
 	py, err := json.Marshal(&info)
 	if err != nil {
 		log.Error().Msgf("err Marshal PublishTransferValidateRequest %#v", err)
