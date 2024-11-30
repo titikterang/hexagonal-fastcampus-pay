@@ -1,0 +1,6 @@
+FROM busybox
+
+COPY ./bin/banking banking
+COPY ./files/config/config.banking.json ./files/config/config.banking.json
+
+CMD [ "./banking" ]

@@ -8,7 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	gorHdl "github.com/gorilla/handlers"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
-	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/banking"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/money"
 )
 
 func startService(cfg *config.Config) {
@@ -38,7 +38,7 @@ func startService(cfg *config.Config) {
 		httpOpts...,
 	)
 
-	banking.RegisterBankingServiceHTTPServer(httpServer, handler)
+	money.RegisterMoneyServiceHTTPServer(httpServer, handler)
 
 	server := kratos.New(
 		kratos.Name(cfg.App.Label),

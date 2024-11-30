@@ -1,0 +1,23 @@
+# FOR LOCAL DEVELOPMENT ONLY
+version: '3.7'
+services:
+  banking_db:
+    image: postgres:12
+    container_name: banking_db
+    ports:
+      - 25432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=fastcampus_banking
+  banking_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.banking
+    container_name: banking_backend
+    volumes:
+      - ./files/config/config.banking.json:/files/config/config.banking.json
+    ports:
+      - 3003:3003
+    depends_on:
+      - banking_db

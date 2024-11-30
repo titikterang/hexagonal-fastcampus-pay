@@ -19,10 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	MembershipService_GetUserInfo_FullMethodName        = "/fastcampus.wmembership.v1.MembershipService/GetUserInfo"
-	MembershipService_SubmitRegistration_FullMethodName = "/fastcampus.wmembership.v1.MembershipService/SubmitRegistration"
-	MembershipService_SubmitLogout_FullMethodName       = "/fastcampus.wmembership.v1.MembershipService/SubmitLogout"
-	MembershipService_SubmitLogin_FullMethodName        = "/fastcampus.wmembership.v1.MembershipService/SubmitLogin"
+	MembershipService_GetUserInfo_FullMethodName        = "/fastcampus.membership.v1.MembershipService/GetUserInfo"
+	MembershipService_SubmitRegistration_FullMethodName = "/fastcampus.membership.v1.MembershipService/SubmitRegistration"
+	MembershipService_SubmitLogout_FullMethodName       = "/fastcampus.membership.v1.MembershipService/SubmitLogout"
+	MembershipService_SubmitLogin_FullMethodName        = "/fastcampus.membership.v1.MembershipService/SubmitLogin"
 )
 
 // MembershipServiceClient is the client API for MembershipService service.
@@ -205,7 +205,7 @@ func _MembershipService_SubmitLogin_Handler(srv interface{}, ctx context.Context
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var MembershipService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "fastcampus.wmembership.v1.MembershipService",
+	ServiceName: "fastcampus.membership.v1.MembershipService",
 	HandlerType: (*MembershipServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
