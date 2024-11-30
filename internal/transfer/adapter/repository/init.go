@@ -2,7 +2,9 @@ package repository
 
 import (
 	"context"
+	"github.com/go-redis/redis/v8"
 	"github.com/rs/zerolog/log"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/ports"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
@@ -11,16 +13,12 @@ import (
 	"time"
 )
 
-const (
-	moneyTopicKey   = "money_service"
-	bankingTopicKey = "banking_service"
-)
-
 type TransferRepository struct {
 	cfg                *config.Config
 	dbClientMaster     postgre.DBInterface
 	dbClientSlave      postgre.DBInterface
 	queries            statementQueries
+	redisClient        *redis.Client
 	httpClient         *http.Client
 	kafkaClient        kafka.KafkaClientInterface
 	topicProducerMoney string
@@ -28,6 +26,7 @@ type TransferRepository struct {
 }
 
 func NewTransferRepository(cfg *config.Config,
+	redisClient *redis.Client,
 	masterClient, slaveClient postgre.DBInterface,
 	kafkaClient kafka.KafkaClientInterface) ports.TransferServiceRepositoryAdapter {
 
@@ -36,6 +35,7 @@ func NewTransferRepository(cfg *config.Config,
 		dbClientMaster: masterClient,
 		dbClientSlave:  slaveClient,
 		queries:        statementQueries{},
+		redisClient:    redisClient,
 		httpClient: &http.Client{
 			Timeout: 10 * time.Second,
 			Transport: &http.Transport{
@@ -44,14 +44,16 @@ func NewTransferRepository(cfg *config.Config,
 				MaxIdleConns:        100,
 			},
 		},
-		kafkaClient: kafkaClient,
+		kafkaClient:        kafkaClient,
+		topicProducerMoney: "",
+		topicProducerBank:  "",
 	}
 
 	for k, v := range cfg.Kafka.ConsumerTopics {
 		switch k {
-		case moneyTopicKey:
+		case model.MoneyTopicKey:
 			repo.topicProducerMoney = v
-		case bankingTopicKey:
+		case model.BankingTopicKey:
 			repo.topicProducerBank = v
 		}
 	}

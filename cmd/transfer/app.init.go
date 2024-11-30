@@ -21,6 +21,8 @@ func initHandler(cfg *config.Config) (*handler.Handler, *handler.ConsumerHandler
 		return nil, nil, err
 	}
 
+	redisClient := InitRedis(cfg)
+
 	// init kafka client
 	client, err := kafka.InitKafkaClient(cfg)
 	if err != nil {
@@ -29,7 +31,7 @@ func initHandler(cfg *config.Config) (*handler.Handler, *handler.ConsumerHandler
 		}
 	}
 
-	repo := repository.NewTransferRepository(cfg, masterClient, slaveClient, client)
+	repo := repository.NewTransferRepository(cfg, redisClient, masterClient, slaveClient, client)
 	svc := services.NewService(cfg, repo)
 
 	hdl, err := handler.NewHandler(cfg, svc)
@@ -53,6 +55,7 @@ func InitDBMaster(cfg *config.Config) (postgre.DBInterface, error) {
 	}
 	return client, nil
 }
+
 func InitDBSlave(cfg *config.Config) (postgre.DBInterface, error) {
 	dbConn := postgre.InitDBConnection(cfg)
 	client, err := dbConn.InitiateSlaveConnection()

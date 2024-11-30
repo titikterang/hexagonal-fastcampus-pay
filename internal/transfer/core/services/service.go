@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
@@ -9,20 +10,51 @@ import (
 	"time"
 )
 
+func (s *TransferService) eligibleAccountStatus(ctx context.Context, accountNumber string) bool {
+	// only eligible if user status == A (Active)
+	data, err := s.repository.GetAccountInfo(ctx, accountNumber)
+	if err != nil {
+		log.Err(err).Msg("eligibleAccountStatus.repository.GetAccountInfo")
+		return false
+	}
+
+	return data.Status == model.UserStatusActive
+}
+
 func (s *TransferService) SubmitTransferBalance(ctx context.Context, data model.TransferInfo) (string, error) {
 	// idempotence check
+	if s.repository.EventIDExists(ctx, model.EventTypeSubmitTransfer, data.SourceAccountNumber, data.RequestID) {
+		return "-", errors.New("duplicate request ID " + data.RequestID)
+	}
 
 	// validate source account status
+	sourceEligible := s.eligibleAccountStatus(ctx, data.SourceAccountNumber)
 
-	// validate destination account , if transfer between fastcampus
+	// validate destination account , if transfer between fastcampus pay
+	var eligible = sourceEligible
+	if data.TransferType == model.TransferType_BETWEEN_ACCOUNT {
+		eligible = sourceEligible && s.eligibleAccountStatus(ctx, data.DestinationAccountNumber)
+	}
+
+	data.Status = model.TransferStatusPending
+	data.Message = "validating transfer balance"
 
 	data.TransactionId = strconv.FormatInt(time.Now().UnixNano(), 10)
+	if !eligible {
+		data.Status = model.TransferStatusRejected
+		data.Message = "account status is inactive"
+	}
+
 	err := s.repository.SaveTransferHistory(ctx, data)
-	s.repository.PublishTransferValidateRequest(ctx, types.TransactionValidateInfo{
+	if !eligible {
+		return data.TransactionId, errors.New("account status isn't eligible to do transfer balance")
+	}
+
+	err = s.repository.PublishTransferValidateRequest(ctx, types.TransactionValidateInfo{
 		TransactionID:       data.TransactionId,
 		Amount:              data.Amount,
 		SourceAccountNumber: data.SourceAccountNumber,
-		TransactionType:     1,
+		TransactionType:     data.TransferType,
 		Destination:         data.DestinationAccountNumber,
 		BankCode:            data.BankCode,
 	})

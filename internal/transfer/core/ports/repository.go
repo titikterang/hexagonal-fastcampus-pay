@@ -15,6 +15,10 @@ type TransferServiceRepositoryAdapter interface {
 	UpdateTransferHistory(ctx context.Context, status, ID string) error
 	GetTransferHistory(ctx context.Context, filter string) ([]model.TransferInfo, error)
 
+	// idempotence check
+	EventIDExists(ctx context.Context, eventType model.EventType, accountNo, id string) bool
+	SaveEventID(ctx context.Context, eventType model.EventType, accountNo, id string) error
+
 	// publish to other service
 	PublishTransferValidateRequest(ctx context.Context, info types.TransactionValidateInfo) error       // to money service
 	PublishTransferBankingRequest(ctx context.Context, payload types.TransferExternalBankPayload) error // to banking service

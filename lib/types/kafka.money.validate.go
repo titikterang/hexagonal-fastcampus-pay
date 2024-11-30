@@ -9,7 +9,7 @@ type TransactionValidateInfo struct {
 	TransactionID       string
 	Amount              int64
 	SourceAccountNumber string
-	TransactionType     int
+	TransactionType     string
 	Destination         string
 	BankCode            string
 }

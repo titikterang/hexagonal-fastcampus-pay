@@ -28,6 +28,7 @@ func (h *Handler) GetTransferHistory(ctx context.Context, payload *transfer.Tran
 
 func (h *Handler) SubmitTransferBalance(ctx context.Context, payload *transfer.TransferBalanceRequest) (*transfer.TransferBalanceResponse, error) {
 	ID, err := h.transferService.SubmitTransferBalance(ctx, model.TransferInfo{
+		RequestID:                payload.GetRequestId(),
 		Amount:                   payload.GetAmount(),
 		SourceAccountNumber:      payload.GetSourceAccountNumber(),
 		DestinationAccountNumber: payload.GetDestinationAccount(),

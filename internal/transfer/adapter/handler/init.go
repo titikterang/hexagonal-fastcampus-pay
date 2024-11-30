@@ -1,14 +1,10 @@
 package handler
 
 import (
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/ports"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
-)
-
-const (
-	moneyTopicKey   = "money_service"
-	bankingTopicKey = "banking_service"
 )
 
 type Handler struct {
@@ -40,9 +36,9 @@ func NewConsumer(cfg *config.Config, client kafka.KafkaClientInterface, adapter 
 
 	for k, v := range cfg.Kafka.ConsumerTopics {
 		switch k {
-		case moneyTopicKey:
+		case model.MoneyTopicKey:
 			handler.topicMoneyReply = v
-		case bankingTopicKey:
+		case model.BankingTopicKey:
 			handler.topicBankReply = v
 		}
 	}

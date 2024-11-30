@@ -8,6 +8,10 @@ const (
 	TransferStatusPendingBank = "pending_bank_confirm"
 	TransferStatusRejected    = "transfer_rejected"
 	TransferStatusSuccess     = "transfer_success"
+
+	TransferType_UNSPECIFIED     = "UNSPECIFIED"
+	TransferType_BETWEEN_ACCOUNT = "BETWEEN_ACCOUNT"
+	TransferType_BETWEEN_BANK    = "BETWEEN_BANK"
 )
 
 type TransferInfoDB struct {
@@ -25,6 +29,7 @@ type TransferInfoDB struct {
 }
 
 type TransferInfo struct {
+	RequestID                string    `json:"request_id"`
 	TransactionId            string    `json:"transaction_id"`
 	TransferDate             string    `json:"transfer_date"`
 	Amount                   int64     `json:"amount"`

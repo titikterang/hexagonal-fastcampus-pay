@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
 	"time"
@@ -30,10 +31,10 @@ func (r *TransferRepository) SaveTransferHistory(ctx context.Context, data model
 		"destination_account_number": data.DestinationAccountNumber,
 		"transfer_type":              data.TransferType,
 		"bank_code":                  data.BankCode,
-		"status":                     model.TransferStatusPending,
+		"status":                     data.Status,
 		"created_at":                 time.Now(),
 		"updated_at":                 time.Now(),
-		"message":                    "Sending transfer balance",
+		"message":                    data.Message,
 	})
 	return err
 }
@@ -86,4 +87,41 @@ func (r *TransferRepository) GetTransferHistory(ctx context.Context, filter stri
 		})
 	}
 	return data, err
+}
+
+func (r *TransferRepository) EventIDExists(ctx context.Context, eventType model.EventType, accountNo, id string) bool {
+	var key string
+	switch eventType {
+	case model.EventTypeSubmitTransfer:
+		key = fmt.Sprintf(model.IdempotenceTransferHandler, accountNo, id)
+	case model.EventTypeMoneyReply:
+		key = fmt.Sprintf(model.IdempotenceMoneyReply, accountNo, id)
+	case model.EventTypeBankReply:
+		key = fmt.Sprintf(model.IdempotenceBankingReply, accountNo, id)
+	default:
+		return true
+	}
+
+	res, err := r.redisClient.Get(ctx, key).Result()
+	if err != nil {
+		return false
+	}
+
+	return res == "1"
+}
+
+func (r *TransferRepository) SaveEventID(ctx context.Context, eventType model.EventType, accountNo, id string) error {
+	var key string
+	switch eventType {
+	case model.EventTypeSubmitTransfer:
+		key = fmt.Sprintf(model.IdempotenceTransferHandler, accountNo, id)
+	case model.EventTypeMoneyReply:
+		key = fmt.Sprintf(model.IdempotenceMoneyReply, accountNo, id)
+	case model.EventTypeBankReply:
+		key = fmt.Sprintf(model.IdempotenceBankingReply, accountNo, id)
+	default:
+		return nil
+	}
+
+	return r.redisClient.SetEX(ctx, key, 1, model.DefaultIdempotenceTTL).Err()
 }
