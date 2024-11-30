@@ -22,7 +22,7 @@ const (
 						message                    varchar(100),
 						constraint transfer_history_pk
 							primary key (transaction_id, transfer_date)
-					) partition by list (transfer_date);`
+					)`
 	queryInsertHistory = `INSERT INTO transfer_history (
 									transaction_id, 
                                      transfer_date, 

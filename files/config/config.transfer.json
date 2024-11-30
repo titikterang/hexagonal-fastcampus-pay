@@ -47,5 +47,9 @@
       "money_service": "TransactionBalanceValidation",
       "banking_service": "TransferExecution"
     }
+  },
+  "redis": {
+    "address": "localhost:6379",
+    "poolsize": 100
   }
 }

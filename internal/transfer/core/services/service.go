@@ -10,6 +10,12 @@ import (
 )
 
 func (s *TransferService) SubmitTransferBalance(ctx context.Context, data model.TransferInfo) (string, error) {
+	// idempotence check
+
+	// validate source account status
+
+	// validate destination account , if transfer between fastcampus
+
 	data.TransactionId = strconv.FormatInt(time.Now().UnixNano(), 10)
 	err := s.repository.SaveTransferHistory(ctx, data)
 	s.repository.PublishTransferValidateRequest(ctx, types.TransactionValidateInfo{

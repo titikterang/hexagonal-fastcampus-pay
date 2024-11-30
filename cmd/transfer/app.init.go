@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-redis/redis/v8"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/adapter/handler"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/adapter/repository"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/services"
@@ -60,4 +61,12 @@ func InitDBSlave(cfg *config.Config) (postgre.DBInterface, error) {
 		log.Fatalf("failed to connect to db, err : %#v", err)
 	}
 	return client, nil
+}
+
+func InitRedis(cfg *config.Config) *redis.Client {
+	client := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis.Address,
+		PoolSize: cfg.Redis.PoolSize,
+	})
+	return client
 }
