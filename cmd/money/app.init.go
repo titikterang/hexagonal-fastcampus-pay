@@ -2,9 +2,10 @@ package main
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/titikterang/hexagonal-fastcampus-pay/internal/banking/adapter/handler"
-	"github.com/titikterang/hexagonal-fastcampus-pay/internal/banking/adapter/repository"
-	"github.com/titikterang/hexagonal-fastcampus-pay/internal/banking/core/services"
+	"github.com/go-redis/redis/v8"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/adapter/handler"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/adapter/repository"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/services"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
 )
@@ -19,7 +20,9 @@ func initHandler(cfg *config.Config) (*handler.Handler, error) {
 		return nil, err
 	}
 
-	repo := repository.NewBankingRepository(cfg, masterClient, slaveClient)
+	redisClient := InitRedis(cfg)
+
+	repo := repository.NewMoneyRepository(cfg, redisClient, masterClient, slaveClient)
 	hdl, err := handler.NewHandler(cfg, services.NewService(cfg, repo))
 	if err != nil {
 		return nil, err
@@ -37,6 +40,7 @@ func InitDBMaster(cfg *config.Config) (postgre.DBInterface, error) {
 	}
 	return client, nil
 }
+
 func InitDBSlave(cfg *config.Config) (postgre.DBInterface, error) {
 	dbConn := postgre.InitDBConnection(cfg)
 	client, err := dbConn.InitiateSlaveConnection()
@@ -45,4 +49,12 @@ func InitDBSlave(cfg *config.Config) (postgre.DBInterface, error) {
 		log.Fatalf("failed to connect to db, err : %#v", err)
 	}
 	return client, nil
+}
+
+func InitRedis(cfg *config.Config) *redis.Client {
+	client := redis.NewClient(&redis.Options{
+		Addr:     cfg.Redis.Address,
+		PoolSize: cfg.Redis.PoolSize,
+	})
+	return client
 }

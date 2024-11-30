@@ -15,7 +15,7 @@ func main() {
 
 	log.Info("Starting backend service")
 
-	cfg, err := cff.Init("config.banking", "./files/config")
+	cfg, err := cff.Init("config.money", "./files/config")
 	if err != nil {
 		log.Fatalf("failed to parse config, %#v", err)
 	}
