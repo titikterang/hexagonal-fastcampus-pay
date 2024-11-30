@@ -8,7 +8,7 @@
   },
   "redis": {
     "address": "localhost:6379",
-    "poolsize": 100
+    "poolsize": 5
   },
   "postgre_master": {
     "address": "localhost",
@@ -37,7 +37,7 @@
   "external_api": {},
   "kafka_config": {
     "hosts": [
-      "localhost:9092"
+      "localhost:9094"
     ],
     "max_poll_record": 1000,
     "consumer_group": "fastcampus-money",

@@ -49,12 +49,14 @@ func NewTransferRepository(cfg *config.Config,
 		topicProducerBank:  "",
 	}
 
-	for k, v := range cfg.Kafka.ConsumerTopics {
+	for k, v := range cfg.Kafka.ProducerTopics {
 		switch k {
 		case model.MoneyTopicKey:
 			repo.topicProducerMoney = v
 		case model.BankingTopicKey:
 			repo.topicProducerBank = v
+		default:
+
 		}
 	}
 

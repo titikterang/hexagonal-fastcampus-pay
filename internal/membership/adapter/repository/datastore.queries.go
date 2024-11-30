@@ -30,6 +30,19 @@ const (
 				status         varchar(10)  not null
 			);`
 
+	InsertQueryUserInfo = `INSERT INTO public.user_profile (account_number, created_at, email, fullname, status)
+						VALUES (:account_number, 
+								:created_at, 
+								:email, 
+								:fullname, 
+								:status)`
+
+	InsertQueryAuth = `INSERT INTO public.user_auth (account_number, username, hash, created_at)
+						VALUES (:account_number,
+								:username,
+								:hash,
+								:created_at);`
+
 	GetUserInfo = `select account_number, email, fullname, status
 					from user_profile p
 					where account_number = :account_number`
@@ -39,6 +52,8 @@ const (
 type statementQueries struct {
 	GetUserInfo        *sqlx.NamedStmt
 	GetUserInfoByUname *sqlx.NamedStmt
+	InsertUserAuth     *sqlx.NamedStmt
+	RegisterUserInfo   *sqlx.NamedStmt
 }
 
 func (r *DatastoreRepository) prepareStatements() error {
@@ -55,6 +70,20 @@ func (r *DatastoreRepository) prepareStatements() error {
 		return err
 	}
 	r.queries.GetUserInfoByUname = stmtNamed
+
+	stmtNamed, err = r.dbClient.PrepareNamed(InsertQueryAuth)
+	if err != nil {
+		log.Error("prepare statement InsertQueryAuth err ", err.Error())
+		return err
+	}
+	r.queries.InsertUserAuth = stmtNamed
+
+	stmtNamed, err = r.dbClient.PrepareNamed(InsertQueryUserInfo)
+	if err != nil {
+		log.Error("prepare statement InsertQueryUserInfo err ", err.Error())
+		return err
+	}
+	r.queries.RegisterUserInfo = stmtNamed
 	return nil
 }
 

@@ -26,6 +26,7 @@ func (s *TransferService) SubmitTransferBalance(ctx context.Context, data model.
 	if s.repository.EventIDExists(ctx, model.EventTypeSubmitTransfer, data.SourceAccountNumber, data.RequestID) {
 		return "-", errors.New("duplicate request ID " + data.RequestID)
 	}
+	_ = s.repository.SaveEventID(ctx, model.EventTypeSubmitTransfer, data.SourceAccountNumber, data.RequestID)
 
 	// validate source account status
 	sourceEligible := s.eligibleAccountStatus(ctx, data.SourceAccountNumber)

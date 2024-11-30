@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/membership/core/model"
+	"time"
 )
 
 func (r *DatastoreRepository) GetUserSessionFromCache(ctx context.Context) {
@@ -17,12 +19,42 @@ func (r *DatastoreRepository) UpdateUserSessionIntoCache(ctx context.Context) {
 
 func (r *DatastoreRepository) InsertUserInfoIntoDB(ctx context.Context, payload model.RegistrationPayload) error {
 	// begin query TX
+	trx, err := r.dbClient.Beginx()
+	if err != nil {
+		log.Err(err)
+		return err
+	}
 
 	// commit & rolback if err
+	defer func() {
+		if err != nil {
+			err = trx.Rollback()
+		} else {
+			err = trx.Commit()
+		}
+	}()
 
-	// insert user info
+	_, err = r.queries.RegisterUserInfo.ExecContext(ctx, map[string]interface{}{
+		"account_number": payload.AccountNumber,
+		"created_at":     time.Now(),
+		"email":          payload.Email,
+		"fullname":       payload.Fullname,
+		"status":         payload.Status,
+	})
+	if err != nil {
+		log.Error().Msgf("RegisterUserInfo err %#v", err)
+	}
 
-	// insert user auth
+	_, err = r.queries.InsertUserAuth.ExecContext(ctx, map[string]interface{}{
+		"account_number": payload.AccountNumber,
+		"username":       payload.Username,
+		"hash":           payload.Hash,
+		"created_at":     time.Now(),
+	})
+	if err != nil {
+		log.Error().Msgf("InsertUserAuth err %#v", err)
+	}
+
 	return nil
 }
 

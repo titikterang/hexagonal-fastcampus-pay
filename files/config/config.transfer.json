@@ -1,7 +1,7 @@
 {
   "app": {
-    "address": "0.0.0.0:3003",
-    "label": "banking"
+    "address": "0.0.0.0:3005",
+    "label": "transfer"
   },
   "http": {
     "timeout": "2s"
@@ -50,6 +50,6 @@
   },
   "redis": {
     "address": "localhost:6379",
-    "poolsize": 100
+    "poolsize": 5
   }
 }

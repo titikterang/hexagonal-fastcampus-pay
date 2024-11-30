@@ -52,6 +52,12 @@ func (h Handler) SubmitRegistration(ctx context.Context, request *membership.Reg
 	return &membership.RegistrationResponse{
 		AccountNumber: accno,
 		Success:       err == nil,
-		ErrorMessage:  err.Error(),
+		ErrorMessage: func() string {
+			if err != nil {
+				return err.Error()
+			}
+
+			return ""
+		}(),
 	}, err
 }

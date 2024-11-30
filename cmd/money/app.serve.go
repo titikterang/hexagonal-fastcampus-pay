@@ -12,10 +12,12 @@ import (
 )
 
 func startService(cfg *config.Config) {
-	handler, err := initHandler(cfg)
+	handler, consumer, err := initHandler(cfg)
 	if err != nil {
 		log.Fatal("failed initiate NewHandler: %v", err)
 	}
+
+	go consumer.StartConsumer()
 
 	httpOpts := []http.ServerOption{
 		http.Timeout(cfg.Http.Timeout),
