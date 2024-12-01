@@ -22,6 +22,8 @@ func (r *MoneyRepository) UpdateSnapshot(ctx context.Context, accountNumber, amo
 
 func (r *MoneyRepository) GetCashMovementFromCache(ctx context.Context, accountNumber string) ([]model.CashMovementInfo, error) {
 	key := fmt.Sprintf("money:movement:%s", accountNumber)
+	//ctx, fn := context.WithTimeout(ctx, 10*time.Second)
+	//defer fn()
 	data, err := r.redisClient.HGetAll(context.TODO(), key).Result()
 	if err != nil {
 		return []model.CashMovementInfo{}, err
@@ -38,6 +40,7 @@ func (r *MoneyRepository) GetCashMovementFromCache(ctx context.Context, accountN
 			Amount:        amount,
 		})
 	}
+
 	return result, nil
 }
 
