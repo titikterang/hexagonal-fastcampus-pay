@@ -21,8 +21,6 @@ func startService(cfg *config.Config) {
 		log.Fatal("failed initiate NewHandler: %v", err)
 	}
 
-	go consumer.StartConsumer()
-
 	httpOpts := []http.ServerOption{
 		http.Timeout(cfg.Http.Timeout),
 		http.Address(cfg.App.Address),
@@ -53,6 +51,7 @@ func startService(cfg *config.Config) {
 		),
 	)
 
+	go consumer.StartConsumer()
 	go func() {
 		if err := server.Run(); err != nil {
 			log.Fatalf("failed to serve: %v", err)

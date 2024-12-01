@@ -22,7 +22,7 @@ func (r *MoneyRepository) UpdateSnapshot(ctx context.Context, accountNumber, amo
 
 func (r *MoneyRepository) GetCashMovementFromCache(ctx context.Context, accountNumber string) ([]model.CashMovementInfo, error) {
 	key := fmt.Sprintf("money:movement:%s", accountNumber)
-	data, err := r.redisClient.HGetAll(ctx, key).Result()
+	data, err := r.redisClient.HGetAll(context.TODO(), key).Result()
 	if err != nil {
 		return []model.CashMovementInfo{}, err
 	}
@@ -62,7 +62,7 @@ func (r *MoneyRepository) ReqIDExists(ctx context.Context, accountNumber, reqID 
 // set to redis TTL 1jam
 func (r *MoneyRepository) SaveReqID(ctx context.Context, accountNumber, reqID string) {
 	key := fmt.Sprintf("money:reqid:%s:%s", accountNumber, reqID)
-	r.redisClient.SetEX(ctx, key, 1, 1*time.Hour)
+	r.redisClient.SetEx(ctx, key, 1, 1*time.Hour)
 	return
 }
 

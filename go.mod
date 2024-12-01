@@ -5,11 +5,11 @@ go 1.23.0
 require (
 	github.com/go-kratos/kratos/contrib/log/zerolog/v2 v2.0.0-20240615052815-46362d1a360d
 	github.com/go-kratos/kratos/v2 v2.7.3
-	github.com/go-redis/redis/v8 v8.11.5
 	github.com/gorilla/handlers v1.5.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.23.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/lib/pq v1.10.9
+	github.com/redis/go-redis/v9 v9.7.0
 	github.com/rs/zerolog v1.33.0
 	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/viper v1.19.0

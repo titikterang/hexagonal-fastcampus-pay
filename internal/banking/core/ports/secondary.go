@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/banking/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
 )
 

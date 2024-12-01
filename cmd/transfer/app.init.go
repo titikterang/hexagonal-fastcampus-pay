@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/adapter/handler"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/adapter/repository"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/services"
