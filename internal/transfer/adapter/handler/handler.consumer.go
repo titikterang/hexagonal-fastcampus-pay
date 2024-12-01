@@ -8,6 +8,10 @@ import (
 	"github.com/twmb/franz-go/pkg/kgo"
 )
 
+func (c *ConsumerHandler) CloseClient() {
+	c.client.Close()
+}
+
 func (c *ConsumerHandler) StartConsumer() {
 	for {
 		ctx := context.Background()

@@ -58,3 +58,7 @@ func NewMoneyRepository(cfg *config.Config,
 
 	return repo
 }
+
+func (r *MoneyRepository) CloseClient() {
+	r.kafkaClient.Close()
+}

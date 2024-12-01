@@ -71,3 +71,7 @@ func NewTransferRepository(cfg *config.Config,
 	}
 	return repo
 }
+
+func (r *TransferRepository) CloseClient() {
+	r.kafkaClient.Close()
+}
