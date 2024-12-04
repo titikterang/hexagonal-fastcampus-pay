@@ -16,7 +16,7 @@ type Config struct {
 type KafkaConfig struct {
 	Hosts          []string          `json:"hosts" mapstructure:"hosts"`
 	MaxPollRecord  int               `json:"max_poll_record" mapstructure:"max_poll_record"`
-	ConsumerGroup  string            `json:"consumer_group" mapstructure:"max_poll_record"`
+	ConsumerGroup  string            `json:"consumer_group" mapstructure:"consumer_group"`
 	ConsumerTopics map[string]string `json:"consumer_topics" mapstructure:"consumer_topics"`
 	ProducerTopics map[string]string `json:"producer_topics" mapstructure:"producer_topics"`
 }
