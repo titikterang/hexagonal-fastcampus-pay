@@ -19,4 +19,5 @@ type TransactionValidateReplyInfo struct {
 	AvailableBalance  int64
 	BalanceSufficient bool
 	TransactionValidateInfo
+	ValidationType int // payment - transfer
 }

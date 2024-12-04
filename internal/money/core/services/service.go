@@ -105,12 +105,16 @@ func (s *MoneyService) HandleTransactionValidation(ctx context.Context, data typ
 	sufficient := requestTrx.GreaterThanOrEqual(balance)
 
 	// set reply
+	validationType := types.TransactionTypeTransfer
+	if data.TransactionType == "payment" {
+		validationType = types.TransactionTypePayment
+	}
 	err = s.repository.PublishMoneyValidationMessageReply(ctx, types.TransactionValidateReplyInfo{
 		ReplyID:                 strconv.FormatInt(time.Now().UnixNano(), 10),
 		AvailableBalance:        balance.IntPart(),
 		BalanceSufficient:       sufficient,
 		TransactionValidateInfo: data,
+		ValidationType:          validationType,
 	})
-
 	return err
 }
