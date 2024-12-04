@@ -80,6 +80,8 @@ func (s *TransferService) HandleTransactionValidationReply(ctx context.Context, 
 		finalStatus = model.TransferStatusSuccess
 	}
 
+	log.Info().Msgf("HandleTransactionValidationReply, final status %s", finalStatus)
+
 	// update history
 	err := s.repository.UpdateTransferHistory(ctx, finalStatus, reply.ReplyID)
 	if err != nil {

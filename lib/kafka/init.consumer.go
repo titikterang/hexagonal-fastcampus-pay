@@ -6,7 +6,14 @@ import (
 	"github.com/twmb/franz-go/pkg/kgo"
 )
 
-func InitKafkaClient(cfg *config.Config) (KafkaClientInterface, error) {
+type ClientType int
+
+const (
+	TypeConsumerClient ClientType = iota
+	TypeProducerClient
+)
+
+func InitKafkaClient(cfg *config.Config, clientType ClientType) (KafkaClientInterface, error) {
 	var (
 		err       error
 		topicList []string
@@ -18,12 +25,17 @@ func InitKafkaClient(cfg *config.Config) (KafkaClientInterface, error) {
 
 	consumerOptions := []kgo.Opt{
 		kgo.SeedBrokers(cfg.Kafka.Hosts...),
-		kgo.ConsumerGroup(cfg.Kafka.ConsumerGroup),
-		kgo.ConsumeTopics(topicList...),
-		kgo.FetchIsolationLevel(kgo.ReadUncommitted()),
-		kgo.AutoCommitMarks(),
-		kgo.BlockRebalanceOnPoll(),
-		kgo.AllowAutoTopicCreation(),
+	}
+
+	if clientType == TypeConsumerClient {
+		consumerOptions = append(consumerOptions, []kgo.Opt{
+			kgo.ConsumerGroup(cfg.Kafka.ConsumerGroup),
+			kgo.ConsumeTopics(topicList...),
+			kgo.FetchIsolationLevel(kgo.ReadUncommitted()),
+			kgo.AutoCommitMarks(),
+			kgo.BlockRebalanceOnPoll(),
+			kgo.AllowAutoTopicCreation(),
+		}...)
 	}
 
 	client, err := kgo.NewClient(consumerOptions...)

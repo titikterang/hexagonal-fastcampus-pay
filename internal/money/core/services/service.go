@@ -102,7 +102,7 @@ func (s *MoneyService) HandleTransactionValidation(ctx context.Context, data typ
 
 	// compare balance
 	requestTrx := decimal.NewFromInt(data.Amount)
-	sufficient := requestTrx.GreaterThanOrEqual(balance)
+	sufficient := balance.GreaterThanOrEqual(requestTrx)
 
 	// set reply
 	validationType := types.TransactionTypeTransfer

@@ -40,7 +40,7 @@
     "max_poll_record": 1000,
     "consumer_group": "fastcampus-banking",
     "consumer_topics": {
-      "transfer_service": "TransferExecution",
+      "transfer_service": "TransferExecution"
     },
     "producer_topics": {
       "transfer_service": "BankingServiceCallbackReply"
