@@ -8,49 +8,27 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/services"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
-	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
 )
 
-func initHandler(cfg *config.Config) (*handler.Handler, *handler.ConsumerHandler, kafka.KafkaClientInterface, error) {
+func initHandler(cfg *config.Config) (*handler.Handler, error) {
 	masterClient, err := InitDBMaster(cfg)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 	slaveClient, err := InitDBSlave(cfg)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 
 	redisClient := InitRedis(cfg)
 
-	// init kafka client consumer
-	clientConsumer, err := kafka.InitKafkaClient(cfg, kafka.TypeConsumerClient)
-	if err != nil {
-		if err != nil {
-			log.Fatal("failed initiate clientConsumer : %v", err)
-		}
-	}
-
-	// init kafka client producer
-	clientProducer, err := kafka.InitKafkaClient(cfg, kafka.TypeProducerClient)
-	if err != nil {
-		if err != nil {
-			log.Fatal("failed initiate clientProducer: %v", err)
-		}
-	}
-
-	repo := repository.NewMoneyRepository(cfg, redisClient, masterClient, slaveClient, clientProducer)
+	repo := repository.NewMoneyRepository(cfg, redisClient, masterClient, slaveClient, nil)
 	svc := services.NewService(cfg, repo)
 	hdl, err := handler.NewHandler(cfg, svc)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
-
-	consHandler, err := handler.NewConsumer(cfg, clientConsumer, svc)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	return hdl, consHandler, clientProducer, nil
+	return hdl, nil
 }
 
 func InitDBMaster(cfg *config.Config) (postgre.DBInterface, error) {

@@ -7,6 +7,8 @@ const (
 	MovementDepositReject = "deposit_reject"
 	MovementPayment       = "payment"
 	MovementTransfer      = "transfer"
+	TopicBankTransfer     = "transfer_service"
+	TopicBankPayment      = "payment_service"
 )
 
 type BankingCashHistory struct {

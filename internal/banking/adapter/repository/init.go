@@ -6,6 +6,7 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/banking/core/ports"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
 	"net/http"
 	"time"
 )
@@ -16,10 +17,14 @@ type BankingRepository struct {
 	dbClientSlave  postgre.DBInterface
 	queries        statementQueries
 	httpClient     *http.Client
+	kafka          kafka.KafkaClientInterface
 }
 
-func NewBankingRepository(cfg *config.Config, masterClient, slaveClient postgre.DBInterface) ports.BankingRepositoryAdapter {
+func NewBankingRepository(cfg *config.Config,
+	masterClient, slaveClient postgre.DBInterface,
+	kafka kafka.KafkaClientInterface) ports.BankingRepositoryAdapter {
 	repo := &BankingRepository{
+		kafka:          kafka,
 		cfg:            cfg,
 		dbClientMaster: masterClient,
 		dbClientSlave:  slaveClient,

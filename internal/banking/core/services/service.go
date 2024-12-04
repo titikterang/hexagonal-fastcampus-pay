@@ -34,3 +34,10 @@ func (b BankingService) SubmitDeposit(ctx context.Context, payload model.Banking
 
 	return b.repository.SaveHistoryToDB(ctx, payload)
 }
+
+func (b BankingService) HandleBankPayment(ctx context.Context) error {
+	return nil
+}
+func (b BankingService) HandleBankTransfer(ctx context.Context) error {
+	return nil
+}

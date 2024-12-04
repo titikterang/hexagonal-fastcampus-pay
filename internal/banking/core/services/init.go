@@ -10,7 +10,7 @@ type BankingService struct {
 	repository ports.BankingRepositoryAdapter
 }
 
-func NewService(cfg *config.Config, repository ports.BankingRepositoryAdapter) ports.BankingServiceAdapter {
+func NewService(cfg *config.Config, repository ports.BankingRepositoryAdapter) *BankingService {
 	return &BankingService{
 		config:     cfg,
 		repository: repository,

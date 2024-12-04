@@ -16,7 +16,7 @@ import (
 )
 
 func startService(cfg *config.Config) {
-	handler, consumer, producer, err := initHandler(cfg)
+	handler, err := initHandler(cfg)
 	if err != nil {
 		log.Fatal("failed initiate NewHandler: %v", err)
 	}
@@ -51,7 +51,6 @@ func startService(cfg *config.Config) {
 		),
 	)
 
-	go consumer.StartConsumer()
 	go func() {
 		if err := server.Run(); err != nil {
 			log.Fatalf("failed to serve: %v", err)
@@ -66,9 +65,6 @@ func startService(cfg *config.Config) {
 	<-quit
 
 	log.Info("Shutting down server...")
-	consumer.CloseClient()
-	producer.Close()
-
 	if err := server.Stop(); err != nil {
 		log.Fatalf("Server forced to shutdown: %#v", err)
 	}

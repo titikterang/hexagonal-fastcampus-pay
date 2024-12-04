@@ -10,3 +10,8 @@ type BankingServiceAdapter interface {
 	SubmitPayment(ctx context.Context, payload model.BankingCashHistory) error
 	SubmitDeposit(ctx context.Context, payload model.BankingCashHistory) error
 }
+
+type BankingServiceConsumerAdapter interface {
+	HandleBankPayment(ctx context.Context) error
+	HandleBankTransfer(ctx context.Context) error
+}
