@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/ports"
@@ -57,4 +57,8 @@ func NewMoneyRepository(cfg *config.Config,
 	}
 
 	return repo
+}
+
+func (r *MoneyRepository) CloseClient() {
+	r.kafkaClient.Close()
 }

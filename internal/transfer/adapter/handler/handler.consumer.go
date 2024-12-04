@@ -8,6 +8,10 @@ import (
 	"github.com/twmb/franz-go/pkg/kgo"
 )
 
+func (c *ConsumerHandler) CloseClient() {
+	c.client.Close()
+}
+
 func (c *ConsumerHandler) StartConsumer() {
 	for {
 		ctx := context.Background()
@@ -23,6 +27,8 @@ func (c *ConsumerHandler) StartConsumer() {
 		fetches.EachRecord(func(r *kgo.Record) {
 			// log request id from header
 			// handle message based on topic
+			log.Info().Msgf("new message from topic %s", r.Topic)
+			log.Info().Msgf("option %s vs %s", c.topicMoneyReply, c.topicBankReply)
 			switch r.Topic {
 			case c.topicMoneyReply:
 				var data types.TransactionValidateReplyInfo

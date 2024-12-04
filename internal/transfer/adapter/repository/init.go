@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/ports"
@@ -70,4 +70,8 @@ func NewTransferRepository(cfg *config.Config,
 		log.Err(err)
 	}
 	return repo
+}
+
+func (r *TransferRepository) CloseClient() {
+	r.kafkaClient.Close()
 }

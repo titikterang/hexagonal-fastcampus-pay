@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/adapter/handler"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/adapter/repository"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/services"
@@ -11,39 +11,47 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
 )
 
-func initHandler(cfg *config.Config) (*handler.Handler, *handler.ConsumerHandler, error) {
+func initHandler(cfg *config.Config) (*handler.Handler, *handler.ConsumerHandler, kafka.KafkaClientInterface, error) {
 	masterClient, err := InitDBMaster(cfg)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	slaveClient, err := InitDBSlave(cfg)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	redisClient := InitRedis(cfg)
 
-	// init kafka client
-	client, err := kafka.InitKafkaClient(cfg)
+	// init kafka client consumer
+	clientConsumer, err := kafka.InitKafkaClient(cfg, kafka.TypeConsumerClient)
 	if err != nil {
 		if err != nil {
-			log.Fatal("failed initiate NewHandler: %v", err)
+			log.Fatal("failed initiate clientConsumer : %v", err)
 		}
 	}
 
-	repo := repository.NewTransferRepository(cfg, redisClient, masterClient, slaveClient, client)
+	// init kafka client producer
+	clientProducer, err := kafka.InitKafkaClient(cfg, kafka.TypeProducerClient)
+	if err != nil {
+		if err != nil {
+			log.Fatal("failed initiate clientProducer: %v", err)
+		}
+	}
+
+	repo := repository.NewTransferRepository(cfg, redisClient, masterClient, slaveClient, clientProducer)
 	svc := services.NewService(cfg, repo)
 
 	hdl, err := handler.NewHandler(cfg, svc)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
-	consHandler, err := handler.NewConsumer(cfg, client, svc)
+	consHandler, err := handler.NewConsumer(cfg, clientConsumer, svc)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
-	return hdl, consHandler, nil
+	return hdl, consHandler, clientProducer, nil
 }
 
 func InitDBMaster(cfg *config.Config) (postgre.DBInterface, error) {

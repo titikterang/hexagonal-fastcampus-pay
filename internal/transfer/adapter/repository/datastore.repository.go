@@ -126,5 +126,5 @@ func (r *TransferRepository) SaveEventID(ctx context.Context, eventType model.Ev
 		return nil
 	}
 
-	return r.redisClient.SetEX(ctx, key, 1, model.DefaultIdempotenceTTL).Err()
+	return r.redisClient.SetEx(ctx, key, 1, model.DefaultIdempotenceTTL).Err()
 }
