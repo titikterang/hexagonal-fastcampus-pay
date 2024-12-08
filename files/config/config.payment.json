@@ -1,0 +1,55 @@
+{
+  "app": {
+    "address": "0.0.0.0:3005",
+    "label": "transfer"
+  },
+  "http": {
+    "timeout": "2s"
+  },
+  "postgre_master": {
+    "address": "localhost",
+    "port": "15432",
+    "username": "admin",
+    "password": "password",
+    "dbname": "fastcampus_transfer",
+    "sslmode": "disable",
+    "maxopenconn": "50",
+    "maxidleconn": "50",
+    "connmaxidletime": "1000",
+    "connmaxlifetime": "1000"
+  },
+  "postgre_slave": {
+    "address": "localhost",
+    "port": "15432",
+    "username": "admin",
+    "password": "password",
+    "dbname": "fastcampus_transfer",
+    "sslmode": "disable",
+    "maxopenconn": "50",
+    "maxidleconn": "50",
+    "connmaxidletime": "1000",
+    "connmaxlifetime": "1000"
+  },
+  "external_api": {
+    "membership": "http://localhost:3002/"
+  },
+  "kafka_config": {
+    "hosts": [
+      "localhost:9094"
+    ],
+    "max_poll_record": 1000,
+    "consumer_group": "fastcampus-transfer",
+    "consumer_topics": {
+      "money_service": "MoneyServiceReply",
+      "banking_service": "BankingServiceCallbackReply"
+    },
+    "producer_topics": {
+      "money_service": "TransactionBalanceValidation",
+      "banking_service": "TransferExecution"
+    }
+  },
+  "redis": {
+    "address": "localhost:6379",
+    "poolsize": 5
+  }
+}

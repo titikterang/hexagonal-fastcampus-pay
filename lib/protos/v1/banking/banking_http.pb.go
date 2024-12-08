@@ -35,7 +35,7 @@ type BankingServiceHTTPServer interface {
 func RegisterBankingServiceHTTPServer(s *http.Server, srv BankingServiceHTTPServer) {
 	r := s.Route("/")
 	r.POST("/v1/banking/transfer", _BankingService_SubmitTransfer0_HTTP_Handler(srv))
-	r.POST("/v1/banking/payment", _BankingService_SubmitPayment0_HTTP_Handler(srv))
+	r.POST("/v1/banking/payment", _BankingService_SubmitPayment1_HTTP_Handler(srv))
 	r.POST("/v1/banking/deposit", _BankingService_SubmitDeposit0_HTTP_Handler(srv))
 }
 
@@ -61,7 +61,7 @@ func _BankingService_SubmitTransfer0_HTTP_Handler(srv BankingServiceHTTPServer) 
 	}
 }
 
-func _BankingService_SubmitPayment0_HTTP_Handler(srv BankingServiceHTTPServer) func(ctx http.Context) error {
+func _BankingService_SubmitPayment1_HTTP_Handler(srv BankingServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in BankPaymentRequest
 		if err := ctx.Bind(&in); err != nil {

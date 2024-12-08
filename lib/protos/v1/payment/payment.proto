@@ -1,0 +1,99 @@
+syntax = "proto3";
+package fastcampus.payment.v1;
+option go_package = "github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/payment;payment";
+
+import "lib/protos/google/api/annotations.proto";
+import "lib/protos/protoc-gen-openapiv2/options/annotations.proto";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Fast Campus Pay (Payment API Endpoint)";
+    version: "1.0";
+    contact: {
+      name: "Fast Campus Payment";
+      url: "https://github.com/titikterang";
+      email: "azwar.nrst@gmail.com";
+    };
+  };
+
+  schemes: HTTP;
+  consumes: "application/json";
+  produces: "application/json";
+};
+
+service MoneyService {
+  // balance return as string
+  // /v1/payment/status?invoice_id=1234
+  rpc GetPaymentStatus(PaymentStatusPayload) returns (PaymentStatusResponse) {
+    option (google.api.http) = {
+      get: "/v1/payment/status",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get Payment Status";
+      operation_id: "GetPaymentStatus";
+      tags: "payment";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+  // update user balance
+  rpc SubmitPayment(SubmitPaymentPayload) returns (SubmitPaymentResponse) {
+    option (google.api.http) = {
+      post: "/v1/payment/submit",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Submit Payment";
+      operation_id: "SubmitPayment";
+      tags: "money";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+}
+enum PaymentStatus {
+  UNSPECIFIED = 0;
+  UNPAID = 1;
+  PENDING = 2;
+  FAILED = 3;
+  PAID = 4;
+}
+
+message  PaymentStatusPayload {
+  string invoice_id = 1;
+}
+
+message PaymentInfo {
+  string datetime = 1;
+  PaymentStatus status = 2;
+}
+
+message PaymentStatusResponse {
+  string invoice_id = 1;
+  PaymentStatus status = 2;
+  int64  amount = 3;
+  string datetime = 4;
+  string message = 5;
+  repeated  PaymentInfo payment_history = 6;
+}
+
+message SubmitPaymentPayload {
+  string merchant_id = 1;
+  int64  amount = 2;
+  string account_no = 3;
+}
+
+message SubmitPaymentResponse {
+  string invoice_id = 1;
+  PaymentStatus status = 2;
+  string message = 3;
+}
