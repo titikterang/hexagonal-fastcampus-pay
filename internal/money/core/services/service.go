@@ -115,6 +115,7 @@ func (s *MoneyService) HandleTransactionValidation(ctx context.Context, data typ
 		BalanceSufficient:       sufficient,
 		TransactionValidateInfo: data,
 		ValidationType:          validationType,
+		MerchantID:              data.MerchantID,
 	})
 	return err
 }

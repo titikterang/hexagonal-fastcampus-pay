@@ -54,6 +54,8 @@ build-payment:
 	@CGO_ENABLED=0  go build -o ./bin/payment_api ./cmd/payment/api/*
 	@CGO_ENABLED=0  go build -o ./bin/payment_consumer ./cmd/payment/consumer/*
 
+run-mongodb:
+	@docker-compose -f docker-compose.mongodb.yaml up
 
 run-membership: build-membership
 	@echo "RUN Membership DB & Backend Service ..."

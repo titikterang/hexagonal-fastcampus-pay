@@ -3,26 +3,22 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/redis/go-redis/v9"
-	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/adapter/handler"
-	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/adapter/repository"
-	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/services"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/adapter/handler"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/adapter/repository"
+	"github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/core/services"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
-	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/mongo"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
 )
 
-func initHandler(cfg *config.Config) (*handler.ConsumerHandler, kafka.KafkaClientInterface, error) {
-	masterClient, err := InitDBMaster(cfg)
+func initHandler(cfg *config.Config) (*handler.ConsumerHandler, kafka.KafkaClientInterface, mongo.DBInterface, error) {
+	dbCon, err := mongo.InitDBConnection(cfg)
 	if err != nil {
-		return nil, nil, err
-	}
-	slaveClient, err := InitDBSlave(cfg)
-	if err != nil {
-		return nil, nil, err
+		// log error
+		log.Fatalf("failed to connect to mongo db, err : %#v", err)
 	}
 
 	redisClient := InitRedis(cfg)
-
 	// init kafka client consumer
 	clientConsumer, err := kafka.InitKafkaClient(cfg, kafka.TypeConsumerClient)
 	if err != nil {
@@ -39,34 +35,14 @@ func initHandler(cfg *config.Config) (*handler.ConsumerHandler, kafka.KafkaClien
 		}
 	}
 
-	repo := repository.NewTransferRepository(cfg, redisClient, masterClient, slaveClient, clientProducer)
+	repo := repository.NewPaymentRepository(cfg, redisClient, dbCon.DBClient, clientProducer)
 	svc := services.NewService(cfg, repo)
 
 	consHandler, err := handler.NewConsumer(cfg, clientConsumer, svc)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
-	return consHandler, clientProducer, nil
-}
-
-func InitDBMaster(cfg *config.Config) (postgre.DBInterface, error) {
-	dbConn := postgre.InitDBConnection(cfg)
-	client, err := dbConn.InitiateMasterConnection()
-	if err != nil {
-		// log error
-		log.Fatalf("failed to connect to db, err : %#v", err)
-	}
-	return client, nil
-}
-
-func InitDBSlave(cfg *config.Config) (postgre.DBInterface, error) {
-	dbConn := postgre.InitDBConnection(cfg)
-	client, err := dbConn.InitiateSlaveConnection()
-	if err != nil {
-		// log error
-		log.Fatalf("failed to connect to db, err : %#v", err)
-	}
-	return client, nil
+	return consHandler, clientProducer, dbCon.DBClient, nil
 }
 
 func InitRedis(cfg *config.Config) *redis.Client {

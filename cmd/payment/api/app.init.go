@@ -7,18 +7,15 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/adapter/repository"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/core/services"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
-	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/mongo"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
 )
 
-func initHandler(cfg *config.Config) (*handler.Handler, kafka.KafkaClientInterface, error) {
-	masterClient, err := InitDBMaster(cfg)
+func initHandler(cfg *config.Config) (*handler.Handler, kafka.KafkaClientInterface, mongo.DBInterface, error) {
+	dbCon, err := mongo.InitDBConnection(cfg)
 	if err != nil {
-		return nil, nil, err
-	}
-	slaveClient, err := InitDBSlave(cfg)
-	if err != nil {
-		return nil, nil, err
+		// log error
+		log.Fatalf("failed to connect to mongo db, err : %#v", err)
 	}
 
 	// init kafka client producer
@@ -30,34 +27,14 @@ func initHandler(cfg *config.Config) (*handler.Handler, kafka.KafkaClientInterfa
 	}
 
 	redisClient := InitRedis(cfg)
-	repo := repository.NewpaymentRepository(cfg, redisClient, masterClient, slaveClient, clientProducer)
+	repo := repository.NewPaymentRepository(cfg, redisClient, dbCon.DBClient, clientProducer)
 	svc := services.NewService(cfg, repo)
 
 	hdl, err := handler.NewHandler(cfg, svc)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
-	return hdl, clientProducer, nil
-}
-
-func InitDBMaster(cfg *config.Config) (postgre.DBInterface, error) {
-	dbConn := postgre.InitDBConnection(cfg)
-	client, err := dbConn.InitiateMasterConnection()
-	if err != nil {
-		// log error
-		log.Fatalf("failed to connect to db, err : %#v", err)
-	}
-	return client, nil
-}
-
-func InitDBSlave(cfg *config.Config) (postgre.DBInterface, error) {
-	dbConn := postgre.InitDBConnection(cfg)
-	client, err := dbConn.InitiateSlaveConnection()
-	if err != nil {
-		// log error
-		log.Fatalf("failed to connect to db, err : %#v", err)
-	}
-	return client, nil
+	return hdl, clientProducer, dbCon.DBClient, nil
 }
 
 func InitRedis(cfg *config.Config) *redis.Client {

@@ -2,19 +2,20 @@ package ports
 
 import (
 	"context"
-	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
+	model2 "github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
 )
 
 type PaymentRepositoryAdapter interface {
 	// save to db
-	InsertPaymentHistory(ctx context.Context)
-	UpdatePaymentStatus(ctx context.Context)
+	InsertPaymentHistory(ctx context.Context, data model2.PaymentInfo)
+	UpdatePaymentStatus(ctx context.Context, data model2.PaymentInfo)
 	InsertPaymentInfo(ctx context.Context)
+	GetPaymentInfo(ctx context.Context, invoiceID string) (model2.PaymentInfo, []model2.PaymentHistory, error)
 
 	// idempotence check
-	EventIDExists(ctx context.Context, eventType model.EventType, accountNo, id string) bool
-	SaveEventID(ctx context.Context, eventType model.EventType, accountNo, id string) error
+	EventIDExists(ctx context.Context, eventType string, accountNo, id string) bool
+	SaveEventID(ctx context.Context, eventType string, accountNo, id string) error
 
 	// external api call
 	GetAccountInfo(ctx context.Context, accountNumber string) (types.UserProfileInfo, error)

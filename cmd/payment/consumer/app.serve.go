@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"os"
@@ -10,7 +11,7 @@ import (
 )
 
 func startService(cfg *config.Config) {
-	consumer, producer, err := initHandler(cfg)
+	consumer, producer, dbConn, err := initHandler(cfg)
 	if err != nil {
 		log.Fatal("failed initiate NewHandler: %v", err)
 	}
@@ -27,6 +28,12 @@ func startService(cfg *config.Config) {
 	log.Info("Shutting down server...")
 	consumer.CloseClient()
 	producer.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err = dbConn.Disconnect(ctx); err != nil {
+		panic(err)
+	}
 
 	log.Info("Server shutdown gracefully ...")
 	time.Sleep(5 * time.Millisecond) // wait for zero log to finish log writing
