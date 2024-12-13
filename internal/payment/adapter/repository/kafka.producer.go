@@ -26,5 +26,16 @@ func (r *PaymentRepository) PublishPaymentValidateRequest(ctx context.Context, i
 }
 
 func (r *PaymentRepository) PublishPaymentBankingRequest(ctx context.Context, payload types.PaymentBankExecution) error {
+	log.Info().Msgf("PublishPaymentBankingRequest -> " + r.topicProducerMoney)
+	py, err := json.Marshal(&payload)
+	if err != nil {
+		log.Error().Msgf("err Marshal PublishPaymentBankingRequest %#v", err)
+	}
+	record := &kgo.Record{
+		Value:     py,
+		Timestamp: time.Now(),
+		Topic:     r.topicProducerBank,
+	}
+	r.kafkaClient.ProduceSync(ctx, record)
 	return nil
 }

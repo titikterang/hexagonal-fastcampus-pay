@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/core/model"
-	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/payment"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
 	"strconv"
 	"time"
@@ -50,7 +49,6 @@ func (p *PaymentService) SubmitPaymentRequest(ctx context.Context, payload model
 	}
 
 	err := p.repository.PublishPaymentValidateRequest(ctx, msg)
-
 	return invID, err
 }
 func (p *PaymentService) GetPaymentInfoByID(ctx context.Context, id string) (model.PaymentDetails, error) {
@@ -89,11 +87,14 @@ func (p *PaymentService) HandleTransactionValidationReply(ctx context.Context, d
 	}
 
 	// publish to bank service
-	p.repository.PublishPaymentBankingRequest(ctx, types.PaymentBankExecution{
+	err := p.repository.PublishPaymentBankingRequest(ctx, types.PaymentBankExecution{
 		TransactionID: data.TransactionID,
 		MerchantID:    data.MerchantID,
-		Amount:        0,
+		Amount:        data.Amount,
 	})
+	if err != nil {
+		log.Error().Msgf("failed to publish to bank service %#v", err)
+	}
 
 	return nil
 }
@@ -104,17 +105,15 @@ func (p *PaymentService) HandleBankCallbackReply(ctx context.Context, data types
 	}
 
 	var (
-		status = payment.PaymentStatus_FAILED
-		info   = model.PaymentInfo{
-			Message: data.Message,
-		}
+		status = model.Status_FAILED
 	)
 	if data.Status == "ok" {
-		status = payment.PaymentStatus_PAID
+		status = model.Status_PAID
 	}
-	p.repository.InsertPaymentHistory(ctx, model.PaymentInfo{
-		Status:  info.SetStatusFromProto(status),
-		Message: data.Message,
+	// get previous payment info
+	p.repository.UpdatePaymentStatus(ctx, model.PaymentInfo{
+		InvoiceID: data.TransactionID,
+		Status:    status,
 	})
 
 	return nil

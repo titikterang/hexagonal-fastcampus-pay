@@ -35,19 +35,19 @@ func (c *ConsumerHandler) StartConsumer() {
 					log.Error().Msgf("Unmarshal HandleTransactionValidation failed for topic %s partition %d", r.Topic, r.Partition)
 					return
 				}
-				err = c.bankingService.HandleBankPayment(r.Context)
+				err = c.bankingService.HandleBankTransfer(r.Context)
 				if err != nil {
 					log.Error().Msgf("HandleTransactionValidation failed for topic %s partition %d", r.Topic, r.Partition)
 					return
 				}
 			case c.topicPaymentBank:
-				var data types.TransactionValidateInfo
+				var data types.PaymentBankExecution
 				err := json.Unmarshal(r.Value, &data)
 				if err != nil {
 					log.Error().Msgf("Unmarshal HandleTransactionValidation failed for topic %s partition %d", r.Topic, r.Partition)
 					return
 				}
-				err = c.bankingService.HandleBankPayment(r.Context)
+				err = c.bankingService.HandleBankPayment(r.Context, data)
 				if err != nil {
 					log.Error().Msgf("HandleTransactionValidation failed for topic %s partition %d", r.Topic, r.Partition)
 					return

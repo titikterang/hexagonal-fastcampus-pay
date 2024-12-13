@@ -3,6 +3,7 @@ package ports
 import (
 	"context"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/banking/core/model"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
 )
 
 type BankingServiceAdapter interface {
@@ -12,6 +13,6 @@ type BankingServiceAdapter interface {
 }
 
 type BankingServiceConsumerAdapter interface {
-	HandleBankPayment(ctx context.Context) error
+	HandleBankPayment(ctx context.Context, data types.PaymentBankExecution) error
 	HandleBankTransfer(ctx context.Context) error
 }
