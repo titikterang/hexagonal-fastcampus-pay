@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
@@ -8,7 +9,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	gorHdl "github.com/gorilla/handlers"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
-	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/transfer"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/payment"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,7 +17,7 @@ import (
 )
 
 func startService(cfg *config.Config) {
-	handler, consumer, producer, err := initHandler(cfg)
+	handler, producer, dbConn, err := initHandler(cfg)
 	if err != nil {
 		log.Fatal("failed initiate NewHandler: %v", err)
 	}
@@ -42,15 +43,13 @@ func startService(cfg *config.Config) {
 		httpOpts...,
 	)
 
-	transfer.RegisterTransferServiceHTTPServer(httpServer, handler)
+	payment.RegisterMoneyServiceHTTPServer(httpServer, handler)
 	server := kratos.New(
 		kratos.Name(cfg.App.Label),
 		kratos.Server(
 			httpServer,
 		),
 	)
-
-	go consumer.StartConsumer()
 	go func() {
 		if err := server.Run(); err != nil {
 			log.Fatalf("failed to serve: %v", err)
@@ -65,8 +64,12 @@ func startService(cfg *config.Config) {
 	<-quit
 
 	log.Info("Shutting down server...")
-	consumer.CloseClient()
 	producer.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err = dbConn.Disconnect(ctx); err != nil {
+		panic(err)
+	}
 
 	if err := server.Stop(); err != nil {
 		log.Fatalf("Server forced to shutdown: %#v", err)

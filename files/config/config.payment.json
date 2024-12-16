@@ -1,0 +1,36 @@
+{
+  "app": {
+    "address": "0.0.0.0:3005",
+    "label": "transfer"
+  },
+  "http": {
+    "timeout": "2s"
+  },
+  "mongo_db": {
+    "address": "localhost:27017",
+    "db_name": "fastcampus_payment",
+    "max_pool_size": 50
+  },
+  "external_api": {
+    "membership": "http://localhost:3002/"
+  },
+  "kafka_config": {
+    "hosts": [
+      "localhost:9094"
+    ],
+    "max_poll_record": 1000,
+    "consumer_group": "fastcampus-payment",
+    "consumer_topics": {
+      "money_service": "MoneyServiceReply",
+      "banking_service": "BankingPaymentCallbackReply"
+    },
+    "producer_topics": {
+      "money_service": "TransactionBalanceValidation",
+      "banking_service": "PaymentExecution"
+    }
+  },
+  "redis": {
+    "address": "localhost:6379",
+    "poolsize": 5
+  }
+}

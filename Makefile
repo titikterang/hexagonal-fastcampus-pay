@@ -36,13 +36,26 @@ lint:
 	@golangci-lint run ./... > .golint.txt
 
 build-membership:
-	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build -o ./bin/membership ./cmd/membership/*
+	@CGO_ENABLED=0  go build -o ./bin/membership ./cmd/membership/*
 
 build-banking:
-	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build -o ./bin/banking ./cmd/banking/*
+	@CGO_ENABLED=0  go build -o ./bin/banking_api ./cmd/banking/api/*
+	@CGO_ENABLED=0  go build -o ./bin/banking_consumer ./cmd/banking/consumer/*
 
 build-money:
-	@GOOS=linux GOARCH=amd64 CGO_ENABLED=0  go build -o ./bin/money ./cmd/money/*
+	@CGO_ENABLED=0  go build -o ./bin/money_api ./cmd/money/api/*
+	@CGO_ENABLED=0  go build -o ./bin/money_consumer ./cmd/money/consumer/*
+
+build-transfer:
+	@CGO_ENABLED=0  go build -o ./bin/transfer_api ./cmd/transfer/api/*
+	@CGO_ENABLED=0  go build -o ./bin/transfer_consumer ./cmd/transfer/consumer/*
+
+build-payment:
+	@CGO_ENABLED=0  go build -o ./bin/payment_api ./cmd/payment/api/*
+	@CGO_ENABLED=0  go build -o ./bin/payment_consumer ./cmd/payment/consumer/*
+
+run-mongodb:
+	@docker-compose -f docker-compose.mongodb.yaml up
 
 run-membership: build-membership
 	@echo "RUN Membership DB & Backend Service ..."

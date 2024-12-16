@@ -40,6 +40,8 @@ func NewConsumer(cfg *config.Config, client kafka.KafkaClientInterface, adapter 
 			handler.topicMoneyReply = v
 		case model.BankingTopicKey:
 			handler.topicBankReply = v
+		default:
+			panic("unhandled default case")
 		}
 	}
 

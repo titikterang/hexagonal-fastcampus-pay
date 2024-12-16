@@ -11,14 +11,14 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
 )
 
-func initHandler(cfg *config.Config) (*handler.Handler, *handler.ConsumerHandler, kafka.KafkaClientInterface, error) {
+func initHandler(cfg *config.Config) (*handler.ConsumerHandler, kafka.KafkaClientInterface, error) {
 	masterClient, err := InitDBMaster(cfg)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 	slaveClient, err := InitDBSlave(cfg)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	redisClient := InitRedis(cfg)
@@ -42,16 +42,11 @@ func initHandler(cfg *config.Config) (*handler.Handler, *handler.ConsumerHandler
 	repo := repository.NewTransferRepository(cfg, redisClient, masterClient, slaveClient, clientProducer)
 	svc := services.NewService(cfg, repo)
 
-	hdl, err := handler.NewHandler(cfg, svc)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
 	consHandler, err := handler.NewConsumer(cfg, clientConsumer, svc)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
-	return hdl, consHandler, clientProducer, nil
+	return consHandler, clientProducer, nil
 }
 
 func InitDBMaster(cfg *config.Config) (postgre.DBInterface, error) {

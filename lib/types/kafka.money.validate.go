@@ -12,6 +12,7 @@ type TransactionValidateInfo struct {
 	TransactionType     string
 	Destination         string
 	BankCode            string
+	MerchantID          string
 }
 
 type TransactionValidateReplyInfo struct {
@@ -19,4 +20,6 @@ type TransactionValidateReplyInfo struct {
 	AvailableBalance  int64
 	BalanceSufficient bool
 	TransactionValidateInfo
+	ValidationType int // payment - transfer
+	MerchantID     string
 }

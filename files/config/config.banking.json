@@ -35,15 +35,17 @@
   },
   "kafka_config": {
     "hosts": [
-      "localhost:9092"
+      "localhost:9094"
     ],
     "max_poll_record": 1000,
     "consumer_group": "fastcampus-banking",
     "consumer_topics": {
-      "transfer_service": "TransferExecution"
+      "transfer_service": "TransferExecution",
+      "payment_service": "PaymentExecution"
     },
     "producer_topics": {
-      "transfer_service": "BankingServiceCallbackReply"
+      "transfer_service": "BankingTransferCallbackReply",
+      "payment_service": "BankingPaymentCallbackReply"
     }
   }
 }

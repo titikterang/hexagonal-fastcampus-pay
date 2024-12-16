@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/banking/core/model"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
 )
 
 func (b BankingService) SubmitTransfer(ctx context.Context, payload model.BankingCashHistory) error {
@@ -33,4 +34,17 @@ func (b BankingService) SubmitDeposit(ctx context.Context, payload model.Banking
 	}
 
 	return b.repository.SaveHistoryToDB(ctx, payload)
+}
+
+func (b BankingService) HandleBankPayment(ctx context.Context, data types.PaymentBankExecution) error {
+	// simulate payment gateway callback
+	err := b.repository.PublishPaymentCallbackReply(ctx, types.PaymentBankReply{
+		TransactionID: data.TransactionID,
+		Status:        "ok",
+		Message:       "Payment success",
+	})
+	return err
+}
+func (b BankingService) HandleBankTransfer(ctx context.Context) error {
+	return nil
 }

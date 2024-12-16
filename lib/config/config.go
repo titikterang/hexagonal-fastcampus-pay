@@ -6,11 +6,20 @@ type Config struct {
 	App           AppConfig         `json:"app" mapstructure:"app"`
 	Http          HttpConfig        `json:"http" mapstructure:"http"`
 	Redis         RedisConfig       `json:"redis" mapstructure:"redis"`
+	MongoDB       MongoDBConfig     `json:"mongo_db" mapstructure:"mongo_db"`
 	Postgre       PostgreConfig     `json:"postgre" mapstructure:"postgre"`
 	PostgreMaster PostgreConfig     `json:"postgre_master" mapstructure:"postgre_master"`
 	PostgreSlave  PostgreConfig     `json:"postgre_slave" mapstructure:"postgre_slave"`
 	ExternalAPI   ExternalAPIConfig `json:"external_api" mapstructure:"external_api"`
 	Kafka         KafkaConfig       `json:"kafka_config" mapstructure:"kafka_config"`
+}
+
+type MongoDBConfig struct {
+	Address     string `json:"address" mapstructure:"address"`
+	DBName      string `json:"db_name" mapstructure:"db_name"`
+	DBUser      string `json:"db_user" mapstructure:"db_user"`
+	DBPass      string `json:"db_pass" mapstructure:"db_pass"`
+	MaxPoolSize int    `json:"max_pool_size" mapstructure:"max_pool_size"`
 }
 
 type KafkaConfig struct {

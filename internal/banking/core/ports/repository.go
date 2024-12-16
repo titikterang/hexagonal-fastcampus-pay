@@ -12,4 +12,7 @@ type BankingRepositoryAdapter interface {
 
 	// external API repository
 	GetAccountInfo(ctx context.Context, accountNumber string) (types.UserProfileInfo, error)
+
+	// kafka producer
+	PublishPaymentCallbackReply(ctx context.Context, data types.PaymentBankReply) error // to banking service
 }
