@@ -43,22 +43,8 @@ service MoneyService {
     };
   }
   // balance will be represented as money
-  rpc GetUserBalancePrivate(UserBalancePayload) returns (UserBalancePrivateResponse) {
-    option (google.api.http) = {
-      get: "/v1/money/private/balance",
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      summary: "Get User Balance Private API";
-      operation_id: "GetUserBalancePrivate";
-      tags: "money";
-      responses: {
-        key: "200"
-        value: {
-          description: "OK";
-        }
-      };
-    };
-  }
+  rpc GetUserBalancePrivate(UserBalancePayload) returns (UserBalancePrivateResponse) {}
+
   // update user balance
   rpc UpdateUserBalance(UpdateBalancePayload) returns (UpdateBalanceResponse) {
     option (google.api.http) = {

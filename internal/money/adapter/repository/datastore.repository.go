@@ -6,6 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/model"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"time"
 )
 
@@ -84,13 +85,72 @@ func (r *MoneyRepository) AppendCashMovementIntoDatastore(ctx context.Context, i
 			err = trx.Commit()
 		}
 	}()
-
 	_, err = r.queries.InsertCashMovement.ExecContext(ctx, map[string]interface{}{
 		"request_id":         info.RequestID,
 		"account_number":     info.AccountNumber,
 		"cash_movement_date": info.Date.Format(time.DateOnly),
 		"amount":             info.Amount.InexactFloat64(),
-		"cash_movement_type": "deposit",
+		"cash_movement_type": info.MovementType,
 	})
+
+	if err != nil {
+		log.Err(err)
+		return err
+	}
+
 	return nil
+}
+
+// ConstructBalanceInfo - insert into mongo db
+func (r *MoneyRepository) ConstructBalanceInfo(ctx context.Context, info model.UserCashInfo) error {
+	//money := common.DecimalToMoney(info.BalanceAmount)
+	filter := bson.D{{"account_no", info.AccountNumber}}
+
+	val, err := bson.ParseDecimal128(info.BalanceAmount.String())
+	if err != nil {
+		return err
+	}
+	payload := model.UserCashDBInfo{
+		AccountNumber: info.AccountNumber,
+		LastUpdate:    info.LastUpdate,
+		BalanceAmount: val,
+	}
+
+	result := r.DB.Collection("user_balance").FindOneAndReplace(ctx, filter, payload)
+	if result.Err() != nil {
+		_, err := r.DB.Collection("user_balance").InsertOne(ctx, payload)
+		if err != nil {
+			log.Error().Msgf("failed insert user_balance : %#v", result.Err())
+		}
+	}
+	return nil
+}
+
+// GetBalanceInfoFromDB - get from mongo fb
+func (r *MoneyRepository) GetBalanceInfoFromDB(ctx context.Context, accountNo string) (model.UserCashInfo, error) {
+	var (
+		result model.UserCashInfo
+		data   model.UserCashDBInfo
+	)
+
+	filter := bson.D{{
+		"account_no", accountNo},
+	}
+	err := r.DB.Collection("user_balance").FindOne(ctx, filter).Decode(&data)
+	if err != nil {
+		return result, err
+	}
+
+	balance, err := decimal.NewFromString(data.BalanceAmount.String())
+	if err != nil {
+		return result, err
+	}
+
+	result = model.UserCashInfo{
+		AccountNumber: data.AccountNumber,
+		LastUpdate:    data.LastUpdate,
+		BalanceAmount: balance,
+	}
+
+	return result, nil
 }

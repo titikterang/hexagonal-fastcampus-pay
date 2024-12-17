@@ -56,35 +56,6 @@
       }
     },
     "/v1/money/private/balance": {
-      "get": {
-        "summary": "Get User Balance Private API",
-        "operationId": "GetUserBalancePrivate",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/v1UserBalancePrivateResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "accountNumber",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "money"
-        ]
-      },
       "post": {
         "summary": "Update Balance",
         "operationId": "UpdateUserBalance",

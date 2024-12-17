@@ -16,14 +16,12 @@ import (
 // PublicGetUserBalance - only get from redis
 // deps, redis get
 func (s *MoneyService) PublicGetUserBalance(ctx context.Context, accountNumber string) (string, error) {
-	// if empty, then recalculate
-	res, err := s.repository.GetSnapshot(ctx, accountNumber)
+	res, err := s.repository.GetBalanceInfoFromDB(ctx, accountNumber)
 	if err != nil {
-		s.updateSnapshoot(ctx, accountNumber)
-		return s.repository.GetSnapshot(ctx, accountNumber)
+		return "0", err
 	}
 
-	return res, err
+	return res.BalanceAmount.String(), err
 }
 
 func (s *MoneyService) updateSnapshoot(ctx context.Context, accountNumber string) {
@@ -33,6 +31,16 @@ func (s *MoneyService) updateSnapshoot(ctx context.Context, accountNumber string
 		return
 	}
 	_ = s.repository.UpdateSnapshot(ctx, accountNumber, common.MoneyToString(finalAmount))
+
+	// upsert into query datastore
+	err = s.repository.ConstructBalanceInfo(ctx, model.UserCashInfo{
+		AccountNumber: accountNumber,
+		LastUpdate:    time.Now(),
+		BalanceAmount: common.MoneyToDecimal(finalAmount),
+	})
+	if err != nil {
+		log.Error().Msgf("failed to store balance info , %#v", err)
+	}
 }
 
 // GetUserBalance - get from redis and re calculate
@@ -76,20 +84,22 @@ func (s *MoneyService) UpdateUserBalance(ctx context.Context, requestID, account
 		AccountNumber: accountNumber,
 		Date:          time.Now(),
 		Amount:        amountInfo,
+		MovementType:  "deposit",
 	}
-	err = s.repository.AppendCashMovementIntoDatastore(ctx, info)
-	if err != nil {
-		return errors.New("failed to update into datastore, skip update")
-	}
+	return s.UpdateHistory(ctx, info)
+}
 
+func (s *MoneyService) UpdateHistory(ctx context.Context, info model.CashMovementInfo) error {
+	err := s.repository.AppendCashMovementIntoDatastore(ctx, info)
+	if err != nil {
+		return err
+	}
 	// update to redis
 	err = s.repository.AppendCashMovementInfoIntoCache(ctx, info)
 	if err != nil {
 		return errors.New("failed to update into cache, skip update")
 	}
-
-	// update snapshoot
-	s.updateSnapshoot(ctx, accountNumber)
+	s.updateSnapshoot(ctx, info.AccountNumber)
 	return nil
 }
 
@@ -117,5 +127,18 @@ func (s *MoneyService) HandleTransactionValidation(ctx context.Context, data typ
 		ValidationType:          validationType,
 		MerchantID:              data.MerchantID,
 	})
+
+	if sufficient {
+		// update db & snapshoot
+		info := model.CashMovementInfo{
+			RequestID:     data.TransactionID,
+			AccountNumber: data.SourceAccountNumber,
+			Date:          time.Now(),
+			Amount:        decimal.NewFromInt(data.Amount),
+			MovementType:  data.TransactionType,
+		}
+		err = s.UpdateHistory(ctx, info)
+	}
+
 	return err
 }

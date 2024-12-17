@@ -22,6 +22,20 @@ func MoneyToString(data *money.Money) string {
 	return result.String()
 }
 
+func MoneyToDecimal(data *money.Money) decimal.Decimal {
+	moneyStr := MoneyToString(data)
+	if moneyStr == "" {
+		return decimal.Decimal{}
+	}
+
+	val, err := decimal.NewFromString(moneyStr)
+	if err != nil {
+		return decimal.Decimal{}
+	}
+
+	return val
+}
+
 func DecimalToMoney(data decimal.Decimal) *money.Money {
 	result := strings.Split(data.String(), ".")
 	if len(result) == 1 {
