@@ -7,6 +7,8 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/mongo"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/membership"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/money"
 	mongo2 "go.mongodb.org/mongo-driver/v2/mongo"
 	"net/http"
 	"time"
@@ -21,12 +23,17 @@ type PaymentRepository struct {
 	kafkaClient        kafka.KafkaClientInterface
 	topicProducerMoney string
 	topicProducerBank  string
+	// grpc client
+	membershipClient membership.MembershipServiceClient
+	moneyClient      money.MoneyServiceClient
 }
 
 func NewPaymentRepository(cfg *config.Config,
 	redisClient *redis.Client,
 	dbClient mongo.DBInterface,
-	kafkaClient kafka.KafkaClientInterface) ports.PaymentRepositoryAdapter {
+	kafkaClient kafka.KafkaClientInterface,
+	membershipClient membership.MembershipServiceClient,
+	moneyClient money.MoneyServiceClient) ports.PaymentRepositoryAdapter {
 
 	repo := &PaymentRepository{
 		cfg:         cfg,
@@ -44,6 +51,9 @@ func NewPaymentRepository(cfg *config.Config,
 		kafkaClient:        kafkaClient,
 		topicProducerMoney: "",
 		topicProducerBank:  "",
+		// grpc client
+		membershipClient: membershipClient,
+		moneyClient:      moneyClient,
 	}
 
 	for k, v := range cfg.Kafka.ProducerTopics {

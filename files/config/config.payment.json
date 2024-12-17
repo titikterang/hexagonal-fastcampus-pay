@@ -12,7 +12,9 @@
     "max_pool_size": 50
   },
   "external_api": {
-    "membership": "http://localhost:3002/"
+    "membership": "http://localhost:3002/",
+    "membership_grpc": "localhost:4002",
+    "money_grpc": "localhost:4004"
   },
   "kafka_config": {
     "hosts": [

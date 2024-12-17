@@ -118,3 +118,22 @@ func (p *PaymentService) HandleBankCallbackReply(ctx context.Context, data types
 
 	return nil
 }
+
+func (p *PaymentService) GetPaymentPrecheckInfo(ctx context.Context, accountNo string) model.PaymentPrecheckInfo {
+	var data model.PaymentPrecheckInfo
+	// call user info
+	userInfo, err := p.repository.GetAccountInfo(ctx, accountNo)
+	if err != nil {
+		log.Error().Msgf("falied to execute GetAccountInfo, err %#v", err)
+	}
+
+	// call money service
+	balanceInfo, err := p.repository.GetUserBalanceInfo(ctx, accountNo)
+	if err != nil {
+		log.Error().Msgf("falied to execute GetUserBalanceInfo, err %#v", err)
+	}
+
+	data.UserProfileInfo = userInfo
+	data.Balance = int64(int(balanceInfo.InexactFloat64()))
+	return data
+}

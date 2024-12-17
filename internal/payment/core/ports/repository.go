@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"github.com/shopspring/decimal"
 	model2 "github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
 )
@@ -19,6 +20,7 @@ type PaymentRepositoryAdapter interface {
 
 	// external api call
 	GetAccountInfo(ctx context.Context, accountNumber string) (types.UserProfileInfo, error)
+	GetUserBalanceInfo(ctx context.Context, accountNumber string) (decimal.Decimal, error)
 
 	// publish to other service
 	PublishPaymentValidateRequest(ctx context.Context, info types.TransactionValidateInfo) error // to money service

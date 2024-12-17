@@ -5,7 +5,6 @@ option go_package = "github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/
 import "lib/protos/google/api/annotations.proto";
 import "lib/protos/protoc-gen-openapiv2/options/annotations.proto";
 
-
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
     title: "Fast Campus Pay (Payment API Endpoint)";
@@ -41,6 +40,24 @@ service MoneyService {
       };
     };
   }
+  // /v1/payment/precheck?account_no=1234
+  rpc GetPaymentPrecheckInfo(PaymentPrecheckPayload) returns (PaymentPrecheckResponse) {
+    option (google.api.http) = {
+      get: "/v1/payment/precheck",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get Payment Precheck Status";
+      operation_id: "GetPaymentPrecheckInfo";
+      tags: "payment";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+
   // update user balance
   rpc SubmitPayment(SubmitPaymentPayload) returns (SubmitPaymentResponse) {
     option (google.api.http) = {
@@ -71,6 +88,9 @@ enum PaymentStatus {
 message  PaymentStatusPayload {
   string invoice_id = 1;
 }
+message  PaymentPrecheckPayload {
+  string account_no = 1;
+}
 
 message PaymentInfo {
   string datetime = 1;
@@ -96,4 +116,17 @@ message SubmitPaymentResponse {
   string invoice_id = 1;
   PaymentStatus status = 2;
   string message = 3;
+}
+
+
+message UserInfoResponse {
+  string email = 1;
+  string fullname = 2;
+  string account_number = 3;
+  string status = 4;
+}
+
+message PaymentPrecheckResponse {
+  int64 balance = 1;
+  UserInfoResponse info = 2;
 }

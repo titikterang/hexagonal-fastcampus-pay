@@ -6,6 +6,10 @@
   "http": {
     "timeout": "2s"
   },
+  "grpc": {
+    "address": "0.0.0.0:4002",
+    "timeout": "5s"
+  },
   "redis": {
     "address": "localhost:6379",
     "poolsize": 5

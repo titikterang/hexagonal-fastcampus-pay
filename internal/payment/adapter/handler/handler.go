@@ -46,3 +46,16 @@ func (h *Handler) SubmitPayment(ctx context.Context, payload *payment.SubmitPaym
 		Message:   msg,
 	}, nil
 }
+
+func (h *Handler) GetPaymentPrecheckInfo(ctx context.Context, payload *payment.PaymentPrecheckPayload) (*payment.PaymentPrecheckResponse, error) {
+	data := h.paymentService.GetPaymentPrecheckInfo(ctx, payload.GetAccountNo())
+	return &payment.PaymentPrecheckResponse{
+		Balance: data.Balance,
+		Info: &payment.UserInfoResponse{
+			Email:         data.UserProfileInfo.Email,
+			Fullname:      data.UserProfileInfo.Fullname,
+			AccountNumber: data.UserProfileInfo.AccountNumber,
+			Status:        data.UserProfileInfo.Status,
+		},
+	}, nil
+}

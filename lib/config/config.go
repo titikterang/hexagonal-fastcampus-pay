@@ -5,6 +5,7 @@ import "time"
 type Config struct {
 	App           AppConfig         `json:"app" mapstructure:"app"`
 	Http          HttpConfig        `json:"http" mapstructure:"http"`
+	Grpc          GRPCConfig        `json:"grpc" mapstructure:"grpc"`
 	Redis         RedisConfig       `json:"redis" mapstructure:"redis"`
 	MongoDB       MongoDBConfig     `json:"mongo_db" mapstructure:"mongo_db"`
 	Postgre       PostgreConfig     `json:"postgre" mapstructure:"postgre"`
@@ -32,6 +33,8 @@ type KafkaConfig struct {
 
 type ExternalAPIConfig struct {
 	MembershipService string `json:"membership" mapstructure:"membership"`
+	MembershipGrpc    string `json:"membership_grpc" mapstructure:"membership_grpc"`
+	MoneyGrpc         string `json:"money_grpc" mapstructure:"money_grpc"`
 }
 
 type PostgreConfig struct {
@@ -50,6 +53,11 @@ type PostgreConfig struct {
 type AppConfig struct {
 	Address string `json:"address" mapstructure:"address"`
 	Label   string `json:"label" mapstructure:"label"`
+}
+
+type GRPCConfig struct {
+	GrpcAddress string        `json:"address" mapstructure:"address"`
+	Timeout     time.Duration `json:"timeout" mapstructure:"timeout"`
 }
 
 type HttpConfig struct {

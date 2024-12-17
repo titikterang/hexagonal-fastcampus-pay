@@ -65,7 +65,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/v1UserInfoResponse"
+              "$ref": "#/definitions/fastcampusmembershipv1UserInfoResponse"
             }
           },
           "default": {
@@ -156,6 +156,23 @@
     }
   },
   "definitions": {
+    "fastcampusmembershipv1UserInfoResponse": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "fullname": {
+          "type": "string"
+        },
+        "accountNumber": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -257,23 +274,6 @@
           "type": "boolean"
         },
         "errorMessage": {
-          "type": "string"
-        }
-      }
-    },
-    "v1UserInfoResponse": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string"
-        },
-        "fullname": {
-          "type": "string"
-        },
-        "accountNumber": {
-          "type": "string"
-        },
-        "status": {
           "type": "string"
         }
       }
