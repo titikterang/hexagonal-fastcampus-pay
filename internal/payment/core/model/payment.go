@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/shopspring/decimal"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/payment"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
 	"time"
 )
 
@@ -84,4 +85,9 @@ func (p PaymentInfo) GetStatusProto() payment.PaymentStatus {
 	}
 
 	return payment.PaymentStatus_UNSPECIFIED
+}
+
+type PaymentPrecheckInfo struct {
+	Balance         int64
+	UserProfileInfo types.UserProfileInfo
 }

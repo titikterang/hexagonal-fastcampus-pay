@@ -5,6 +5,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	gorHdl "github.com/gorilla/handlers"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
@@ -21,6 +22,18 @@ func startService(cfg *config.Config) {
 		log.Fatal("failed initiate NewHandler: %v", err)
 	}
 
+	// init grpc
+	grpcOpts := []grpc.ServerOption{
+		grpc.Address(cfg.Grpc.GrpcAddress),
+		grpc.Timeout(cfg.Grpc.Timeout),
+		grpc.Middleware(
+			metadata.Server(),
+			logging.Server(log.GetLogger()),
+		),
+		grpc.Logger(log.GetLogger()),
+	}
+
+	// init rest api
 	httpOpts := []http.ServerOption{
 		http.Timeout(cfg.Http.Timeout),
 		http.Address(cfg.App.Address),
@@ -38,16 +51,22 @@ func startService(cfg *config.Config) {
 		http.Logger(log.GetLogger()),
 	}
 
+	grpcServer := grpc.NewServer(
+		grpcOpts...,
+	)
+
 	httpServer := http.NewServer(
 		httpOpts...,
 	)
 
+	membership.RegisterMembershipServiceServer(grpcServer, handler)
 	membership.RegisterMembershipServiceHTTPServer(httpServer, handler)
 
 	server := kratos.New(
 		kratos.Name(cfg.App.Label),
 		kratos.Server(
 			httpServer,
+			grpcServer,
 		),
 	)
 

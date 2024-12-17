@@ -14,7 +14,6 @@ require (
 	github.com/shopspring/decimal v1.4.0
 	github.com/spf13/viper v1.19.0
 	github.com/twmb/franz-go v1.18.0
-	go.mongodb.org/mongo-driver v1.17.1
 	go.mongodb.org/mongo-driver/v2 v2.0.0-beta2
 	golang.org/x/crypto v0.27.0
 	google.golang.org/genproto v0.0.0-20240213162025-012b6fc9bca9

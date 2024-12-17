@@ -5,9 +5,11 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/ports"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/money"
 )
 
 type Handler struct {
+	money.UnimplementedMoneyServiceServer
 	config       *config.Config
 	moneyService ports.MoneyServiceAdapter
 }

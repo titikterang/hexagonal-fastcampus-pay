@@ -24,6 +24,37 @@
     "application/json"
   ],
   "paths": {
+    "/v1/payment/precheck": {
+      "get": {
+        "summary": "Get Payment Precheck Status",
+        "operationId": "GetPaymentPrecheckInfo",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/v1PaymentPrecheckResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "accountNo",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "payment"
+        ]
+      }
+    },
     "/v1/payment/status": {
       "get": {
         "summary": "Get Payment Status",
@@ -90,6 +121,23 @@
     }
   },
   "definitions": {
+    "fastcampuspaymentv1UserInfoResponse": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "fullname": {
+          "type": "string"
+        },
+        "accountNumber": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -128,6 +176,18 @@
         },
         "status": {
           "$ref": "#/definitions/v1PaymentStatus"
+        }
+      }
+    },
+    "v1PaymentPrecheckResponse": {
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "string",
+          "format": "int64"
+        },
+        "info": {
+          "$ref": "#/definitions/fastcampuspaymentv1UserInfoResponse"
         }
       }
     },

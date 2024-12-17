@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	MoneyService_GetPaymentStatus_FullMethodName = "/fastcampus.payment.v1.MoneyService/GetPaymentStatus"
-	MoneyService_SubmitPayment_FullMethodName    = "/fastcampus.payment.v1.MoneyService/SubmitPayment"
+	MoneyService_GetPaymentStatus_FullMethodName       = "/fastcampus.payment.v1.MoneyService/GetPaymentStatus"
+	MoneyService_GetPaymentPrecheckInfo_FullMethodName = "/fastcampus.payment.v1.MoneyService/GetPaymentPrecheckInfo"
+	MoneyService_SubmitPayment_FullMethodName          = "/fastcampus.payment.v1.MoneyService/SubmitPayment"
 )
 
 // MoneyServiceClient is the client API for MoneyService service.
@@ -30,6 +31,8 @@ type MoneyServiceClient interface {
 	// balance return as string
 	// /v1/payment/status?invoice_id=1234
 	GetPaymentStatus(ctx context.Context, in *PaymentStatusPayload, opts ...grpc.CallOption) (*PaymentStatusResponse, error)
+	// /v1/payment/precheck?account_no=1234
+	GetPaymentPrecheckInfo(ctx context.Context, in *PaymentPrecheckPayload, opts ...grpc.CallOption) (*PaymentPrecheckResponse, error)
 	// update user balance
 	SubmitPayment(ctx context.Context, in *SubmitPaymentPayload, opts ...grpc.CallOption) (*SubmitPaymentResponse, error)
 }
@@ -46,6 +49,16 @@ func (c *moneyServiceClient) GetPaymentStatus(ctx context.Context, in *PaymentSt
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PaymentStatusResponse)
 	err := c.cc.Invoke(ctx, MoneyService_GetPaymentStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *moneyServiceClient) GetPaymentPrecheckInfo(ctx context.Context, in *PaymentPrecheckPayload, opts ...grpc.CallOption) (*PaymentPrecheckResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentPrecheckResponse)
+	err := c.cc.Invoke(ctx, MoneyService_GetPaymentPrecheckInfo_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -69,6 +82,8 @@ type MoneyServiceServer interface {
 	// balance return as string
 	// /v1/payment/status?invoice_id=1234
 	GetPaymentStatus(context.Context, *PaymentStatusPayload) (*PaymentStatusResponse, error)
+	// /v1/payment/precheck?account_no=1234
+	GetPaymentPrecheckInfo(context.Context, *PaymentPrecheckPayload) (*PaymentPrecheckResponse, error)
 	// update user balance
 	SubmitPayment(context.Context, *SubmitPaymentPayload) (*SubmitPaymentResponse, error)
 	mustEmbedUnimplementedMoneyServiceServer()
@@ -80,6 +95,9 @@ type UnimplementedMoneyServiceServer struct {
 
 func (UnimplementedMoneyServiceServer) GetPaymentStatus(context.Context, *PaymentStatusPayload) (*PaymentStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentStatus not implemented")
+}
+func (UnimplementedMoneyServiceServer) GetPaymentPrecheckInfo(context.Context, *PaymentPrecheckPayload) (*PaymentPrecheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentPrecheckInfo not implemented")
 }
 func (UnimplementedMoneyServiceServer) SubmitPayment(context.Context, *SubmitPaymentPayload) (*SubmitPaymentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitPayment not implemented")
@@ -115,6 +133,24 @@ func _MoneyService_GetPaymentStatus_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MoneyService_GetPaymentPrecheckInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaymentPrecheckPayload)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MoneyServiceServer).GetPaymentPrecheckInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MoneyService_GetPaymentPrecheckInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MoneyServiceServer).GetPaymentPrecheckInfo(ctx, req.(*PaymentPrecheckPayload))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MoneyService_SubmitPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubmitPaymentPayload)
 	if err := dec(in); err != nil {
@@ -143,6 +179,10 @@ var MoneyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPaymentStatus",
 			Handler:    _MoneyService_GetPaymentStatus_Handler,
+		},
+		{
+			MethodName: "GetPaymentPrecheckInfo",
+			Handler:    _MoneyService_GetPaymentPrecheckInfo_Handler,
 		},
 		{
 			MethodName: "SubmitPayment",
