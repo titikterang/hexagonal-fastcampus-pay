@@ -7,14 +7,18 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/ports"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/mongo"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
+	mongo2 "go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type MoneyRepository struct {
 	cfg                  *config.Config
 	dbClientMaster       postgre.DBInterface
 	dbClientSlave        postgre.DBInterface
+	dbClient             mongo.DBInterface
+	DB                   *mongo2.Database
 	queries              statementQueries
 	redisClient          *redis.Client
 	kafkaClient          kafka.KafkaClientInterface
@@ -24,6 +28,7 @@ type MoneyRepository struct {
 
 func NewMoneyRepository(cfg *config.Config,
 	redisClient *redis.Client,
+	dbClient mongo.DBInterface,
 	masterClient,
 	slaveClient postgre.DBInterface,
 	kafkaClient kafka.KafkaClientInterface) ports.MoneyRepositoryAdapter {
@@ -34,6 +39,8 @@ func NewMoneyRepository(cfg *config.Config,
 		queries:        statementQueries{},
 		redisClient:    redisClient,
 		kafkaClient:    kafkaClient,
+		dbClient:       dbClient,
+		DB:             dbClient.Database(cfg.MongoDB.DBName),
 	}
 	err := repo.initDBSchema(context.TODO())
 	if err != nil {

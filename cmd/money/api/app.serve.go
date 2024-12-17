@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
@@ -17,7 +18,7 @@ import (
 )
 
 func startService(cfg *config.Config) {
-	handler, err := initHandler(cfg)
+	handler, dbConn, err := initHandler(cfg)
 	if err != nil {
 		log.Fatal("failed initiate NewHandler: %v", err)
 	}
@@ -57,7 +58,6 @@ func startService(cfg *config.Config) {
 	httpServer := http.NewServer(
 		httpOpts...,
 	)
-
 	money.RegisterMoneyServiceServer(grpcServer, handler)
 	money.RegisterMoneyServiceHTTPServer(httpServer, handler)
 
@@ -81,7 +81,11 @@ func startService(cfg *config.Config) {
 	// kill -9 is syscall.SIGKILL but can't be catch, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err = dbConn.Disconnect(ctx); err != nil {
+		panic(err)
+	}
 	log.Info("Shutting down server...")
 	if err := server.Stop(); err != nil {
 		log.Fatalf("Server forced to shutdown: %#v", err)

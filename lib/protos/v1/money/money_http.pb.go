@@ -20,15 +20,12 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationMoneyServiceGetUserBalance = "/fastcampus.money.v1.MoneyService/GetUserBalance"
-const OperationMoneyServiceGetUserBalancePrivate = "/fastcampus.money.v1.MoneyService/GetUserBalancePrivate"
 const OperationMoneyServiceUpdateUserBalance = "/fastcampus.money.v1.MoneyService/UpdateUserBalance"
 
 type MoneyServiceHTTPServer interface {
 	// GetUserBalance balance return as string
 	// /v1/money/balance?account_number=1234
 	GetUserBalance(context.Context, *UserBalancePayload) (*UserBalanceResponse, error)
-	// GetUserBalancePrivate balance will be represented as money
-	GetUserBalancePrivate(context.Context, *UserBalancePayload) (*UserBalancePrivateResponse, error)
 	// UpdateUserBalance update user balance
 	UpdateUserBalance(context.Context, *UpdateBalancePayload) (*UpdateBalanceResponse, error)
 }
@@ -36,7 +33,6 @@ type MoneyServiceHTTPServer interface {
 func RegisterMoneyServiceHTTPServer(s *http.Server, srv MoneyServiceHTTPServer) {
 	r := s.Route("/")
 	r.GET("/v1/money/balance", _MoneyService_GetUserBalance0_HTTP_Handler(srv))
-	r.GET("/v1/money/private/balance", _MoneyService_GetUserBalancePrivate0_HTTP_Handler(srv))
 	r.POST("/v1/money/private/balance", _MoneyService_UpdateUserBalance0_HTTP_Handler(srv))
 }
 
@@ -55,25 +51,6 @@ func _MoneyService_GetUserBalance0_HTTP_Handler(srv MoneyServiceHTTPServer) func
 			return err
 		}
 		reply := out.(*UserBalanceResponse)
-		return ctx.Result(200, reply)
-	}
-}
-
-func _MoneyService_GetUserBalancePrivate0_HTTP_Handler(srv MoneyServiceHTTPServer) func(ctx http.Context) error {
-	return func(ctx http.Context) error {
-		var in UserBalancePayload
-		if err := ctx.BindQuery(&in); err != nil {
-			return err
-		}
-		http.SetOperation(ctx, OperationMoneyServiceGetUserBalancePrivate)
-		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.GetUserBalancePrivate(ctx, req.(*UserBalancePayload))
-		})
-		out, err := h(ctx, &in)
-		if err != nil {
-			return err
-		}
-		reply := out.(*UserBalancePrivateResponse)
 		return ctx.Result(200, reply)
 	}
 }
@@ -102,7 +79,6 @@ func _MoneyService_UpdateUserBalance0_HTTP_Handler(srv MoneyServiceHTTPServer) f
 
 type MoneyServiceHTTPClient interface {
 	GetUserBalance(ctx context.Context, req *UserBalancePayload, opts ...http.CallOption) (rsp *UserBalanceResponse, err error)
-	GetUserBalancePrivate(ctx context.Context, req *UserBalancePayload, opts ...http.CallOption) (rsp *UserBalancePrivateResponse, err error)
 	UpdateUserBalance(ctx context.Context, req *UpdateBalancePayload, opts ...http.CallOption) (rsp *UpdateBalanceResponse, err error)
 }
 
@@ -119,19 +95,6 @@ func (c *MoneyServiceHTTPClientImpl) GetUserBalance(ctx context.Context, in *Use
 	pattern := "/v1/money/balance"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationMoneyServiceGetUserBalance))
-	opts = append(opts, http.PathTemplate(pattern))
-	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &out, nil
-}
-
-func (c *MoneyServiceHTTPClientImpl) GetUserBalancePrivate(ctx context.Context, in *UserBalancePayload, opts ...http.CallOption) (*UserBalancePrivateResponse, error) {
-	var out UserBalancePrivateResponse
-	pattern := "/v1/money/private/balance"
-	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationMoneyServiceGetUserBalancePrivate))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
