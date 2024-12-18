@@ -1,0 +1,61 @@
+syntax = "proto3";
+package fastcampus.settlement.v1;
+option go_package = "github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/settlement;settlement";
+
+import "lib/protos/google/api/annotations.proto";
+import "lib/protos/protoc-gen-openapiv2/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Fast Campus Pay (Settlement API Endpoint)";
+    version: "1.0";
+    contact: {
+      name: "Fast Campus Payment";
+      url: "https://github.com/titikterang";
+      email: "azwar.nrst@gmail.com";
+    };
+  };
+
+  schemes: HTTP;
+  consumes: "application/json";
+  produces: "application/json";
+};
+
+service SettlementService {
+  rpc GetSettlementReport(SettlementReportRequest) returns (SettlementReportResponse) {
+    option (google.api.http) = {
+      get: "/v1/settlement/report",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get Settlement Report";
+      operation_id: "GetSettlementReport";
+      tags: "settlement";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+}
+
+message SettlementReportRequest {
+  string account_no = 1;
+  string settlement_date = 2;
+}
+
+message SettlementReport {
+  string id = 1;
+  string account_no = 2;
+  string cash_movement_type = 3;
+  double fee_percentage = 4;
+  double fee_amount = 5;
+  string date_time = 6;
+}
+
+message SettlementReportResponse {
+  string settlement_date = 1;
+  string account_no = 2;
+  repeated  SettlementReport report = 3;
+}

@@ -58,14 +58,6 @@ func (r *PaymentRepository) UpdatePaymentStatus(ctx context.Context, data model2
 	if err != nil {
 		log.Error().Msgf("failed update history : %#v", err)
 	}
-	//_, err = r.DB.Collection("payment_history.history").InsertOne(ctx, []PaymentHistoryPayload{{
-	//	DateTime: data.DateTime,
-	//	Status:   string(data.Status),
-	//},
-	//})
-	//if err != nil {
-	//	log.Error().Msgf("failed insert new history : %#v", err)
-	//}
 }
 
 func (r *PaymentRepository) InsertPaymentInfo(ctx context.Context) {

@@ -19,15 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	MoneyService_GetPaymentStatus_FullMethodName       = "/fastcampus.payment.v1.MoneyService/GetPaymentStatus"
-	MoneyService_GetPaymentPrecheckInfo_FullMethodName = "/fastcampus.payment.v1.MoneyService/GetPaymentPrecheckInfo"
-	MoneyService_SubmitPayment_FullMethodName          = "/fastcampus.payment.v1.MoneyService/SubmitPayment"
+	PaymentService_GetPaymentStatus_FullMethodName       = "/fastcampus.payment.v1.PaymentService/GetPaymentStatus"
+	PaymentService_GetPaymentPrecheckInfo_FullMethodName = "/fastcampus.payment.v1.PaymentService/GetPaymentPrecheckInfo"
+	PaymentService_SubmitPayment_FullMethodName          = "/fastcampus.payment.v1.PaymentService/SubmitPayment"
+	PaymentService_GetPaymentInfoByID_FullMethodName     = "/fastcampus.payment.v1.PaymentService/GetPaymentInfoByID"
 )
 
-// MoneyServiceClient is the client API for MoneyService service.
+// PaymentServiceClient is the client API for PaymentService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type MoneyServiceClient interface {
+type PaymentServiceClient interface {
 	// balance return as string
 	// /v1/payment/status?invoice_id=1234
 	GetPaymentStatus(ctx context.Context, in *PaymentStatusPayload, opts ...grpc.CallOption) (*PaymentStatusResponse, error)
@@ -35,50 +36,61 @@ type MoneyServiceClient interface {
 	GetPaymentPrecheckInfo(ctx context.Context, in *PaymentPrecheckPayload, opts ...grpc.CallOption) (*PaymentPrecheckResponse, error)
 	// update user balance
 	SubmitPayment(ctx context.Context, in *SubmitPaymentPayload, opts ...grpc.CallOption) (*SubmitPaymentResponse, error)
+	GetPaymentInfoByID(ctx context.Context, in *PaymentInfoPayload, opts ...grpc.CallOption) (*PaymentInfoResponse, error)
 }
 
-type moneyServiceClient struct {
+type paymentServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewMoneyServiceClient(cc grpc.ClientConnInterface) MoneyServiceClient {
-	return &moneyServiceClient{cc}
+func NewPaymentServiceClient(cc grpc.ClientConnInterface) PaymentServiceClient {
+	return &paymentServiceClient{cc}
 }
 
-func (c *moneyServiceClient) GetPaymentStatus(ctx context.Context, in *PaymentStatusPayload, opts ...grpc.CallOption) (*PaymentStatusResponse, error) {
+func (c *paymentServiceClient) GetPaymentStatus(ctx context.Context, in *PaymentStatusPayload, opts ...grpc.CallOption) (*PaymentStatusResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PaymentStatusResponse)
-	err := c.cc.Invoke(ctx, MoneyService_GetPaymentStatus_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, PaymentService_GetPaymentStatus_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *moneyServiceClient) GetPaymentPrecheckInfo(ctx context.Context, in *PaymentPrecheckPayload, opts ...grpc.CallOption) (*PaymentPrecheckResponse, error) {
+func (c *paymentServiceClient) GetPaymentPrecheckInfo(ctx context.Context, in *PaymentPrecheckPayload, opts ...grpc.CallOption) (*PaymentPrecheckResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PaymentPrecheckResponse)
-	err := c.cc.Invoke(ctx, MoneyService_GetPaymentPrecheckInfo_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, PaymentService_GetPaymentPrecheckInfo_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *moneyServiceClient) SubmitPayment(ctx context.Context, in *SubmitPaymentPayload, opts ...grpc.CallOption) (*SubmitPaymentResponse, error) {
+func (c *paymentServiceClient) SubmitPayment(ctx context.Context, in *SubmitPaymentPayload, opts ...grpc.CallOption) (*SubmitPaymentResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SubmitPaymentResponse)
-	err := c.cc.Invoke(ctx, MoneyService_SubmitPayment_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, PaymentService_SubmitPayment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// MoneyServiceServer is the server API for MoneyService service.
-// All implementations must embed UnimplementedMoneyServiceServer
+func (c *paymentServiceClient) GetPaymentInfoByID(ctx context.Context, in *PaymentInfoPayload, opts ...grpc.CallOption) (*PaymentInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentInfoResponse)
+	err := c.cc.Invoke(ctx, PaymentService_GetPaymentInfoByID_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// PaymentServiceServer is the server API for PaymentService service.
+// All implementations must embed UnimplementedPaymentServiceServer
 // for forward compatibility
-type MoneyServiceServer interface {
+type PaymentServiceServer interface {
 	// balance return as string
 	// /v1/payment/status?invoice_id=1234
 	GetPaymentStatus(context.Context, *PaymentStatusPayload) (*PaymentStatusResponse, error)
@@ -86,107 +98,133 @@ type MoneyServiceServer interface {
 	GetPaymentPrecheckInfo(context.Context, *PaymentPrecheckPayload) (*PaymentPrecheckResponse, error)
 	// update user balance
 	SubmitPayment(context.Context, *SubmitPaymentPayload) (*SubmitPaymentResponse, error)
-	mustEmbedUnimplementedMoneyServiceServer()
+	GetPaymentInfoByID(context.Context, *PaymentInfoPayload) (*PaymentInfoResponse, error)
+	mustEmbedUnimplementedPaymentServiceServer()
 }
 
-// UnimplementedMoneyServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedMoneyServiceServer struct {
+// UnimplementedPaymentServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedPaymentServiceServer struct {
 }
 
-func (UnimplementedMoneyServiceServer) GetPaymentStatus(context.Context, *PaymentStatusPayload) (*PaymentStatusResponse, error) {
+func (UnimplementedPaymentServiceServer) GetPaymentStatus(context.Context, *PaymentStatusPayload) (*PaymentStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentStatus not implemented")
 }
-func (UnimplementedMoneyServiceServer) GetPaymentPrecheckInfo(context.Context, *PaymentPrecheckPayload) (*PaymentPrecheckResponse, error) {
+func (UnimplementedPaymentServiceServer) GetPaymentPrecheckInfo(context.Context, *PaymentPrecheckPayload) (*PaymentPrecheckResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentPrecheckInfo not implemented")
 }
-func (UnimplementedMoneyServiceServer) SubmitPayment(context.Context, *SubmitPaymentPayload) (*SubmitPaymentResponse, error) {
+func (UnimplementedPaymentServiceServer) SubmitPayment(context.Context, *SubmitPaymentPayload) (*SubmitPaymentResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitPayment not implemented")
 }
-func (UnimplementedMoneyServiceServer) mustEmbedUnimplementedMoneyServiceServer() {}
+func (UnimplementedPaymentServiceServer) GetPaymentInfoByID(context.Context, *PaymentInfoPayload) (*PaymentInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentInfoByID not implemented")
+}
+func (UnimplementedPaymentServiceServer) mustEmbedUnimplementedPaymentServiceServer() {}
 
-// UnsafeMoneyServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to MoneyServiceServer will
+// UnsafePaymentServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PaymentServiceServer will
 // result in compilation errors.
-type UnsafeMoneyServiceServer interface {
-	mustEmbedUnimplementedMoneyServiceServer()
+type UnsafePaymentServiceServer interface {
+	mustEmbedUnimplementedPaymentServiceServer()
 }
 
-func RegisterMoneyServiceServer(s grpc.ServiceRegistrar, srv MoneyServiceServer) {
-	s.RegisterService(&MoneyService_ServiceDesc, srv)
+func RegisterPaymentServiceServer(s grpc.ServiceRegistrar, srv PaymentServiceServer) {
+	s.RegisterService(&PaymentService_ServiceDesc, srv)
 }
 
-func _MoneyService_GetPaymentStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PaymentService_GetPaymentStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PaymentStatusPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MoneyServiceServer).GetPaymentStatus(ctx, in)
+		return srv.(PaymentServiceServer).GetPaymentStatus(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MoneyService_GetPaymentStatus_FullMethodName,
+		FullMethod: PaymentService_GetPaymentStatus_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MoneyServiceServer).GetPaymentStatus(ctx, req.(*PaymentStatusPayload))
+		return srv.(PaymentServiceServer).GetPaymentStatus(ctx, req.(*PaymentStatusPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MoneyService_GetPaymentPrecheckInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PaymentService_GetPaymentPrecheckInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PaymentPrecheckPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MoneyServiceServer).GetPaymentPrecheckInfo(ctx, in)
+		return srv.(PaymentServiceServer).GetPaymentPrecheckInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MoneyService_GetPaymentPrecheckInfo_FullMethodName,
+		FullMethod: PaymentService_GetPaymentPrecheckInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MoneyServiceServer).GetPaymentPrecheckInfo(ctx, req.(*PaymentPrecheckPayload))
+		return srv.(PaymentServiceServer).GetPaymentPrecheckInfo(ctx, req.(*PaymentPrecheckPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MoneyService_SubmitPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PaymentService_SubmitPayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubmitPaymentPayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MoneyServiceServer).SubmitPayment(ctx, in)
+		return srv.(PaymentServiceServer).SubmitPayment(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MoneyService_SubmitPayment_FullMethodName,
+		FullMethod: PaymentService_SubmitPayment_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MoneyServiceServer).SubmitPayment(ctx, req.(*SubmitPaymentPayload))
+		return srv.(PaymentServiceServer).SubmitPayment(ctx, req.(*SubmitPaymentPayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// MoneyService_ServiceDesc is the grpc.ServiceDesc for MoneyService service.
+func _PaymentService_GetPaymentInfoByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaymentInfoPayload)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).GetPaymentInfoByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_GetPaymentInfoByID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).GetPaymentInfoByID(ctx, req.(*PaymentInfoPayload))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// PaymentService_ServiceDesc is the grpc.ServiceDesc for PaymentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var MoneyService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "fastcampus.payment.v1.MoneyService",
-	HandlerType: (*MoneyServiceServer)(nil),
+var PaymentService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "fastcampus.payment.v1.PaymentService",
+	HandlerType: (*PaymentServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetPaymentStatus",
-			Handler:    _MoneyService_GetPaymentStatus_Handler,
+			Handler:    _PaymentService_GetPaymentStatus_Handler,
 		},
 		{
 			MethodName: "GetPaymentPrecheckInfo",
-			Handler:    _MoneyService_GetPaymentPrecheckInfo_Handler,
+			Handler:    _PaymentService_GetPaymentPrecheckInfo_Handler,
 		},
 		{
 			MethodName: "SubmitPayment",
-			Handler:    _MoneyService_SubmitPayment_Handler,
+			Handler:    _PaymentService_SubmitPayment_Handler,
+		},
+		{
+			MethodName: "GetPaymentInfoByID",
+			Handler:    _PaymentService_GetPaymentInfoByID_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

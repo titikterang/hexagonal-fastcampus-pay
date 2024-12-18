@@ -19,11 +19,11 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationMoneyServiceGetPaymentPrecheckInfo = "/fastcampus.payment.v1.MoneyService/GetPaymentPrecheckInfo"
-const OperationMoneyServiceGetPaymentStatus = "/fastcampus.payment.v1.MoneyService/GetPaymentStatus"
-const OperationMoneyServiceSubmitPayment = "/fastcampus.payment.v1.MoneyService/SubmitPayment"
+const OperationPaymentServiceGetPaymentPrecheckInfo = "/fastcampus.payment.v1.PaymentService/GetPaymentPrecheckInfo"
+const OperationPaymentServiceGetPaymentStatus = "/fastcampus.payment.v1.PaymentService/GetPaymentStatus"
+const OperationPaymentServiceSubmitPayment = "/fastcampus.payment.v1.PaymentService/SubmitPayment"
 
-type MoneyServiceHTTPServer interface {
+type PaymentServiceHTTPServer interface {
 	// GetPaymentPrecheckInfo /v1/payment/precheck?account_no=1234
 	GetPaymentPrecheckInfo(context.Context, *PaymentPrecheckPayload) (*PaymentPrecheckResponse, error)
 	// GetPaymentStatus balance return as string
@@ -33,20 +33,20 @@ type MoneyServiceHTTPServer interface {
 	SubmitPayment(context.Context, *SubmitPaymentPayload) (*SubmitPaymentResponse, error)
 }
 
-func RegisterMoneyServiceHTTPServer(s *http.Server, srv MoneyServiceHTTPServer) {
+func RegisterPaymentServiceHTTPServer(s *http.Server, srv PaymentServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/v1/payment/status", _MoneyService_GetPaymentStatus0_HTTP_Handler(srv))
-	r.GET("/v1/payment/precheck", _MoneyService_GetPaymentPrecheckInfo0_HTTP_Handler(srv))
-	r.POST("/v1/payment/submit", _MoneyService_SubmitPayment0_HTTP_Handler(srv))
+	r.GET("/v1/payment/status", _PaymentService_GetPaymentStatus0_HTTP_Handler(srv))
+	r.GET("/v1/payment/precheck", _PaymentService_GetPaymentPrecheckInfo0_HTTP_Handler(srv))
+	r.POST("/v1/payment/submit", _PaymentService_SubmitPayment0_HTTP_Handler(srv))
 }
 
-func _MoneyService_GetPaymentStatus0_HTTP_Handler(srv MoneyServiceHTTPServer) func(ctx http.Context) error {
+func _PaymentService_GetPaymentStatus0_HTTP_Handler(srv PaymentServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in PaymentStatusPayload
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationMoneyServiceGetPaymentStatus)
+		http.SetOperation(ctx, OperationPaymentServiceGetPaymentStatus)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.GetPaymentStatus(ctx, req.(*PaymentStatusPayload))
 		})
@@ -59,13 +59,13 @@ func _MoneyService_GetPaymentStatus0_HTTP_Handler(srv MoneyServiceHTTPServer) fu
 	}
 }
 
-func _MoneyService_GetPaymentPrecheckInfo0_HTTP_Handler(srv MoneyServiceHTTPServer) func(ctx http.Context) error {
+func _PaymentService_GetPaymentPrecheckInfo0_HTTP_Handler(srv PaymentServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in PaymentPrecheckPayload
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationMoneyServiceGetPaymentPrecheckInfo)
+		http.SetOperation(ctx, OperationPaymentServiceGetPaymentPrecheckInfo)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.GetPaymentPrecheckInfo(ctx, req.(*PaymentPrecheckPayload))
 		})
@@ -78,7 +78,7 @@ func _MoneyService_GetPaymentPrecheckInfo0_HTTP_Handler(srv MoneyServiceHTTPServ
 	}
 }
 
-func _MoneyService_SubmitPayment0_HTTP_Handler(srv MoneyServiceHTTPServer) func(ctx http.Context) error {
+func _PaymentService_SubmitPayment0_HTTP_Handler(srv PaymentServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in SubmitPaymentPayload
 		if err := ctx.Bind(&in); err != nil {
@@ -87,7 +87,7 @@ func _MoneyService_SubmitPayment0_HTTP_Handler(srv MoneyServiceHTTPServer) func(
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationMoneyServiceSubmitPayment)
+		http.SetOperation(ctx, OperationPaymentServiceSubmitPayment)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
 			return srv.SubmitPayment(ctx, req.(*SubmitPaymentPayload))
 		})
@@ -100,25 +100,25 @@ func _MoneyService_SubmitPayment0_HTTP_Handler(srv MoneyServiceHTTPServer) func(
 	}
 }
 
-type MoneyServiceHTTPClient interface {
+type PaymentServiceHTTPClient interface {
 	GetPaymentPrecheckInfo(ctx context.Context, req *PaymentPrecheckPayload, opts ...http.CallOption) (rsp *PaymentPrecheckResponse, err error)
 	GetPaymentStatus(ctx context.Context, req *PaymentStatusPayload, opts ...http.CallOption) (rsp *PaymentStatusResponse, err error)
 	SubmitPayment(ctx context.Context, req *SubmitPaymentPayload, opts ...http.CallOption) (rsp *SubmitPaymentResponse, err error)
 }
 
-type MoneyServiceHTTPClientImpl struct {
+type PaymentServiceHTTPClientImpl struct {
 	cc *http.Client
 }
 
-func NewMoneyServiceHTTPClient(client *http.Client) MoneyServiceHTTPClient {
-	return &MoneyServiceHTTPClientImpl{client}
+func NewPaymentServiceHTTPClient(client *http.Client) PaymentServiceHTTPClient {
+	return &PaymentServiceHTTPClientImpl{client}
 }
 
-func (c *MoneyServiceHTTPClientImpl) GetPaymentPrecheckInfo(ctx context.Context, in *PaymentPrecheckPayload, opts ...http.CallOption) (*PaymentPrecheckResponse, error) {
+func (c *PaymentServiceHTTPClientImpl) GetPaymentPrecheckInfo(ctx context.Context, in *PaymentPrecheckPayload, opts ...http.CallOption) (*PaymentPrecheckResponse, error) {
 	var out PaymentPrecheckResponse
 	pattern := "/v1/payment/precheck"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationMoneyServiceGetPaymentPrecheckInfo))
+	opts = append(opts, http.Operation(OperationPaymentServiceGetPaymentPrecheckInfo))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -127,11 +127,11 @@ func (c *MoneyServiceHTTPClientImpl) GetPaymentPrecheckInfo(ctx context.Context,
 	return &out, nil
 }
 
-func (c *MoneyServiceHTTPClientImpl) GetPaymentStatus(ctx context.Context, in *PaymentStatusPayload, opts ...http.CallOption) (*PaymentStatusResponse, error) {
+func (c *PaymentServiceHTTPClientImpl) GetPaymentStatus(ctx context.Context, in *PaymentStatusPayload, opts ...http.CallOption) (*PaymentStatusResponse, error) {
 	var out PaymentStatusResponse
 	pattern := "/v1/payment/status"
 	path := binding.EncodeURL(pattern, in, true)
-	opts = append(opts, http.Operation(OperationMoneyServiceGetPaymentStatus))
+	opts = append(opts, http.Operation(OperationPaymentServiceGetPaymentStatus))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
@@ -140,11 +140,11 @@ func (c *MoneyServiceHTTPClientImpl) GetPaymentStatus(ctx context.Context, in *P
 	return &out, nil
 }
 
-func (c *MoneyServiceHTTPClientImpl) SubmitPayment(ctx context.Context, in *SubmitPaymentPayload, opts ...http.CallOption) (*SubmitPaymentResponse, error) {
+func (c *PaymentServiceHTTPClientImpl) SubmitPayment(ctx context.Context, in *SubmitPaymentPayload, opts ...http.CallOption) (*SubmitPaymentResponse, error) {
 	var out SubmitPaymentResponse
 	pattern := "/v1/payment/submit"
 	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationMoneyServiceSubmitPayment))
+	opts = append(opts, http.Operation(OperationPaymentServiceSubmitPayment))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

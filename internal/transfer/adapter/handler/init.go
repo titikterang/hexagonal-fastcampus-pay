@@ -5,9 +5,11 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/ports"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/transfer"
 )
 
 type Handler struct {
+	transfer.UnimplementedTransferServiceServer
 	config          *config.Config
 	transferService ports.TransferServiceAPIAdapter
 }

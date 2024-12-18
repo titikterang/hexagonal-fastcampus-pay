@@ -3,6 +3,7 @@ package fastcampus.payment.v1;
 option go_package = "github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/payment;payment";
 
 import "lib/protos/google/api/annotations.proto";
+import "lib/protos/google/type/money.proto";
 import "lib/protos/protoc-gen-openapiv2/options/annotations.proto";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
@@ -21,7 +22,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   produces: "application/json";
 };
 
-service MoneyService {
+service PaymentService {
   // balance return as string
   // /v1/payment/status?invoice_id=1234
   rpc GetPaymentStatus(PaymentStatusPayload) returns (PaymentStatusResponse) {
@@ -76,6 +77,8 @@ service MoneyService {
       };
     };
   }
+
+  rpc GetPaymentInfoByID(PaymentInfoPayload) returns (PaymentInfoResponse) {}
 }
 enum PaymentStatus {
   UNSPECIFIED = 0;
@@ -83,6 +86,16 @@ enum PaymentStatus {
   PENDING = 2;
   FAILED = 3;
   PAID = 4;
+}
+
+message PaymentInfoPayload {
+  string trx_id = 1;
+}
+
+message PaymentInfoResponse {
+  string trx_id = 1;
+  string account_no = 2;
+  google.type.Money amount = 3;
 }
 
 message  PaymentStatusPayload {

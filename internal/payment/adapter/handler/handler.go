@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/core/model"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/payment"
 	"time"
 )
@@ -57,5 +58,17 @@ func (h *Handler) GetPaymentPrecheckInfo(ctx context.Context, payload *payment.P
 			AccountNumber: data.UserProfileInfo.AccountNumber,
 			Status:        data.UserProfileInfo.Status,
 		},
+	}, nil
+}
+
+func (h *Handler) GetPaymentInfoByID(ctx context.Context, payload *payment.PaymentInfoPayload) (*payment.PaymentInfoResponse, error) {
+	data, err := h.paymentService.GetInfoByTrxID(ctx, payload.GetTrxId())
+	if err != nil {
+		return nil, err
+	}
+	return &payment.PaymentInfoResponse{
+		TrxId:     data.ID,
+		AccountNo: data.AccountNo,
+		Amount:    common.DecimalToMoney(data.Amount),
 	}, nil
 }

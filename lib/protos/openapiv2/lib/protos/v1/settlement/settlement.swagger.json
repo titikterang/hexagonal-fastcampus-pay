@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Fast Campus Pay (Transfer API Endpoint)",
+    "title": "Fast Campus Pay (Settlement API Endpoint)",
     "version": "1.0",
     "contact": {
       "name": "Fast Campus Payment",
@@ -11,7 +11,7 @@
   },
   "tags": [
     {
-      "name": "TransferService"
+      "name": "SettlementService"
     }
   ],
   "schemes": [
@@ -24,48 +24,15 @@
     "application/json"
   ],
   "paths": {
-    "/v1/transfer/balance": {
-      "post": {
-        "summary": "Transfer User Balance",
-        "operationId": "SubmitTransfer",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/definitions/v1TransferBalanceResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/v1TransferBalanceRequest"
-            }
-          }
-        ],
-        "tags": [
-          "transfer"
-        ]
-      }
-    },
-    "/v1/transfer/history": {
+    "/v1/settlement/report": {
       "get": {
-        "summary": "Get Transfer History",
-        "operationId": "GetTransferHistory",
+        "summary": "Get Settlement Report",
+        "operationId": "GetSettlementReport",
         "responses": {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/v1TransferHistoryResponse"
+              "$ref": "#/definitions/v1SettlementReportResponse"
             }
           },
           "default": {
@@ -77,14 +44,20 @@
         },
         "parameters": [
           {
-            "name": "date",
+            "name": "accountNo",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "settlementDate",
             "in": "query",
             "required": false,
             "type": "string"
           }
         ],
         "tags": [
-          "transfer"
+          "settlement"
         ]
       }
     }
@@ -120,103 +93,48 @@
         }
       }
     },
-    "typeMoney": {
+    "v1SettlementReport": {
       "type": "object",
       "properties": {
-        "currencyCode": {
-          "type": "string",
-          "description": "The three-letter currency code defined in ISO 4217."
-        },
-        "units": {
-          "type": "string",
-          "format": "int64",
-          "description": "The whole units of the amount.\nFor example if `currencyCode` is `\"USD\"`, then 1 unit is one US dollar."
-        },
-        "nanos": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Number of nano (10^-9) units of the amount.\nThe value must be between -999,999,999 and +999,999,999 inclusive.\nIf `units` is positive, `nanos` must be positive or zero.\nIf `units` is zero, `nanos` can be positive, zero, or negative.\nIf `units` is negative, `nanos` must be negative or zero.\nFor example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000."
-        }
-      },
-      "description": "Represents an amount of money with its currency type."
-    },
-    "v1TransferBalanceRequest": {
-      "type": "object",
-      "properties": {
-        "sourceAccountNumber": {
-          "type": "string"
-        },
-        "amount": {
-          "type": "string",
-          "format": "int64"
-        },
-        "destinationAccount": {
-          "type": "string"
-        },
-        "accountCode": {
-          "type": "string",
-          "format": "int64"
-        },
-        "transferType": {
-          "$ref": "#/definitions/v1TransferType"
-        },
-        "requestId": {
-          "type": "string"
-        }
-      }
-    },
-    "v1TransferBalanceResponse": {
-      "type": "object",
-      "properties": {
-        "message": {
-          "type": "string"
-        },
-        "status": {
-          "type": "string"
-        },
-        "trxId": {
-          "type": "string"
-        },
-        "amount": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "v1TransferHistoryResponse": {
-      "type": "object",
-      "properties": {
-        "transferHistory": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1TransferBalanceResponse"
-          }
-        }
-      }
-    },
-    "v1TransferInfoResponse": {
-      "type": "object",
-      "properties": {
-        "trxId": {
+        "id": {
           "type": "string"
         },
         "accountNo": {
           "type": "string"
         },
-        "amount": {
-          "$ref": "#/definitions/typeMoney"
+        "cashMovementType": {
+          "type": "string"
+        },
+        "feePercentage": {
+          "type": "number",
+          "format": "double"
+        },
+        "feeAmount": {
+          "type": "number",
+          "format": "double"
+        },
+        "dateTime": {
+          "type": "string"
         }
       }
     },
-    "v1TransferType": {
-      "type": "string",
-      "enum": [
-        "UNSPECIFIED",
-        "BETWEEN_ACCOUNT",
-        "BETWEEN_BANK"
-      ],
-      "default": "UNSPECIFIED"
+    "v1SettlementReportResponse": {
+      "type": "object",
+      "properties": {
+        "settlementDate": {
+          "type": "string"
+        },
+        "accountNo": {
+          "type": "string"
+        },
+        "report": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1SettlementReport"
+          }
+        }
+      }
     }
   }
 }

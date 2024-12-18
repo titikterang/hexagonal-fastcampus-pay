@@ -4,6 +4,7 @@ import "time"
 
 type Config struct {
 	App           AppConfig         `json:"app" mapstructure:"app"`
+	WorkerPool    WorkerPoolConfig  `json:"worker_pool" mapstructure:"worker_pool"`
 	Http          HttpConfig        `json:"http" mapstructure:"http"`
 	Grpc          GRPCConfig        `json:"grpc" mapstructure:"grpc"`
 	Redis         RedisConfig       `json:"redis" mapstructure:"redis"`
@@ -13,6 +14,10 @@ type Config struct {
 	PostgreSlave  PostgreConfig     `json:"postgre_slave" mapstructure:"postgre_slave"`
 	ExternalAPI   ExternalAPIConfig `json:"external_api" mapstructure:"external_api"`
 	Kafka         KafkaConfig       `json:"kafka_config" mapstructure:"kafka_config"`
+}
+
+type WorkerPoolConfig struct {
+	Limit int `json:"limit" mapstructure:"limit"`
 }
 
 type MongoDBConfig struct {
@@ -35,6 +40,8 @@ type ExternalAPIConfig struct {
 	MembershipService string `json:"membership" mapstructure:"membership"`
 	MembershipGrpc    string `json:"membership_grpc" mapstructure:"membership_grpc"`
 	MoneyGrpc         string `json:"money_grpc" mapstructure:"money_grpc"`
+	TransferGrpc      string `json:"transfer_grpc" mapstructure:"transfer_grpc"`
+	PaymentGrpc       string `json:"payment_grpc" mapstructure:"payment_grpc"`
 }
 
 type PostgreConfig struct {

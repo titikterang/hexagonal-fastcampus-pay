@@ -9,6 +9,7 @@ import (
 type TransferServiceAPIAdapter interface {
 	SubmitTransferBalance(ctx context.Context, data model.TransferInfo) (string, error)
 	GetTransferHistory(ctx context.Context, filter string) ([]model.TransferInfo, error)
+	GetInfoByTrxID(ctx context.Context, id string) (types.TransactionInfoResult, error)
 }
 
 type TransferServiceConsumerAdapter interface {
