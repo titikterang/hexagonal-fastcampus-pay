@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
 	"time"
 )
 
@@ -126,5 +127,5 @@ func (r *TransferRepository) SaveEventID(ctx context.Context, eventType model.Ev
 		return nil
 	}
 
-	return r.redisClient.SetEx(ctx, key, 1, model.DefaultIdempotenceTTL).Err()
+	return r.redisClient.SetEx(ctx, key, 1, types.DefaultIdempotenceTTL).Err()
 }

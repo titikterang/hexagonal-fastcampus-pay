@@ -6,15 +6,24 @@ import (
 )
 
 func (h *Handler) GetSettlementReport(ctx context.Context, data *settlement.SettlementReportRequest) (*settlement.SettlementReportResponse, error) {
-	err := h.settlementService.HandleSettlementReport(ctx, data.GetAccountNo(), data.GetSettlementDate())
+	result, err := h.settlementService.HandleSettlementReport(ctx, data.GetAccountNo(), data.GetSettlementDate())
 	if err != nil {
 		return &settlement.SettlementReportResponse{}, err
 	}
-	result := settlement.SettlementReportResponse{
-		SettlementDate: "",
-		AccountNo:      "",
-		Report:         nil,
+	var settlementList = settlement.SettlementReportResponse{
+		SettlementDate: data.GetSettlementDate(),
+		AccountNo:      data.GetAccountNo(),
+		Report:         make([]*settlement.SettlementReport, 0),
+	}
+	for _, v := range result {
+		settlementList.Report = append(settlementList.Report, &settlement.SettlementReport{
+			Id:               v.TransactionID,
+			AccountNo:        v.AccountNo,
+			CashMovementType: string(v.SettlementType),
+			FeePercentage:    v.FeePercentage.InexactFloat64(),
+			FeeAmount:        v.FeeAmount.InexactFloat64(),
+		})
 	}
 
-	return &result, nil
+	return &settlementList, nil
 }

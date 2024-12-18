@@ -6,7 +6,7 @@ import (
 )
 
 type SettlementServiceAdapter interface {
-	HandleSettlementReport(ctx context.Context, accountNo, date string) error
+	HandleSettlementReport(ctx context.Context, accountNo, date string) ([]model.SettlementPayload, error)
 }
 
 type SettlementConsumerAdapter interface {
