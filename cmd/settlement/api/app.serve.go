@@ -6,11 +6,10 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
-	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	gorHdl "github.com/gorilla/handlers"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
-	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/payment"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/settlement"
 	"os"
 	"os/signal"
 	"syscall"
@@ -18,20 +17,9 @@ import (
 )
 
 func startService(cfg *config.Config) {
-	handler, producer, dbConn, err := initHandler(cfg)
+	handler, dbConn, err := initHandler(cfg)
 	if err != nil {
 		log.Fatal("failed initiate NewHandler: %v", err)
-	}
-
-	// init grpc
-	grpcOpts := []grpc.ServerOption{
-		grpc.Address(cfg.Grpc.GrpcAddress),
-		grpc.Timeout(cfg.Grpc.Timeout),
-		grpc.Middleware(
-			metadata.Server(),
-			logging.Server(log.GetLogger()),
-		),
-		grpc.Logger(log.GetLogger()),
 	}
 
 	httpOpts := []http.ServerOption{
@@ -51,21 +39,15 @@ func startService(cfg *config.Config) {
 		http.Logger(log.GetLogger()),
 	}
 
-	grpcServer := grpc.NewServer(
-		grpcOpts...,
-	)
-
 	httpServer := http.NewServer(
 		httpOpts...,
 	)
 
-	payment.RegisterPaymentServiceServer(grpcServer, handler)
-	payment.RegisterPaymentServiceHTTPServer(httpServer, handler)
+	settlement.RegisterSettlementServiceHTTPServer(httpServer, handler)
 	server := kratos.New(
 		kratos.Name(cfg.App.Label),
 		kratos.Server(
 			httpServer,
-			grpcServer,
 		),
 	)
 	go func() {
@@ -82,7 +64,6 @@ func startService(cfg *config.Config) {
 	<-quit
 
 	log.Info("Shutting down server...")
-	producer.Close()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err = dbConn.Disconnect(ctx); err != nil {

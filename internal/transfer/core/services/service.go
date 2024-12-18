@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+func (s *TransferService) GetInfoByTrxID(ctx context.Context, id string) (types.TransactionInfoResult, error) {
+	return types.TransactionInfoResult{}, nil
+}
+
 func (s *TransferService) eligibleAccountStatus(ctx context.Context, accountNumber string) bool {
 	// only eligible if user status == A (Active)
 	data, err := s.repository.GetAccountInfo(ctx, accountNumber)

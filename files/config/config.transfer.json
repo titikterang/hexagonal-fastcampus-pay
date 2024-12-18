@@ -6,6 +6,10 @@
   "http": {
     "timeout": "2s"
   },
+  "grpc": {
+    "address": "0.0.0.0:4005",
+    "timeout": "5s"
+  },
   "postgre_master": {
     "address": "localhost",
     "port": "15432",

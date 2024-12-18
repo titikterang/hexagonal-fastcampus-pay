@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
+	TransferService_GetTransferInfoByID_FullMethodName   = "/fastcampus.transfer.v1.TransferService/GetTransferInfoByID"
 	TransferService_SubmitTransferBalance_FullMethodName = "/fastcampus.transfer.v1.TransferService/SubmitTransferBalance"
 	TransferService_GetTransferHistory_FullMethodName    = "/fastcampus.transfer.v1.TransferService/GetTransferHistory"
 )
@@ -27,6 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TransferServiceClient interface {
+	GetTransferInfoByID(ctx context.Context, in *TransferInfoPayload, opts ...grpc.CallOption) (*TransferInfoResponse, error)
 	// Transfer Balance Antar Account
 	SubmitTransferBalance(ctx context.Context, in *TransferBalanceRequest, opts ...grpc.CallOption) (*TransferBalanceResponse, error)
 	GetTransferHistory(ctx context.Context, in *TransferHistoryRequest, opts ...grpc.CallOption) (*TransferHistoryResponse, error)
@@ -38,6 +40,16 @@ type transferServiceClient struct {
 
 func NewTransferServiceClient(cc grpc.ClientConnInterface) TransferServiceClient {
 	return &transferServiceClient{cc}
+}
+
+func (c *transferServiceClient) GetTransferInfoByID(ctx context.Context, in *TransferInfoPayload, opts ...grpc.CallOption) (*TransferInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TransferInfoResponse)
+	err := c.cc.Invoke(ctx, TransferService_GetTransferInfoByID_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *transferServiceClient) SubmitTransferBalance(ctx context.Context, in *TransferBalanceRequest, opts ...grpc.CallOption) (*TransferBalanceResponse, error) {
@@ -64,6 +76,7 @@ func (c *transferServiceClient) GetTransferHistory(ctx context.Context, in *Tran
 // All implementations must embed UnimplementedTransferServiceServer
 // for forward compatibility
 type TransferServiceServer interface {
+	GetTransferInfoByID(context.Context, *TransferInfoPayload) (*TransferInfoResponse, error)
 	// Transfer Balance Antar Account
 	SubmitTransferBalance(context.Context, *TransferBalanceRequest) (*TransferBalanceResponse, error)
 	GetTransferHistory(context.Context, *TransferHistoryRequest) (*TransferHistoryResponse, error)
@@ -74,6 +87,9 @@ type TransferServiceServer interface {
 type UnimplementedTransferServiceServer struct {
 }
 
+func (UnimplementedTransferServiceServer) GetTransferInfoByID(context.Context, *TransferInfoPayload) (*TransferInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTransferInfoByID not implemented")
+}
 func (UnimplementedTransferServiceServer) SubmitTransferBalance(context.Context, *TransferBalanceRequest) (*TransferBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitTransferBalance not implemented")
 }
@@ -91,6 +107,24 @@ type UnsafeTransferServiceServer interface {
 
 func RegisterTransferServiceServer(s grpc.ServiceRegistrar, srv TransferServiceServer) {
 	s.RegisterService(&TransferService_ServiceDesc, srv)
+}
+
+func _TransferService_GetTransferInfoByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TransferInfoPayload)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TransferServiceServer).GetTransferInfoByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TransferService_GetTransferInfoByID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TransferServiceServer).GetTransferInfoByID(ctx, req.(*TransferInfoPayload))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _TransferService_SubmitTransferBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -136,6 +170,10 @@ var TransferService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "fastcampus.transfer.v1.TransferService",
 	HandlerType: (*TransferServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetTransferInfoByID",
+			Handler:    _TransferService_GetTransferInfoByID_Handler,
+		},
 		{
 			MethodName: "SubmitTransferBalance",
 			Handler:    _TransferService_SubmitTransferBalance_Handler,

@@ -10,6 +10,7 @@ type PaymentServiceAdapter interface {
 	SubmitPaymentRequest(ctx context.Context, payload model.SubmitPaymentPayload) (string, error)
 	GetPaymentInfoByID(ctx context.Context, id string) (model.PaymentDetails, error)
 	GetPaymentPrecheckInfo(ctx context.Context, accountNo string) model.PaymentPrecheckInfo
+	GetInfoByTrxID(ctx context.Context, id string) (types.TransactionInfoResult, error)
 }
 
 type PaymentConsumerAdapter interface {

@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/transfer"
 	"strconv"
 )
@@ -40,4 +41,16 @@ func (h *Handler) SubmitTransferBalance(ctx context.Context, payload *transfer.T
 		TrxId:  ID,
 		Amount: payload.GetAmount(),
 	}, err
+}
+
+func (h *Handler) GetTransferInfoByID(ctx context.Context, in *transfer.TransferInfoPayload) (*transfer.TransferInfoResponse, error) {
+	data, err := h.transferService.GetInfoByTrxID(ctx, in.GetTrxId())
+	if err != nil {
+		return nil, err
+	}
+	return &transfer.TransferInfoResponse{
+		TrxId:     data.ID,
+		AccountNo: data.AccountNo,
+		Amount:    common.DecimalToMoney(data.Amount),
+	}, nil
 }

@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+func (p *PaymentService) GetInfoByTrxID(ctx context.Context, id string) (types.TransactionInfoResult, error) {
+	return types.TransactionInfoResult{}, nil
+}
+
 func (p *PaymentService) eligibleUser(ctx context.Context, accountNo string) bool {
 	data, err := p.repository.GetAccountInfo(ctx, accountNo)
 	if err != nil {

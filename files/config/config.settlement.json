@@ -1,0 +1,37 @@
+{
+  "app": {
+    "address": "0.0.0.0:3007",
+    "label": "settlement"
+  },
+  "worker_pool": {
+    "limit": 10
+  },
+  "http": {
+    "timeout": "2s"
+  },
+  "mongo_db": {
+    "address": "localhost:27017",
+    "db_name": "fastcampus_settlement",
+    "max_pool_size": 50
+  },
+  "external_api": {
+    "money_grpc": "localhost:4004",
+    "transfer_grpc": "localhost:4005",
+    "payment_grpc": "localhost:4006"
+  },
+  "kafka_config": {
+    "hosts": [
+      "localhost:9094"
+    ],
+    "max_poll_record": 1000,
+    "consumer_group": "fastcampus-settlement",
+    "consumer_topics": {
+      "transfer": "BankingServiceCallbackReply",
+      "payment": "BankingPaymentCallbackReply"
+    }
+  },
+  "redis": {
+    "address": "localhost:6379",
+    "poolsize": 5
+  }
+}
