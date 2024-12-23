@@ -45,5 +45,9 @@ func NewConsumer(cfg *config.Config, client kafka.KafkaClientInterface, adapter 
 		}
 	}
 
+	if handler.settlementService != nil {
+		handler.settlementService.InitWorkerPool()
+	}
+
 	return handler, nil
 }

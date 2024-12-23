@@ -9,7 +9,8 @@ func (s *SettlementService) HandleSettlementQueue(data model.SettlementPayload) 
 	s.settlementQueue <- &data
 }
 
-func (s *SettlementService) initWorkerPool() {
+func (s *SettlementService) InitWorkerPool() {
+	log.Info().Msg("Initiate settlement service worker pool")
 	for w := 0; w < s.config.WorkerPool.Limit; w++ {
 		s.runWorkerPool(w)
 	}
