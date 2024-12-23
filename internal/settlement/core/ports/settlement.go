@@ -11,4 +11,5 @@ type SettlementServiceAdapter interface {
 
 type SettlementConsumerAdapter interface {
 	HandleSettlementQueue(data model.SettlementPayload)
+	InitWorkerPool() // only initiate worker pool on settlement consumer
 }

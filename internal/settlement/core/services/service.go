@@ -9,7 +9,7 @@ import (
 )
 
 func (s *SettlementService) HandleSettlementReport(ctx context.Context, accountNo, date string) ([]model.SettlementPayload, error) {
-	return nil
+	return nil, nil
 }
 
 func (s *SettlementService) executeSettlementReport(data *model.SettlementPayload) {

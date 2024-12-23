@@ -18,6 +18,5 @@ func NewService(cfg *config.Config, repository ports.SettlementRepository) *Sett
 		repository:      repository,
 		settlementQueue: make(chan *model.SettlementPayload, cfg.WorkerPool.Limit),
 	}
-	s.initWorkerPool()
 	return &s
 }
