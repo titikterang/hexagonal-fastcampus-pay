@@ -70,7 +70,7 @@ run-money: build-money
 	@docker-compose -f docker-compose.money.yaml up --force-recreate
 
 run-krakend:
-	@docker run --name krakend -p 18080:8080 \
+	@docker run --rm --name krakend -p 18080:8080 \
 		-v /etc/localtime:/etc/localtime:ro \
 		--add-host=host.docker.internal:host-gateway \
 		-v ./files/config:/etc/krakend/ \
