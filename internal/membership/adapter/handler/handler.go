@@ -27,7 +27,7 @@ func (h Handler) SubmitLogin(ctx context.Context, request *membership.LoginReque
 	return &membership.LoginResponse{
 		Success:      resp.Success,
 		LoginMessage: resp.Message,
-		Uuid:         resp.UUID,
+		Token:        resp.Token,
 	}, err
 }
 

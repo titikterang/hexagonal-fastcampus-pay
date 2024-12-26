@@ -3,6 +3,13 @@
     "address": "0.0.0.0:3002",
     "label": "membership"
   },
+  "token": {
+    "secret": "f45tc5mpu5P4y2025",
+    "expiry": "1h",
+    "private_key": "./files/keypair/jwtRSA256-private.pem",
+    "public_key": "./files/keypair/jwtRSA256-public.pem",
+    "key_id": "532f03bac363771a49c667631bc985d95fc27004"
+  },
   "http": {
     "timeout": "2s"
   },

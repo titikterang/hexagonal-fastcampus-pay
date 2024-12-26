@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/membership/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
@@ -52,7 +53,25 @@ func (s *MembershipService) GetUserInfo(ctx context.Context, accountNumber strin
 }
 
 func (s *MembershipService) SubmitLogin(ctx context.Context, payload model.LoginInfo) (model.LoginResponse, error) {
-	return model.LoginResponse{}, nil
+	// query db, get user info by DB
+	userInfo, err := s.repository.GetUserByUsername(ctx, payload.Username)
+	if err != nil {
+		return model.LoginResponse{}, err
+	}
+
+	if !common.VerifyHash(userInfo.Hash, payload.Password) {
+		return model.LoginResponse{}, errors.New("invalid username & password combination")
+	}
+
+	data, err := s.CreateRSAToken(userInfo)
+	if err != nil {
+		return model.LoginResponse{}, err
+	}
+
+	return model.LoginResponse{
+		Success: true,
+		Token:   data,
+	}, nil
 }
 
 func (s *MembershipService) SubmitLogout(ctx context.Context, uuid string) error {

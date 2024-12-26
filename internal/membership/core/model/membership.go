@@ -8,7 +8,7 @@ type LoginInfo struct {
 
 type LoginResponse struct {
 	Success bool
-	UUID    string
+	Token   string
 	Message string
 }
 
