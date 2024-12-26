@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/membership/core/model"
 )
@@ -39,6 +40,12 @@ func (s *MembershipService) RefreshToken(ctx context.Context, token string) (mod
 	existingToken, err := s.repository.GetUserSessionFromCache(ctx, userInfo.AccountNumber)
 	if err != nil {
 		log.Error().Msgf("failed to GetUserSessionFromCache, err %#v", err)
+		if errors.Is(err, redis.Nil) {
+			return model.LoginResponse{
+				Message: "no refresh token exists, please relogin",
+			}, nil
+		}
+
 		return model.LoginResponse{
 			Message: "failed to refresh user token, please re login",
 		}, err
@@ -48,7 +55,7 @@ func (s *MembershipService) RefreshToken(ctx context.Context, token string) (mod
 	if existingToken != token {
 		return model.LoginResponse{
 			Message: "invalid refresh token, please relogin",
-		}, err
+		}, nil
 	}
 
 	newToken, refresh, err := s.constructToken(ctx, s.refreshKeypair.privKey, userInfo, s.config.Token.RefreshExpiry)
