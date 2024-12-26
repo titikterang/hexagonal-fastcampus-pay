@@ -3,15 +3,20 @@
     "address": "0.0.0.0:3002",
     "label": "membership"
   },
+  "vault": {
+    "token": "hvs.CAESIDNneCRFMkGpfBYEsSXjDe_CaJ4ls1CtYwdR-Y55PU2-Gh4KHGh2cy43Q2x3azR2VVR2NEpKSmRvc3dna2dPYlM",
+    "address": "http://127.0.0.1:8200",
+    "path": "membership_service"
+  },
   "token": {
-    "secret": "f45tc5mpu5P4y2025",
+    "secret": "",
     "expiry": "1h",
     "refresh_expiry": "6h",
     "private_key": "./files/keypair/jwtRSA256-private.pem",
     "public_key": "./files/keypair/jwtRSA256-public.pem",
     "refresh_private_key": "./files/keypair/jwtRSA256-refresh-private.pem",
     "refresh_public_key": "./files/keypair/jwtRSA256-refresh-public.pem",
-    "key_id": "532f03bac363771a49c667631bc985d95fc27004"
+    "key_id": ""
   },
   "http": {
     "timeout": "2s"
@@ -27,9 +32,9 @@
   "postgre": {
     "address": "localhost",
     "port": "15432",
-    "username": "admin",
-    "password": "password",
-    "dbname": "fastcampus_membership",
+    "username": "",
+    "password": "",
+    "dbname": "",
     "sslmode": "disable",
     "maxopenconn": "50",
     "maxidleconn": "50",
