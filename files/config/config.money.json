@@ -3,6 +3,11 @@
     "address": "0.0.0.0:3004",
     "label": "money"
   },
+  "vault": {
+    "token": "hvs.CAESIOdOzhu8VaXfm-JmI2XStoI9OzbrSuORUnth-HLfeH7BGh4KHGh2cy5uY3dCSFo1Qk1ON0kyV09xYjNPVzZPZHM",
+    "address": "http://127.0.0.1:8200",
+    "path": "money_service"
+  },
   "http": {
     "timeout": "2s"
   },

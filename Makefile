@@ -76,3 +76,7 @@ run-krakend:
 		-v ./files/config:/etc/krakend/ \
 		-v ./files/jwks:/data/jwks/ devopsfaith/krakend run \
 		--config /etc/krakend/krakend.json
+
+add-vault-token:
+	@echo "usage : POLICY={your_new_policy_name} make add-vault-token"
+	@vault token create -policy=$(POLICY) -address=http://localhost:8200

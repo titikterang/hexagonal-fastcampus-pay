@@ -15,6 +15,13 @@ type Config struct {
 	PostgreSlave  PostgreConfig     `json:"postgre_slave" mapstructure:"postgre_slave"`
 	ExternalAPI   ExternalAPIConfig `json:"external_api" mapstructure:"external_api"`
 	Kafka         KafkaConfig       `json:"kafka_config" mapstructure:"kafka_config"`
+	Vault         VaultConfig       `json:"vault" mapstructure:"vault"`
+}
+
+type VaultConfig struct {
+	Token   string `json:"token" mapstructure:"token"`
+	Address string `json:"address" mapstructure:"address"`
+	Path    string `json:"path" mapstructure:"path"`
 }
 
 type TokenConfig struct {
