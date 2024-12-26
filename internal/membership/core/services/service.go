@@ -98,5 +98,7 @@ func (s *MembershipService) SubmitLogin(ctx context.Context, payload model.Login
 }
 
 func (s *MembershipService) SubmitLogout(ctx context.Context, accountNumber string) error {
+	// TODO: need to revoke token to krakend client after clearn up redis
+	// https://www.krakend.io/docs/authorization/revoking-tokens/
 	return s.repository.DeleteUserSessionFromCache(ctx, accountNumber)
 }
