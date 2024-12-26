@@ -97,7 +97,6 @@ func (s *MembershipService) SubmitLogin(ctx context.Context, payload model.Login
 	}, nil
 }
 
-func (s *MembershipService) SubmitLogout(ctx context.Context, uuid string) error {
-
-	return nil
+func (s *MembershipService) SubmitLogout(ctx context.Context, accountNumber string) error {
+	return s.repository.DeleteUserSessionFromCache(ctx, accountNumber)
 }

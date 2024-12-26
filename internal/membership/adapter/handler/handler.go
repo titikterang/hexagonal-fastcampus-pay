@@ -2,8 +2,11 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/membership/core/model"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/membership"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (h Handler) GetUserInfo(ctx context.Context, payload *membership.UserInfoPayload) (*membership.UserInfoResponse, error) {
@@ -32,11 +35,22 @@ func (h Handler) SubmitLogin(ctx context.Context, request *membership.LoginReque
 	}, err
 }
 
-func (h Handler) SubmitLogout(ctx context.Context, request *membership.LogoutRequest) (*membership.LogoutResponse, error) {
-	err := h.membershipService.SubmitLogout(ctx, request.GetUuid())
+func (h Handler) SubmitLogout(ctx context.Context, _ *emptypb.Empty) (*membership.LogoutResponse, error) {
+	userID, ok := common.ExtractUserIDFromHeader(ctx)
+	if !ok {
+		return &membership.LogoutResponse{
+			Message: "Logout Success",
+		}, errors.New("invalid user ID")
+	}
+	err := h.membershipService.SubmitLogout(ctx, userID)
+	if err != nil {
+		return &membership.LogoutResponse{
+			Message: "Failed to logout",
+		}, err
+	}
 	return &membership.LogoutResponse{
 		Message: "Logout Success",
-	}, err
+	}, nil
 }
 
 func (h Handler) SubmitRegistration(ctx context.Context, request *membership.RegistrationRequest) (*membership.RegistrationResponse, error) {

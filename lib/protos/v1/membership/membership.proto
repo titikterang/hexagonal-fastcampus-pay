@@ -3,6 +3,7 @@ package fastcampus.membership.v1;
 option go_package = "github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/membership;membership";
 
 import "lib/protos/google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 import "lib/protos/protoc-gen-openapiv2/options/annotations.proto";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
@@ -58,7 +59,7 @@ service MembershipService {
   }
 
   // login
-  rpc SubmitLogout(LogoutRequest) returns (LogoutResponse) {
+  rpc SubmitLogout(google.protobuf.Empty) returns (LogoutResponse) {
     option (google.api.http) = {
       post: "/v1/membership/logout",
       body: "*"
@@ -72,6 +73,14 @@ service MembershipService {
         value: {
           description: "OK";
         }
+      },parameters: {
+        headers: [
+          {
+            name: "X-User"
+            required: true
+            type: STRING
+          }
+        ]
       };
     };
   }
@@ -142,10 +151,6 @@ message RegistrationRequest {
   string username = 3;
   string password = 4;
   string confirm_password = 5;
-}
-
-message LogoutRequest {
-  string uuid = 1;
 }
 
 message LogoutResponse {

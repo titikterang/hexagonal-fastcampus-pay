@@ -145,8 +145,15 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1LogoutRequest"
+              "type": "object",
+              "properties": {}
             }
+          },
+          {
+            "name": "X-User",
+            "in": "header",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -260,14 +267,6 @@
           "type": "string"
         },
         "refreshToken": {
-          "type": "string"
-        }
-      }
-    },
-    "v1LogoutRequest": {
-      "type": "object",
-      "properties": {
-        "uuid": {
           "type": "string"
         }
       }

@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/membership/core/model"
@@ -16,8 +17,24 @@ func (s *MembershipService) RefreshToken(ctx context.Context, token string) (mod
 			Message: "failed to refresh user token, please re login",
 		}, err
 	}
+	rawInfo := data.(map[string]interface{})
+	var userInfo model.UserAuthInfo
+	marshal, err := json.Marshal(rawInfo)
+	if err != nil {
+		log.Error().Msgf("failed to Marshal jwt data, err %#v", err)
+		return model.LoginResponse{
+			Message: "failed to refresh user token, please re login",
+		}, err
+	}
 
-	userInfo := data.(model.UserAuthInfo)
+	err = json.Unmarshal(marshal, &userInfo)
+	if err != nil {
+		log.Error().Msgf("failed to Unmarshal into user Info, err %#v", err)
+		return model.LoginResponse{
+			Message: "failed to refresh user token, please re login",
+		}, err
+	}
+
 	// if valid cek from redis
 	existingToken, err := s.repository.GetUserSessionFromCache(ctx, userInfo.AccountNumber)
 	if err != nil {

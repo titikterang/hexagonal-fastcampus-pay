@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -34,7 +35,7 @@ type MembershipServiceClient interface {
 	// Register
 	SubmitRegistration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	// login
-	SubmitLogout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
+	SubmitLogout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*LogoutResponse, error)
 	// login
 	SubmitLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	// refresh token
@@ -69,7 +70,7 @@ func (c *membershipServiceClient) SubmitRegistration(ctx context.Context, in *Re
 	return out, nil
 }
 
-func (c *membershipServiceClient) SubmitLogout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error) {
+func (c *membershipServiceClient) SubmitLogout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*LogoutResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LogoutResponse)
 	err := c.cc.Invoke(ctx, MembershipService_SubmitLogout_FullMethodName, in, out, cOpts...)
@@ -107,7 +108,7 @@ type MembershipServiceServer interface {
 	// Register
 	SubmitRegistration(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
 	// login
-	SubmitLogout(context.Context, *LogoutRequest) (*LogoutResponse, error)
+	SubmitLogout(context.Context, *emptypb.Empty) (*LogoutResponse, error)
 	// login
 	SubmitLogin(context.Context, *LoginRequest) (*LoginResponse, error)
 	// refresh token
@@ -125,7 +126,7 @@ func (UnimplementedMembershipServiceServer) GetUserInfo(context.Context, *UserIn
 func (UnimplementedMembershipServiceServer) SubmitRegistration(context.Context, *RegistrationRequest) (*RegistrationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitRegistration not implemented")
 }
-func (UnimplementedMembershipServiceServer) SubmitLogout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
+func (UnimplementedMembershipServiceServer) SubmitLogout(context.Context, *emptypb.Empty) (*LogoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitLogout not implemented")
 }
 func (UnimplementedMembershipServiceServer) SubmitLogin(context.Context, *LoginRequest) (*LoginResponse, error) {
@@ -184,7 +185,7 @@ func _MembershipService_SubmitRegistration_Handler(srv interface{}, ctx context.
 }
 
 func _MembershipService_SubmitLogout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LogoutRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -196,7 +197,7 @@ func _MembershipService_SubmitLogout_Handler(srv interface{}, ctx context.Contex
 		FullMethod: MembershipService_SubmitLogout_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MembershipServiceServer).SubmitLogout(ctx, req.(*LogoutRequest))
+		return srv.(MembershipServiceServer).SubmitLogout(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
