@@ -2,14 +2,23 @@ package handler
 
 import (
 	"context"
+	"errors"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/money"
 )
 
 // GetUserBalance - oublic endpoint , get from redis snapshoot, return amount (string)
 func (h *Handler) GetUserBalance(ctx context.Context, data *money.UserBalancePayload) (*money.UserBalanceResponse, error) {
+	userID, ok := common.ExtractUserIDFromHeader(ctx)
+	if !ok {
+		return &money.UserBalanceResponse{
+			AccountNumber: userID,
+			Balance:       "0",
+		}, errors.New("invalid user ID")
+	}
 	amountStr, err := h.moneyService.PublicGetUserBalance(ctx, data.GetAccountNumber())
 	return &money.UserBalanceResponse{
-		AccountNumber: data.GetAccountNumber(),
+		AccountNumber: userID,
 		Balance:       amountStr,
 	}, err
 }

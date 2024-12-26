@@ -15,6 +15,7 @@ func (s *MembershipService) CreateRSAToken(userInfo model.UserAuthInfo) (string,
 
 	now := time.Now().UTC()
 	claims := make(jwt.MapClaims)
+	claims["sub"] = userInfo.AccountNumber
 	claims["dat"] = userInfo                              // Our custom data.
 	claims["exp"] = now.Add(s.config.Token.Expiry).Unix() // The expiration time after which the token must be disregarded.
 	claims["iat"] = now.Unix()                            // The time at which the token was issued.

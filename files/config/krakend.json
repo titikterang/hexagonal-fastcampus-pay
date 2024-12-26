@@ -17,7 +17,7 @@
     "security/cors": {
       "allow_origins": [ "*"],
       "allow_methods": [ "POST", "GET" ],
-      "allow_headers": [ "Origin", "Authorization", "Content-Type" ],
+      "allow_headers": [ "Origin", "Authorization", "Content-Type" , "X-User"],
       "expose_headers": [ "Content-Length" ],
       "max_age": "12h"
     }
@@ -47,6 +47,39 @@
       ],
       "extra_config": {
         "auth/validator": {
+          "propagate_claims": [
+            ["sub", "x-user"]
+          ],
+          "alg": "RS256",
+          "disable_jwk_security": true,
+          "jwk_local_path": "/data/jwks/public.jwk.json"
+        }
+      }
+    },{
+      "endpoint": "/v1/user/balance",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "input_headers": ["Authorization", "Content-Type", "X-User"],
+      "backend": [
+        {
+          "url_pattern": "/v1/money/balance",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://host.docker.internal:3004"
+          ],
+          "disable_host_sanitize": false
+        }
+      ],
+      "input_query_strings": [
+        "accountNumber"
+      ],
+      "extra_config": {
+        "auth/validator": {
+          "propagate_claims": [
+            ["sub", "X-User"]
+          ],
           "alg": "RS256",
           "disable_jwk_security": true,
           "jwk_local_path": "/data/jwks/public.jwk.json"
