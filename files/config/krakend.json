@@ -15,10 +15,22 @@
       "version": "1.0"
     },
     "security/cors": {
-      "allow_origins": [ "*"],
-      "allow_methods": [ "POST", "GET" ],
-      "allow_headers": [ "Origin", "Authorization", "Content-Type" , "X-User"],
-      "expose_headers": [ "Content-Length" ],
+      "allow_origins": [
+        "*"
+      ],
+      "allow_methods": [
+        "POST",
+        "GET"
+      ],
+      "allow_headers": [
+        "Origin",
+        "Authorization",
+        "Content-Type",
+        "X-User"
+      ],
+      "expose_headers": [
+        "Content-Length"
+      ],
       "max_age": "12h"
     }
   },
@@ -29,7 +41,10 @@
       "endpoint": "/v1/user/info",
       "method": "GET",
       "output_encoding": "no-op",
-      "input_headers": ["Authorization", "Content-Type"],
+      "input_headers": [
+        "Authorization",
+        "Content-Type"
+      ],
       "backend": [
         {
           "url_pattern": "/v1/membership/info",
@@ -48,18 +63,26 @@
       "extra_config": {
         "auth/validator": {
           "propagate_claims": [
-            ["sub", "x-user"]
+            [
+              "sub",
+              "x-user"
+            ]
           ],
           "alg": "RS256",
           "disable_jwk_security": true,
           "jwk_local_path": "/data/jwks/public.jwk.json"
         }
       }
-    },{
+    },
+    {
       "endpoint": "/v1/user/balance",
       "method": "GET",
       "output_encoding": "no-op",
-      "input_headers": ["Authorization", "Content-Type", "X-User"],
+      "input_headers": [
+        "Authorization",
+        "Content-Type",
+        "X-User"
+      ],
       "backend": [
         {
           "url_pattern": "/v1/money/balance",
@@ -78,13 +101,30 @@
       "extra_config": {
         "auth/validator": {
           "propagate_claims": [
-            ["sub", "X-User"]
+            [
+              "sub",
+              "X-User"
+            ]
           ],
           "alg": "RS256",
           "disable_jwk_security": true,
           "jwk_local_path": "/data/jwks/public.jwk.json"
         }
       }
+    },
+    {
+      "endpoint": "/v1/auth/refresh",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/v1/membership/auth/refresh",
+          "method": "POST",
+          "host": [
+            "http://host.docker.internal:3002"
+          ]
+        }
+      ]
     },
     {
       "endpoint": "/v1/auth",
@@ -99,6 +139,41 @@
           ]
         }
       ]
+    },
+    {
+      "endpoint": "/v1/auth/logout",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "input_headers": [
+        "Authorization",
+        "Content-Type",
+        "X-User"
+      ],
+      "backend": [
+        {
+          "url_pattern": "/v1/membership/logout",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://host.docker.internal:3002"
+          ],
+          "disable_host_sanitize": false
+        }
+      ],
+      "extra_config": {
+        "auth/validator": {
+          "propagate_claims": [
+            [
+              "sub",
+              "X-User"
+            ]
+          ],
+          "alg": "RS256",
+          "disable_jwk_security": true,
+          "jwk_local_path": "/data/jwks/public.jwk.json"
+        }
+      }
     }
   ],
   "output_encoding": "json",

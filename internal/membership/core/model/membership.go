@@ -7,9 +7,10 @@ type LoginInfo struct {
 }
 
 type LoginResponse struct {
-	Success bool
-	Token   string
-	Message string
+	Success      bool
+	Token        string
+	RefreshToken string
+	Message      string
 }
 
 // RegistrationInfo -  submit registration info

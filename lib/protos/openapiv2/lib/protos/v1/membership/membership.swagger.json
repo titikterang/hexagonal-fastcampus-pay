@@ -57,6 +57,39 @@
         ]
       }
     },
+    "/v1/membership/auth/refresh": {
+      "post": {
+        "summary": "Refresh User Token",
+        "operationId": "RefreshToken",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/v1LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1RefreshRequest"
+            }
+          }
+        ],
+        "tags": [
+          "membership"
+        ]
+      }
+    },
     "/v1/membership/info": {
       "get": {
         "summary": "Get User Info",
@@ -112,8 +145,15 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1LogoutRequest"
+              "type": "object",
+              "properties": {}
             }
+          },
+          {
+            "name": "X-User",
+            "in": "header",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [
@@ -225,13 +265,8 @@
         },
         "token": {
           "type": "string"
-        }
-      }
-    },
-    "v1LogoutRequest": {
-      "type": "object",
-      "properties": {
-        "uuid": {
+        },
+        "refreshToken": {
           "type": "string"
         }
       }
@@ -240,6 +275,14 @@
       "type": "object",
       "properties": {
         "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1RefreshRequest": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
           "type": "string"
         }
       }

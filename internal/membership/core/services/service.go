@@ -52,6 +52,25 @@ func (s *MembershipService) GetUserInfo(ctx context.Context, accountNumber strin
 	return dbUserInfo, err
 }
 
+func (s *MembershipService) constructToken(ctx context.Context, key []byte, userInfo model.UserAuthInfo, expiry time.Duration) (token string, refresh string, err error) {
+	// generate auth token
+	data, err := s.CreateRSAToken(key, expiry, userInfo)
+	if err != nil {
+		return data, "", err
+	}
+
+	// generate refresh token
+	refreshData, err := s.CreateRSAToken(s.refreshKeypair.privKey, s.config.Token.RefreshExpiry, userInfo)
+	if err != nil {
+		return data, refreshData, err
+	}
+
+	// save to redis
+	// se ttl based on refresh expiry
+	err = s.repository.UpdateUserSessionIntoCache(ctx, userInfo.AccountNumber, refreshData)
+	return data, refreshData, err
+}
+
 func (s *MembershipService) SubmitLogin(ctx context.Context, payload model.LoginInfo) (model.LoginResponse, error) {
 	// query db, get user info by DB
 	userInfo, err := s.repository.GetUserByUsername(ctx, payload.Username)
@@ -63,18 +82,23 @@ func (s *MembershipService) SubmitLogin(ctx context.Context, payload model.Login
 		return model.LoginResponse{}, errors.New("invalid username & password combination")
 	}
 
-	data, err := s.CreateRSAToken(userInfo)
+	token, refresh, err := s.constructToken(ctx, s.authKeyPair.privKey, userInfo, s.config.Token.Expiry)
 	if err != nil {
-		return model.LoginResponse{}, err
+		return model.LoginResponse{
+				Message: err.Error(),
+			},
+			errors.New("failed to generate token")
 	}
-
 	return model.LoginResponse{
-		Success: true,
-		Token:   data,
+		Success:      true,
+		Token:        token,
+		RefreshToken: refresh,
+		Message:      "login successful",
 	}, nil
 }
 
-func (s *MembershipService) SubmitLogout(ctx context.Context, uuid string) error {
-
-	return nil
+func (s *MembershipService) SubmitLogout(ctx context.Context, accountNumber string) error {
+	// TODO: need to revoke token to krakend client after clearn up redis
+	// https://www.krakend.io/docs/authorization/revoking-tokens/
+	return s.repository.DeleteUserSessionFromCache(ctx, accountNumber)
 }

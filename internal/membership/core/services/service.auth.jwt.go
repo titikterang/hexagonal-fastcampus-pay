@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-func (s *MembershipService) CreateRSAToken(userInfo model.UserAuthInfo) (string, error) {
-	key, err := jwt.ParseRSAPrivateKeyFromPEM(s.privKey)
+func (s *MembershipService) CreateRSAToken(privateKey []byte, exp time.Duration, userInfo model.UserAuthInfo) (string, error) {
+	key, err := jwt.ParseRSAPrivateKeyFromPEM(privateKey)
 	if err != nil {
 		return "", fmt.Errorf("create: parse key: %w", err)
 	}
@@ -16,10 +16,10 @@ func (s *MembershipService) CreateRSAToken(userInfo model.UserAuthInfo) (string,
 	now := time.Now().UTC()
 	claims := make(jwt.MapClaims)
 	claims["sub"] = userInfo.AccountNumber
-	claims["dat"] = userInfo                              // Our custom data.
-	claims["exp"] = now.Add(s.config.Token.Expiry).Unix() // The expiration time after which the token must be disregarded.
-	claims["iat"] = now.Unix()                            // The time at which the token was issued.
-	claims["nbf"] = now.Unix()                            // The time before which the token must be disregarded.
+	claims["dat"] = userInfo            // Our custom data.
+	claims["exp"] = now.Add(exp).Unix() // The expiration time after which the token must be disregarded.
+	claims["iat"] = now.Unix()          // The time at which the token was issued.
+	claims["nbf"] = now.Unix()          // The time before which the token must be disregarded.
 
 	tokenData := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	tokenData.Header["kid"] = s.config.Token.KeyID
@@ -30,8 +30,8 @@ func (s *MembershipService) CreateRSAToken(userInfo model.UserAuthInfo) (string,
 	return token, nil
 }
 
-func (s *MembershipService) ValidateRSAToken(token string) (interface{}, error) {
-	key, err := jwt.ParseRSAPublicKeyFromPEM(s.pubKey)
+func (s *MembershipService) ValidateRSAToken(publicKey []byte, token string) (interface{}, error) {
+	key, err := jwt.ParseRSAPublicKeyFromPEM(publicKey)
 	if err != nil {
 		return "", fmt.Errorf("validate: parse key: %w", err)
 	}
