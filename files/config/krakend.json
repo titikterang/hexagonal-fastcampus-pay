@@ -1,0 +1,106 @@
+{
+  "$schema": "https://www.krakend.io/schema/krakend.json",
+  "version": 3,
+  "name": "Fast Campus API Gateway",
+  "extra_config": {
+    "extra_config": {
+      "telemetry/logging": {
+        "level": "DEBUG",
+        "prefix": "[KRAKEND]",
+        "syslog": false,
+        "stdout": true
+      }
+    },
+    "documentation/openapi": {
+      "version": "1.0"
+    },
+    "security/cors": {
+      "allow_origins": [ "*"],
+      "allow_methods": [ "POST", "GET" ],
+      "allow_headers": [ "Origin", "Authorization", "Content-Type" , "X-User"],
+      "expose_headers": [ "Content-Length" ],
+      "max_age": "12h"
+    }
+  },
+  "timeout": "3000ms",
+  "cache_ttl": "300s",
+  "endpoints": [
+    {
+      "endpoint": "/v1/user/info",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "input_headers": ["Authorization", "Content-Type"],
+      "backend": [
+        {
+          "url_pattern": "/v1/membership/info",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://host.docker.internal:3002"
+          ],
+          "disable_host_sanitize": false
+        }
+      ],
+      "input_query_strings": [
+        "accountNumber"
+      ],
+      "extra_config": {
+        "auth/validator": {
+          "propagate_claims": [
+            ["sub", "x-user"]
+          ],
+          "alg": "RS256",
+          "disable_jwk_security": true,
+          "jwk_local_path": "/data/jwks/public.jwk.json"
+        }
+      }
+    },{
+      "endpoint": "/v1/user/balance",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "input_headers": ["Authorization", "Content-Type", "X-User"],
+      "backend": [
+        {
+          "url_pattern": "/v1/money/balance",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://host.docker.internal:3004"
+          ],
+          "disable_host_sanitize": false
+        }
+      ],
+      "input_query_strings": [
+        "accountNumber"
+      ],
+      "extra_config": {
+        "auth/validator": {
+          "propagate_claims": [
+            ["sub", "X-User"]
+          ],
+          "alg": "RS256",
+          "disable_jwk_security": true,
+          "jwk_local_path": "/data/jwks/public.jwk.json"
+        }
+      }
+    },
+    {
+      "endpoint": "/v1/auth",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/v1/membership/auth",
+          "method": "POST",
+          "host": [
+            "http://host.docker.internal:3002"
+          ]
+        }
+      ]
+    }
+  ],
+  "output_encoding": "json",
+  "port": 8080
+}

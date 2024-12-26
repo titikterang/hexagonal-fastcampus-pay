@@ -46,7 +46,7 @@ const (
 	GetUserInfo = `select account_number, email, fullname, status
 					from user_profile p
 					where account_number = :account_number`
-	GetUserInfoByUname = "select username, hash from user_auth where username = :username"
+	GetUserInfoByUname = "select account_number, username, hash from user_auth where username = :username"
 )
 
 type statementQueries struct {

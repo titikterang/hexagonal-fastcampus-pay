@@ -16,5 +16,5 @@ type DatastoreRepositoryAdapter interface {
 	// to postgres
 	InsertUserInfoIntoDB(ctx context.Context, payload model.RegistrationPayload) error
 	GetUserInfoFromDB(ctx context.Context, accountNumber string) (model.UserProfileInfo, error)
-	GetUserByUsername(ctx context.Context)
+	GetUserByUsername(ctx context.Context, username string) (model.UserAuthInfo, error)
 }

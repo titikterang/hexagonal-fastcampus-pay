@@ -39,6 +39,15 @@ service MoneyService {
         value: {
           description: "OK";
         }
+      },
+      parameters: {
+        headers: [
+          {
+            name: "X-User"
+            required: true
+            type: STRING
+          }
+        ]
       };
     };
   }

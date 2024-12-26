@@ -1,0 +1,12 @@
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "n": "----",
+      "e": "----",
+      "use": "sig",
+      "kid": "--- use generated key ID value, must be the sampe with config key_id ----",
+      "alg": "RS256"
+    }
+  ]
+}

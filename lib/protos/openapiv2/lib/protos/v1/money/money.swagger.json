@@ -48,6 +48,12 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "X-User",
+            "in": "header",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [

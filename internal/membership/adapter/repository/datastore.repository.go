@@ -68,8 +68,19 @@ func (r *DatastoreRepository) GetUserInfoFromDB(ctx context.Context, accountNumb
 	return
 }
 
-func (r *DatastoreRepository) GetUserByUsername(ctx context.Context) {
-
+func (r *DatastoreRepository) GetUserByUsername(ctx context.Context, username string) (model.UserAuthInfo, error) {
+	var (
+		err  error
+		data model.UserAuthInfo
+	)
+	err = r.queries.GetUserInfoByUname.GetContext(ctx, &data, map[string]interface{}{
+		"username": username,
+	})
+	if err != nil {
+		fmt.Printf("err : %#v\n", err)
+		return data, err
+	}
+	return data, nil
 }
 
 // redis datastore handler

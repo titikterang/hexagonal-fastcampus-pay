@@ -4,6 +4,7 @@ import "time"
 
 type Config struct {
 	App           AppConfig         `json:"app" mapstructure:"app"`
+	Token         TokenConfig       `json:"token" mapstructure:"token"`
 	WorkerPool    WorkerPoolConfig  `json:"worker_pool" mapstructure:"worker_pool"`
 	Http          HttpConfig        `json:"http" mapstructure:"http"`
 	Grpc          GRPCConfig        `json:"grpc" mapstructure:"grpc"`
@@ -14,6 +15,14 @@ type Config struct {
 	PostgreSlave  PostgreConfig     `json:"postgre_slave" mapstructure:"postgre_slave"`
 	ExternalAPI   ExternalAPIConfig `json:"external_api" mapstructure:"external_api"`
 	Kafka         KafkaConfig       `json:"kafka_config" mapstructure:"kafka_config"`
+}
+
+type TokenConfig struct {
+	Secret     string        `json:"secret" mapstructure:"secret"`
+	PrivateKey string        `json:"private_key" mapstructure:"private_key"`
+	PublicKey  string        `json:"public_key" mapstructure:"public_key"`
+	Expiry     time.Duration `json:"expiry" mapstructure:"expiry"`
+	KeyID      string        `json:"key_id" mapstructure:"key_id"`
 }
 
 type WorkerPoolConfig struct {

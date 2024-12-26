@@ -58,7 +58,6 @@ func startService(cfg *config.Config) {
 	httpServer := http.NewServer(
 		httpOpts...,
 	)
-
 	membership.RegisterMembershipServiceServer(grpcServer, handler)
 	membership.RegisterMembershipServiceHTTPServer(httpServer, handler)
 

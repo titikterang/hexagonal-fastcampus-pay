@@ -223,7 +223,7 @@
         "loginMessage": {
           "type": "string"
         },
-        "uuid": {
+        "token": {
           "type": "string"
         }
       }

@@ -1,0 +1,16 @@
+{
+  "keys": [
+    {
+      "kty": "RSA",
+      "n": "rcChRMa4JWzK23cxgKsRfXj_QOK7Vw8NL5pgEFWDDd_xmW7mp4eX4nPrT2_LXZg7lecwEhQrDHncLkPLbzS1KDfX-aAqWZmrOC8htcVdXTHr1Pebrr5INpqSnMihUZOW-3By8Z3xUbGqPMw1e1Bvs0H44haQ0--6CYWu0lFWtnPPRkJdXql1-1zNFVp_nyRX_POdDD_post9oGO4oP7nJ6aKr7jPbOcHulxqCyuh9TQRJ2UmAjmiKQGbkWBh5sPacmdc4592_ZzzRa-szi49xrDofx3BPSxBR7dA7bqzHFlLqrpi9NSuQLcu9N5sjHTCfMkVIOY8SeTc_O6FYI9SvQ",
+      "e": "AQAB",
+      "d": "DNSeNA12mLDlc_pjyewYAQt30etMSTv_zcWZFWuzH0mrthhV6QYexaaouDd5rYIp2EJ3rsYVfbjb9QClm6MpQ3yIMtNMfUxXM_FrDFi0MccXcqUMNoWvoHSeofxAyVzcN9oQat4ubUlw2Ed-JYqFjRewkMV40WWw97YK-FXwUM2yNZ2JwKicikptLBz9fUO-nefGgsI4sfe3xBVWgNLRQqw_uQ4dF4CUhX4qLTfI2LNJaX3zpavkBrX6GpIY-QGKpBOH8sZVejYQVql3IGuhvwYI3G_0fDbIKuZQ5nbkMTn6-fIrbDlwS4TwO3fPA9ZE0YiDq_cViH9IpbA2QU0DAQ",
+      "p": "58nH6dkcEuvBT0CjNH1_tC2m0pB9qfWeaQMiYmp_dfFaoNGdl5gk9OQi01Emt052DpjrlQCcFVtr0mOCrnLWM2heK8BeiF-2hpZuMCsAldS45pCUggUhPC1VbFn2EThkGD3i9EelZzOt2W5DFEtAqhXskAIQ_iLkP23TOAOC8YE",
+      "q": "v-bsKZzcbrrrXpewhGFLJId4W16L-lEw5z0Ac-gWAxQ0CR0_rvpOfXmySwkoHekK-H29ZpoeUd6J64iuaGlZFKM-9iPmYj_fJgA6A1Jjrrv_eOajOVaani4quKHZmSEtmxvz5f5dMSdC9ANkHr8xC6MsizszAS7eEL712nfhRz0",
+      "dp": "AtKEKqbIHrrcKbjhw9vbWDhOFbZIsW8aNLEjFAuz7Z24usiSoKvrl0fH3MbaL9U2vsrB45iUTfZFA9TOXI1takbVDrdS71orAMyIHvIHGcvzTGtqQ4MIepEavy0BQAhtv5XRU6QjsXQBo-ohyvd3nBqUPNSpnE6UdOlDbyUrzQE",
+      "dq": "rQG3L9znLjz-LY176hz87bXkYBtg_w9rk01_tv8puSThtMXVwB6R3LV2dAeRT0XmShiyRGn1o8GJffr_oco4MU7rWGUNMs56k3vo0U3Z6JI8w_bKeMsHIkxk34eq8U7kGs6cmGE2CzZmOi9EeCPOR7uYUP3SAeMK-PXwGEGzq9E",
+      "qi": "S_UfXvUDtUincWEniZz9CYHRyxbDIJXuFshPZderhmhRDrkXpeE9LQdYDDxRErinVLHvBfGMq2eg-U2ff3B0W_yghykmut_nV4gh9ZM6CeI7Q_jnHKdzrawoXfxEnGqKxrQkhBc2DJjL3Jh4sJupJeBHXcpglDekAwEHKBo1VUA",
+      "kid": "fastcampusSigner"
+    }
+  ]
+}

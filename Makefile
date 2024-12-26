@@ -68,3 +68,11 @@ run-banking: build-banking
 run-money: build-money
 	@echo "RUN Money DB & Backend Service ..."
 	@docker-compose -f docker-compose.money.yaml up --force-recreate
+
+run-krakend:
+	@docker run --rm --name krakend -p 18080:8080 \
+		-v /etc/localtime:/etc/localtime:ro \
+		--add-host=host.docker.internal:host-gateway \
+		-v ./files/config:/etc/krakend/ \
+		-v ./files/jwks:/data/jwks/ devopsfaith/krakend run \
+		--config /etc/krakend/krakend.json
