@@ -27,8 +27,6 @@ func (s *MembershipService) CreateRSAToken(userInfo model.UserAuthInfo) (string,
 	if err != nil {
 		return "", fmt.Errorf("create: sign token: %w", err)
 	}
-
-	//return base64.URLEncoding.EncodeToString([]byte(token)), nil
 	return token, nil
 }
 
