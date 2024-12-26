@@ -16,7 +16,7 @@ func (h *Handler) GetUserBalance(ctx context.Context, data *money.UserBalancePay
 			Balance:       "0",
 		}, errors.New("invalid user ID")
 	}
-	amountStr, err := h.moneyService.PublicGetUserBalance(ctx, data.GetAccountNumber())
+	amountStr, err := h.moneyService.PublicGetUserBalance(ctx, userID)
 	return &money.UserBalanceResponse{
 		AccountNumber: userID,
 		Balance:       amountStr,
