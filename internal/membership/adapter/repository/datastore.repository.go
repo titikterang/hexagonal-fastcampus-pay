@@ -9,12 +9,21 @@ import (
 	"time"
 )
 
+// GetUserSessionFromCache  - get refresh token from cache
 func (r *DatastoreRepository) GetUserSessionFromCache(ctx context.Context, accountNo string) (string, error) {
-	return "", nil
+	redisKey := fmt.Sprintf(model.RedisKeyRefresh, accountNo)
+	return r.redisClient.Get(ctx, redisKey).Result()
 }
 
+// UpdateUserSessionIntoCache  - safe refresh token into cache
 func (r *DatastoreRepository) UpdateUserSessionIntoCache(ctx context.Context, accountNo, refreshData string) error {
-	return nil
+	redisKey := fmt.Sprintf(model.RedisKeyRefresh, accountNo)
+	return r.redisClient.Set(ctx, redisKey, refreshData, r.cfg.Token.RefreshExpiry).Err()
+}
+
+func (r *DatastoreRepository) DeleteUserSessionFromCache(ctx context.Context, accountNo string) error {
+	redisKey := fmt.Sprintf(model.RedisKeyRefresh, accountNo)
+	return r.redisClient.Del(ctx, redisKey).Err()
 }
 
 func (r *DatastoreRepository) InsertUserInfoIntoDB(ctx context.Context, payload model.RegistrationPayload) error {
@@ -51,6 +60,7 @@ func (r *DatastoreRepository) InsertUserInfoIntoDB(ctx context.Context, payload 
 		"hash":           payload.Hash,
 		"created_at":     time.Now(),
 	})
+
 	if err != nil {
 		log.Error().Msgf("InsertUserAuth err %#v", err)
 	}
