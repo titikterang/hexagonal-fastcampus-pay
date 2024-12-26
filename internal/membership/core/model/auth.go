@@ -2,6 +2,10 @@ package model
 
 import "time"
 
+const (
+	RedisKeyRefresh = `auth:refresh:%s` // auth:refresh:[account_no]
+)
+
 type Token struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`

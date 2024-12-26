@@ -23,6 +23,7 @@ const (
 	MembershipService_SubmitRegistration_FullMethodName = "/fastcampus.membership.v1.MembershipService/SubmitRegistration"
 	MembershipService_SubmitLogout_FullMethodName       = "/fastcampus.membership.v1.MembershipService/SubmitLogout"
 	MembershipService_SubmitLogin_FullMethodName        = "/fastcampus.membership.v1.MembershipService/SubmitLogin"
+	MembershipService_RefreshToken_FullMethodName       = "/fastcampus.membership.v1.MembershipService/RefreshToken"
 )
 
 // MembershipServiceClient is the client API for MembershipService service.
@@ -36,6 +37,8 @@ type MembershipServiceClient interface {
 	SubmitLogout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
 	// login
 	SubmitLogin(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	// refresh token
+	RefreshToken(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 }
 
 type membershipServiceClient struct {
@@ -86,6 +89,16 @@ func (c *membershipServiceClient) SubmitLogin(ctx context.Context, in *LoginRequ
 	return out, nil
 }
 
+func (c *membershipServiceClient) RefreshToken(ctx context.Context, in *RefreshRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LoginResponse)
+	err := c.cc.Invoke(ctx, MembershipService_RefreshToken_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MembershipServiceServer is the server API for MembershipService service.
 // All implementations must embed UnimplementedMembershipServiceServer
 // for forward compatibility
@@ -97,6 +110,8 @@ type MembershipServiceServer interface {
 	SubmitLogout(context.Context, *LogoutRequest) (*LogoutResponse, error)
 	// login
 	SubmitLogin(context.Context, *LoginRequest) (*LoginResponse, error)
+	// refresh token
+	RefreshToken(context.Context, *RefreshRequest) (*LoginResponse, error)
 	mustEmbedUnimplementedMembershipServiceServer()
 }
 
@@ -115,6 +130,9 @@ func (UnimplementedMembershipServiceServer) SubmitLogout(context.Context, *Logou
 }
 func (UnimplementedMembershipServiceServer) SubmitLogin(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitLogin not implemented")
+}
+func (UnimplementedMembershipServiceServer) RefreshToken(context.Context, *RefreshRequest) (*LoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
 func (UnimplementedMembershipServiceServer) mustEmbedUnimplementedMembershipServiceServer() {}
 
@@ -201,6 +219,24 @@ func _MembershipService_SubmitLogin_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MembershipService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MembershipServiceServer).RefreshToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MembershipService_RefreshToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MembershipServiceServer).RefreshToken(ctx, req.(*RefreshRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MembershipService_ServiceDesc is the grpc.ServiceDesc for MembershipService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -223,6 +259,10 @@ var MembershipService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SubmitLogin",
 			Handler:    _MembershipService_SubmitLogin_Handler,
+		},
+		{
+			MethodName: "RefreshToken",
+			Handler:    _MembershipService_RefreshToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

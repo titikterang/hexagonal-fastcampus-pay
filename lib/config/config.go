@@ -18,11 +18,16 @@ type Config struct {
 }
 
 type TokenConfig struct {
-	Secret     string        `json:"secret" mapstructure:"secret"`
-	PrivateKey string        `json:"private_key" mapstructure:"private_key"`
-	PublicKey  string        `json:"public_key" mapstructure:"public_key"`
-	Expiry     time.Duration `json:"expiry" mapstructure:"expiry"`
-	KeyID      string        `json:"key_id" mapstructure:"key_id"`
+	Secret string `json:"secret" mapstructure:"secret"`
+	// auth token key pair
+	PrivateKey string `json:"private_key" mapstructure:"private_key"`
+	PublicKey  string `json:"public_key" mapstructure:"public_key"`
+	// refresh token key pair
+	RefreshPrivateKey string        `json:"refresh_private_key" mapstructure:"refresh_private_key"`
+	RefreshPublicKey  string        `json:"refresh_public_key" mapstructure:"refresh_public_key"`
+	Expiry            time.Duration `json:"expiry" mapstructure:"expiry"`
+	RefreshExpiry     time.Duration `json:"refresh_expiry" mapstructure:"refresh_expiry"`
+	KeyID             string        `json:"key_id" mapstructure:"key_id"`
 }
 
 type WorkerPoolConfig struct {

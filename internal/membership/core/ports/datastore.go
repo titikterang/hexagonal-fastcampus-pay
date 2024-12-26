@@ -7,8 +7,9 @@ import (
 
 type DatastoreRepositoryAdapter interface {
 	// to redis
-	GetUserSessionFromCache(ctx context.Context)
-	UpdateUserSessionIntoCache(ctx context.Context)
+	GetUserSessionFromCache(ctx context.Context, accountNo string) (string, error)
+	UpdateUserSessionIntoCache(ctx context.Context, accountNo, refreshData string) error
+
 	// cek user info from redis
 	GetUserInfoFromCache(ctx context.Context, accountNumber string) (model.UserProfileInfo, error)
 	UpdateUserInfoOnCache(ctx context.Context, data model.UserProfileInfo) error

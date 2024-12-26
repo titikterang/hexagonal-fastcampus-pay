@@ -57,6 +57,39 @@
         ]
       }
     },
+    "/v1/membership/auth/refresh": {
+      "post": {
+        "summary": "Refresh User Token",
+        "operationId": "RefreshToken",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/v1LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1RefreshRequest"
+            }
+          }
+        ],
+        "tags": [
+          "membership"
+        ]
+      }
+    },
     "/v1/membership/info": {
       "get": {
         "summary": "Get User Info",
@@ -225,6 +258,9 @@
         },
         "token": {
           "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
         }
       }
     },
@@ -240,6 +276,14 @@
       "type": "object",
       "properties": {
         "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1RefreshRequest": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
           "type": "string"
         }
       }

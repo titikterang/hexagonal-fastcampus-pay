@@ -9,12 +9,12 @@ import (
 	"time"
 )
 
-func (r *DatastoreRepository) GetUserSessionFromCache(ctx context.Context) {
-
+func (r *DatastoreRepository) GetUserSessionFromCache(ctx context.Context, accountNo string) (string, error) {
+	return "", nil
 }
 
-func (r *DatastoreRepository) UpdateUserSessionIntoCache(ctx context.Context) {
-
+func (r *DatastoreRepository) UpdateUserSessionIntoCache(ctx context.Context, accountNo, refreshData string) error {
+	return nil
 }
 
 func (r *DatastoreRepository) InsertUserInfoIntoDB(ctx context.Context, payload model.RegistrationPayload) error {

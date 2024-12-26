@@ -20,12 +20,15 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationMembershipServiceGetUserInfo = "/fastcampus.membership.v1.MembershipService/GetUserInfo"
+const OperationMembershipServiceRefreshToken = "/fastcampus.membership.v1.MembershipService/RefreshToken"
 const OperationMembershipServiceSubmitLogin = "/fastcampus.membership.v1.MembershipService/SubmitLogin"
 const OperationMembershipServiceSubmitLogout = "/fastcampus.membership.v1.MembershipService/SubmitLogout"
 const OperationMembershipServiceSubmitRegistration = "/fastcampus.membership.v1.MembershipService/SubmitRegistration"
 
 type MembershipServiceHTTPServer interface {
 	GetUserInfo(context.Context, *UserInfoPayload) (*UserInfoResponse, error)
+	// RefreshToken refresh token
+	RefreshToken(context.Context, *RefreshRequest) (*LoginResponse, error)
 	// SubmitLogin login
 	SubmitLogin(context.Context, *LoginRequest) (*LoginResponse, error)
 	// SubmitLogout login
@@ -40,6 +43,7 @@ func RegisterMembershipServiceHTTPServer(s *http.Server, srv MembershipServiceHT
 	r.POST("/v1/membership/register", _MembershipService_SubmitRegistration0_HTTP_Handler(srv))
 	r.POST("/v1/membership/logout", _MembershipService_SubmitLogout0_HTTP_Handler(srv))
 	r.POST("/v1/membership/auth", _MembershipService_SubmitLogin0_HTTP_Handler(srv))
+	r.POST("/v1/membership/auth/refresh", _MembershipService_RefreshToken0_HTTP_Handler(srv))
 }
 
 func _MembershipService_GetUserInfo0_HTTP_Handler(srv MembershipServiceHTTPServer) func(ctx http.Context) error {
@@ -127,8 +131,31 @@ func _MembershipService_SubmitLogin0_HTTP_Handler(srv MembershipServiceHTTPServe
 	}
 }
 
+func _MembershipService_RefreshToken0_HTTP_Handler(srv MembershipServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in RefreshRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationMembershipServiceRefreshToken)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RefreshToken(ctx, req.(*RefreshRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*LoginResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type MembershipServiceHTTPClient interface {
 	GetUserInfo(ctx context.Context, req *UserInfoPayload, opts ...http.CallOption) (rsp *UserInfoResponse, err error)
+	RefreshToken(ctx context.Context, req *RefreshRequest, opts ...http.CallOption) (rsp *LoginResponse, err error)
 	SubmitLogin(ctx context.Context, req *LoginRequest, opts ...http.CallOption) (rsp *LoginResponse, err error)
 	SubmitLogout(ctx context.Context, req *LogoutRequest, opts ...http.CallOption) (rsp *LogoutResponse, err error)
 	SubmitRegistration(ctx context.Context, req *RegistrationRequest, opts ...http.CallOption) (rsp *RegistrationResponse, err error)
@@ -149,6 +176,19 @@ func (c *MembershipServiceHTTPClientImpl) GetUserInfo(ctx context.Context, in *U
 	opts = append(opts, http.Operation(OperationMembershipServiceGetUserInfo))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *MembershipServiceHTTPClientImpl) RefreshToken(ctx context.Context, in *RefreshRequest, opts ...http.CallOption) (*LoginResponse, error) {
+	var out LoginResponse
+	pattern := "/v1/membership/auth/refresh"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationMembershipServiceRefreshToken))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

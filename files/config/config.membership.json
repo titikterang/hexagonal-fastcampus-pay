@@ -6,8 +6,11 @@
   "token": {
     "secret": "f45tc5mpu5P4y2025",
     "expiry": "1h",
+    "refresh_expiry": "6h",
     "private_key": "./files/keypair/jwtRSA256-private.pem",
     "public_key": "./files/keypair/jwtRSA256-public.pem",
+    "refresh_private_key": "./files/keypair/jwtRSA256-refresh-private.pem",
+    "refresh_public_key": "./files/keypair/jwtRSA256-refresh-public.pem",
     "key_id": "532f03bac363771a49c667631bc985d95fc27004"
   },
   "http": {

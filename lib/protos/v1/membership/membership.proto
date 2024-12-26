@@ -94,10 +94,33 @@ service MembershipService {
       };
     };
   }
+
+  // refresh token
+  rpc RefreshToken(RefreshRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/membership/auth/refresh",
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Refresh User Token";
+      operation_id: "RefreshToken";
+      tags: "membership";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
 }
 
 message UserInfoPayload {
   string account_number = 1;
+}
+
+message RefreshRequest {
+  string refresh_token = 1;
 }
 
 message UserInfoResponse {
@@ -138,4 +161,5 @@ message LoginResponse {
   bool success = 1;
   string login_message = 2;
   string token = 3;
+  string refresh_token = 4;
 }

@@ -28,6 +28,7 @@ func (h Handler) SubmitLogin(ctx context.Context, request *membership.LoginReque
 		Success:      resp.Success,
 		LoginMessage: resp.Message,
 		Token:        resp.Token,
+		RefreshToken: resp.RefreshToken,
 	}, err
 }
 
@@ -59,5 +60,15 @@ func (h Handler) SubmitRegistration(ctx context.Context, request *membership.Reg
 
 			return ""
 		}(),
+	}, err
+}
+
+func (h Handler) RefreshToken(ctx context.Context, payload *membership.RefreshRequest) (*membership.LoginResponse, error) {
+	data, err := h.membershipService.RefreshToken(ctx, payload.GetRefreshToken())
+	return &membership.LoginResponse{
+		Success:      data.Success,
+		LoginMessage: data.Message,
+		Token:        data.Token,
+		RefreshToken: data.RefreshToken,
 	}, err
 }

@@ -3,11 +3,13 @@
 ```shell
 # generate private key
 openssl genrsa -out ./files/keypair/jwtRSA256-private.pem 2048
+openssl genrsa -out ./files/keypair/jwtRSA256-refresh-private.pem 2048
 ```
 
 ```shell
 # Extract the public key from the private key
 openssl rsa -in ./files/keypair/jwtRSA256-private.pem -pubout -outform PEM -out ./files/keypair/jwtRSA256-public.pem
+openssl rsa -in ./files/keypair/jwtRSA256-refresh-private.pem -pubout -outform PEM -out ./files/keypair/jwtRSA256-refresh-public.pem
 ```
 
 ```shell
