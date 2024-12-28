@@ -14,7 +14,7 @@ import (
 )
 
 func initHandler(cfg *config.Config) (*handler.Handler, error) {
-	FetchConfigFromVault(cfg)
+	//FetchConfigFromVault(cfg)
 
 	redisClient := InitRedis(cfg)
 	dbClient, err := InitDB(cfg)
