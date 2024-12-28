@@ -1,3 +1,4 @@
+//go:generate mockgen -source=iface.go -destination=mocks/mock.kafka.go -package=mocks
 package kafka
 
 import (

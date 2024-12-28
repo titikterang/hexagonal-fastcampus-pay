@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/eapache/go-resiliency/breaker"
 	"github.com/redis/go-redis/v9"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/core/ports"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/transfer/core/model"
@@ -14,9 +15,15 @@ import (
 	"time"
 )
 
+type circuitBreaker struct {
+	breakerAccount *breaker.Breaker
+	breakerBalance *breaker.Breaker
+}
+
 type PaymentRepository struct {
 	cfg                *config.Config
 	dbClient           mongo.DBInterface
+	cb                 circuitBreaker
 	DB                 *mongo2.Database
 	redisClient        *redis.Client
 	httpClient         *http.Client
@@ -54,6 +61,10 @@ func NewPaymentRepository(cfg *config.Config,
 		// grpc client
 		membershipClient: membershipClient,
 		moneyClient:      moneyClient,
+		cb: circuitBreaker{
+			breakerAccount: breaker.New(5, 5, 3*time.Second),
+			breakerBalance: breaker.New(5, 5, 3*time.Second),
+		},
 	}
 
 	for k, v := range cfg.Kafka.ProducerTopics {

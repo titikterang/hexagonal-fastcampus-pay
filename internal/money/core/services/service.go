@@ -35,7 +35,7 @@ func (s *MoneyService) updateSnapshoot(ctx context.Context, accountNumber string
 	// upsert into query datastore
 	err = s.repository.ConstructBalanceInfo(ctx, model.UserCashInfo{
 		AccountNumber: accountNumber,
-		LastUpdate:    time.Now(),
+		LastUpdate:    s.currentTime.CurrentTime(),
 		BalanceAmount: common.MoneyToDecimal(finalAmount),
 	})
 	if err != nil {
@@ -64,9 +64,9 @@ func (s *MoneyService) GetUserBalance(ctx context.Context, accountNumber string)
 // hset redis
 // set snapshot
 func (s *MoneyService) UpdateUserBalance(ctx context.Context, requestID, accountNumber string, amount *money.Money) error {
-	if amount == nil {
-		return errors.New("empty amount, skip update")
-	}
+	//if amount == nil {
+	//	return errors.New("empty amount, skip update")
+	//}
 	// validate reqID
 	if s.repository.ReqIDExists(ctx, accountNumber, requestID) {
 		return errors.New("reqID duplicate, skip update")
