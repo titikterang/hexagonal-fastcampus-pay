@@ -7,6 +7,7 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/adapter/repository"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/services"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/mongo"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/kafka"
 )
@@ -38,7 +39,13 @@ func initHandler(cfg *config.Config) (*handler.ConsumerHandler, kafka.KafkaClien
 		}
 	}
 
-	repo := repository.NewMoneyRepository(cfg, redisClient, masterClient, slaveClient, clientProducer)
+	dbCon, err := mongo.InitDBConnection(cfg)
+	if err != nil {
+		// log error
+		log.Fatalf("failed to connect to mongo db, err : %#v", err)
+	}
+
+	repo := repository.NewMoneyRepository(cfg, redisClient, dbCon.DBClient, masterClient, slaveClient, clientProducer)
 	svc := services.NewService(cfg, repo)
 	consHandler, err := handler.NewConsumer(cfg, clientConsumer, svc)
 	if err != nil {

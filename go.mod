@@ -3,9 +3,11 @@ module github.com/titikterang/hexagonal-fastcampus-pay
 go 1.23.0
 
 require (
+	github.com/eapache/go-resiliency v1.7.0
 	github.com/go-kratos/kratos/contrib/log/zerolog/v2 v2.0.0-20240615052815-46362d1a360d
 	github.com/go-kratos/kratos/v2 v2.7.3
 	github.com/golang-jwt/jwt/v4 v4.5.1
+	github.com/golang/mock v1.6.0
 	github.com/gorilla/handlers v1.5.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.23.0
 	github.com/hashicorp/vault-client-go v0.4.3

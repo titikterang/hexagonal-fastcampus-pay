@@ -1,3 +1,4 @@
+//go:generate mockgen -source=money.go -destination=mocks/mock.money.go -package=mocks
 package ports
 
 import (
