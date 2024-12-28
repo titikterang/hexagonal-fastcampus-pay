@@ -15,23 +15,33 @@ import (
 )
 
 func (r *PaymentRepository) GetAccountInfo(ctx context.Context, accountNumber string) (types.UserProfileInfo, error) {
-	result, err := r.membershipClient.GetUserInfo(ctx, &membership.UserInfoPayload{
-		AccountNumber: accountNumber,
-	})
-	if err != nil {
-		return types.UserProfileInfo{}, err
-	}
+	var data types.UserProfileInfo
+	errBreaker := r.cb.breakerAccount.Run(func() error {
+		result, err := r.membershipClient.GetUserInfo(ctx, &membership.UserInfoPayload{
+			AccountNumber: accountNumber,
+		})
+		if err != nil {
+			return err
+		}
 
-	return types.UserProfileInfo{
-		AccountNumber: result.AccountNumber,
-		Email:         result.Email,
-		Fullname:      result.Fullname,
-		Status:        result.Status,
-	}, nil
+		data = types.UserProfileInfo{
+			AccountNumber: result.AccountNumber,
+			Email:         result.Email,
+			Fullname:      result.Fullname,
+			Status:        result.Status,
+		}
+		return nil
+	})
+
+	if errBreaker != nil {
+		log.Error().Msgf("failed to GetAccountInfo, %#v", errBreaker)
+	}
+	return data, nil
 }
 
 func (r *PaymentRepository) GetAccountInfoHttp(ctx context.Context, accountNumber string) (types.UserProfileInfo, error) {
 	// get account info from membership service
+
 	url := r.cfg.ExternalAPI.MembershipService + "v1/membership/info?account_number=" + accountNumber
 	method := "GET"
 
@@ -71,21 +81,23 @@ func (r *PaymentRepository) GetAccountInfoHttp(ctx context.Context, accountNumbe
 }
 
 func (r *PaymentRepository) GetUserBalanceInfo(ctx context.Context, accountNumber string) (decimal.Decimal, error) {
-	var (
-		balance decimal.Decimal
-		err     error
-	)
+	var balanceStr string
+	errBreaker := r.cb.breakerAccount.Run(func() error {
+		result, err := r.moneyClient.GetUserBalancePrivate(ctx, &money.UserBalancePayload{
+			AccountNumber: accountNumber,
+		})
 
-	result, err := r.moneyClient.GetUserBalancePrivate(ctx, &money.UserBalancePayload{
-		AccountNumber: accountNumber,
+		if err != nil {
+			log.Err(err).Msgf("failed GetUserBalancePrivate %#v", err)
+			return err
+		}
+		balance := result.GetBalance()
+		balanceStr = common.MoneyToString(balance)
+		return nil
 	})
 
-	if err != nil {
-		log.Err(err).Msgf("failed GetUserBalancePrivate %#v", err)
-		return balance, err
+	if errBreaker != nil {
+		log.Error().Msgf("failed to GetUserBalanceInfo, %#v", errBreaker)
 	}
-
-	balanceMoney := result.GetBalance()
-	balanceStr := common.MoneyToString(balanceMoney)
 	return decimal.NewFromString(balanceStr)
 }

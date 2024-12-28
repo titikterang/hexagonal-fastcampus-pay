@@ -62,8 +62,8 @@ func NewPaymentRepository(cfg *config.Config,
 		membershipClient: membershipClient,
 		moneyClient:      moneyClient,
 		cb: circuitBreaker{
-			breakerAccount: breaker.New(5, 5, 3*time.Second),
-			breakerBalance: breaker.New(5, 5, 3*time.Second),
+			breakerAccount: breaker.New(5, 5, 1*time.Second),
+			breakerBalance: breaker.New(5, 5, 1*time.Second),
 		},
 	}
 
