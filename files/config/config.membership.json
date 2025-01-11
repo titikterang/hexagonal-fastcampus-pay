@@ -32,14 +32,20 @@
   "postgre": {
     "address": "localhost",
     "port": "15432",
-    "username": "",
-    "password": "",
-    "dbname": "",
+    "username": "admin",
+    "password": "password",
+    "dbname": "fastcampus_membership",
     "sslmode": "disable",
     "maxopenconn": "50",
     "maxidleconn": "50",
     "connmaxidletime": "1000",
     "connmaxlifetime": "1000"
+  },
+  "open_telemetry":{
+    "host": "localhost:4317"
+  },
+  "grafana": {
+    "loki_host": "http://localhost:3100"
   },
   "external_api": {
   }

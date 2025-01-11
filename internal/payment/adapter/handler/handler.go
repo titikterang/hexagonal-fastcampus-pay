@@ -5,8 +5,15 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/payment/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/payment"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"time"
 )
+
+func (h Handler) HealthCheck(context.Context, *emptypb.Empty) (*payment.HealthResponse, error) {
+	return &payment.HealthResponse{
+		Response: "ok",
+	}, nil
+}
 
 func (h *Handler) GetPaymentStatus(ctx context.Context, payload *payment.PaymentStatusPayload) (*payment.PaymentStatusResponse, error) {
 	data, err := h.paymentService.GetPaymentInfoByID(ctx, payload.GetInvoiceId())

@@ -7,7 +7,9 @@ import (
 	"github.com/shopspring/decimal"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/tracer"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/types"
+	"go.opentelemetry.io/otel/attribute"
 	"google.golang.org/genproto/googleapis/type/money"
 	"strconv"
 	"time"
@@ -64,11 +66,17 @@ func (s *MoneyService) GetUserBalance(ctx context.Context, accountNumber string)
 // hset redis
 // set snapshot
 func (s *MoneyService) UpdateUserBalance(ctx context.Context, requestID, accountNumber string, amount *money.Money) error {
+	ctx, span := tracer.StartUseCaseSpan(ctx, "MoneyService.UpdateUserBalance")
+	defer span.End()
+
+	span.SetAttributes(attribute.String("accountNumber", accountNumber))
+
 	//if amount == nil {
 	//	return errors.New("empty amount, skip update")
 	//}
 	// validate reqID
 	if s.repository.ReqIDExists(ctx, accountNumber, requestID) {
+		span.RecordError(errors.New("reqID duplicate, skip update"))
 		return errors.New("reqID duplicate, skip update")
 	}
 
@@ -77,6 +85,7 @@ func (s *MoneyService) UpdateUserBalance(ctx context.Context, requestID, account
 	amountStr := common.MoneyToString(amount)
 	amountInfo, err := decimal.NewFromString(amountStr)
 	if err != nil {
+		span.RecordError(err)
 		return errors.New("failed to get amount, skip update")
 	}
 	info := model.CashMovementInfo{

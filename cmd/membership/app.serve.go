@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
@@ -10,6 +11,7 @@ import (
 	gorHdl "github.com/gorilla/handlers"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/membership"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/tracer"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,7 +19,16 @@ import (
 )
 
 func startService(cfg *config.Config) {
-	handler, err := initHandler(cfg)
+	tracer := tracer.ClientTracer{
+		Insecure:     "1",
+		ServiceName:  cfg.App.Label,
+		CollectorURL: cfg.OpenTelemetry.Host,
+	}
+
+	cleanup, tp := tracer.InitTracer()
+	defer cleanup(context.Background())
+
+	handler, err := initHandler(cfg, tp)
 	if err != nil {
 		log.Fatal("failed initiate NewHandler: %v", err)
 	}

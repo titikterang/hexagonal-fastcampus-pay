@@ -1,0 +1,28 @@
+{
+  "checks": [
+    {
+      "id": "chk1",
+      "name": "membership-service",
+      "http": "http://localhost:3002/v1/health",
+      "interval": "5s"
+    },
+    {
+      "id": "chk2",
+      "name": "money-service",
+      "http": "http://localhost:3004/v1/health",
+      "interval": "5s"
+    },
+    {
+      "id": "chk3",
+      "name": "payment-service-api",
+      "http": "http://localhost:3006/v1/health",
+      "interval": "5s"
+    },
+    {
+      "id": "chk4",
+      "name": "payment-service-consumer",
+      "http": "http://localhost:5006/v1/health",
+      "interval": "5s"
+    }
+  ]
+}

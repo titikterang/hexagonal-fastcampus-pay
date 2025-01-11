@@ -16,6 +16,16 @@ type Config struct {
 	ExternalAPI   ExternalAPIConfig `json:"external_api" mapstructure:"external_api"`
 	Kafka         KafkaConfig       `json:"kafka_config" mapstructure:"kafka_config"`
 	Vault         VaultConfig       `json:"vault" mapstructure:"vault"`
+	OpenTelemetry OtelConfig        `json:"open_telemetry" mapstructure:"open_telemetry"`
+	Grafana       GrafanaConfig     `json:"grafana" mapstructure:"grafana"`
+}
+
+type GrafanaConfig struct {
+	LokiHost string `json:"loki_host" mapstructure:"loki_host"`
+}
+
+type OtelConfig struct {
+	Host string `json:"host" mapstructure:"host"`
 }
 
 type VaultConfig struct {
@@ -79,8 +89,9 @@ type PostgreConfig struct {
 }
 
 type AppConfig struct {
-	Address string `json:"address" mapstructure:"address"`
-	Label   string `json:"label" mapstructure:"label"`
+	Address       string `json:"address" mapstructure:"address"`
+	HealthAddress string `json:"health_address" mapstructure:"health_address"`
+	Label         string `json:"label" mapstructure:"label"`
 }
 
 type GRPCConfig struct {

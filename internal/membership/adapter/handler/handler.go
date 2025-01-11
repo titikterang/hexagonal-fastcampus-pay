@@ -6,12 +6,22 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/membership/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/membership"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/tracer"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+func (h Handler) HealthCheck(context.Context, *emptypb.Empty) (*membership.HealthResponse, error) {
+	return &membership.HealthResponse{
+		Response: "ok",
+	}, nil
+}
+
 func (h Handler) GetUserInfo(ctx context.Context, payload *membership.UserInfoPayload) (*membership.UserInfoResponse, error) {
+	ctx, span := tracer.StartInitSpan(ctx, "GetUserInfo")
+	defer span.End()
 	data, err := h.membershipService.GetUserInfo(ctx, payload.GetAccountNumber())
 	if err != nil {
+		span.RecordError(err)
 		return nil, err
 	}
 	return &membership.UserInfoResponse{
@@ -23,6 +33,9 @@ func (h Handler) GetUserInfo(ctx context.Context, payload *membership.UserInfoPa
 }
 
 func (h Handler) SubmitLogin(ctx context.Context, request *membership.LoginRequest) (*membership.LoginResponse, error) {
+	ctx, span := tracer.StartInitSpan(ctx, "SubmitLogin")
+	defer span.End()
+
 	resp, err := h.membershipService.SubmitLogin(ctx, model.LoginInfo{
 		Username: request.GetUsername(),
 		Password: request.GetPassword(),
@@ -37,6 +50,9 @@ func (h Handler) SubmitLogin(ctx context.Context, request *membership.LoginReque
 
 func (h Handler) SubmitLogout(ctx context.Context, _ *emptypb.Empty) (*membership.LogoutResponse, error) {
 	userID, ok := common.ExtractUserIDFromHeader(ctx)
+	ctx, span := tracer.StartInitSpan(ctx, "SubmitLogout")
+	defer span.End()
+
 	if !ok {
 		return &membership.LogoutResponse{
 			Message: "Logout Success",
@@ -54,6 +70,10 @@ func (h Handler) SubmitLogout(ctx context.Context, _ *emptypb.Empty) (*membershi
 }
 
 func (h Handler) SubmitRegistration(ctx context.Context, request *membership.RegistrationRequest) (*membership.RegistrationResponse, error) {
+	ctx, span := tracer.StartInitSpan(ctx, "SubmitRegistration")
+	defer span.End()
+
+	//_, ok := common.ExtractUserIDFromHeader(ctx)
 	accno, err := h.membershipService.SubmitRegisterUser(ctx, model.RegistrationPayload{
 		LoginInfo: model.LoginInfo{
 			Username: request.GetUsername(),
@@ -78,6 +98,10 @@ func (h Handler) SubmitRegistration(ctx context.Context, request *membership.Reg
 }
 
 func (h Handler) RefreshToken(ctx context.Context, payload *membership.RefreshRequest) (*membership.LoginResponse, error) {
+	ctx, span := tracer.StartInitSpan(ctx, "RefreshToken")
+	defer span.End()
+
+	//_, ok := common.ExtractUserIDFromHeader(ctx)
 	data, err := h.membershipService.RefreshToken(ctx, payload.GetRefreshToken())
 	return &membership.LoginResponse{
 		Success:      data.Success,

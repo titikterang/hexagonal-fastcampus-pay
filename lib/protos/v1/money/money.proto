@@ -4,6 +4,7 @@ option go_package = "github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/
 
 import "lib/protos/google/api/annotations.proto";
 import "lib/protos/google/type/money.proto";
+import "google/protobuf/empty.proto";
 import "lib/protos/protoc-gen-openapiv2/options/annotations.proto";
 
 
@@ -23,7 +24,29 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   produces: "application/json";
 };
 
+
+message  HealthResponse {
+  string response = 1;
+}
+
 service MoneyService {
+  rpc HealthCheck(google.protobuf.Empty) returns (HealthResponse) {
+    option (google.api.http) = {
+      get: "/v1/health",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Health Check";
+      operation_id: "HealthCheck";
+      tags: "membership";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+
   // balance return as string
   // /v1/money/balance?account_number=1234
   rpc GetUserBalance(UserBalancePayload) returns (UserBalanceResponse) {

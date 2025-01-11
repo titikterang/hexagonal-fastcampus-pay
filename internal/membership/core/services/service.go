@@ -6,22 +6,29 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/membership/core/model"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/tracer"
 	"strconv"
 	"time"
 )
 
 func (s *MembershipService) SubmitRegisterUser(ctx context.Context, payload model.RegistrationPayload) (string, error) {
+	ctx, span := tracer.StartUseCaseSpan(ctx, "MembershipService.SubmitRegisterUser")
+	defer span.End()
+
 	// generate account number
 	payload.AccountNumber = strconv.FormatInt(time.Now().UnixMilli(), 10)
 
 	// get hash from password
 	payload.Hash = common.GetHashAndSalt(payload.Password)
-
+	log.Info().Msg("register success")
 	// insert info
 	return payload.AccountNumber, s.repository.InsertUserInfoIntoDB(ctx, payload)
 }
 
 func (s *MembershipService) GetUserInfo(ctx context.Context, accountNumber string) (model.UserProfileInfo, error) {
+	ctx, span := tracer.StartUseCaseSpan(ctx, "MembershipService.GetUserInfo")
+	defer span.End()
+
 	// cek from redis
 	// if exists, then return from redis
 	log.Info().Msg("get user info ....")
@@ -53,6 +60,9 @@ func (s *MembershipService) GetUserInfo(ctx context.Context, accountNumber strin
 }
 
 func (s *MembershipService) constructToken(ctx context.Context, key []byte, userInfo model.UserAuthInfo, expiry time.Duration) (token string, refresh string, err error) {
+	ctx, span := tracer.StartUseCaseSpan(ctx, "MembershipService.constructToken")
+	defer span.End()
+
 	// generate auth token
 	data, err := s.CreateRSAToken(key, expiry, userInfo)
 	if err != nil {
@@ -72,8 +82,16 @@ func (s *MembershipService) constructToken(ctx context.Context, key []byte, user
 }
 
 func (s *MembershipService) SubmitLogin(ctx context.Context, payload model.LoginInfo) (model.LoginResponse, error) {
+	var (
+		err      error
+		userInfo model.UserAuthInfo
+	)
+	ctx, span := tracer.StartUseCaseSpan(ctx, "MembershipService.SubmitLogin")
+	defer span.End()
+	defer span.RecordError(err)
+
 	// query db, get user info by DB
-	userInfo, err := s.repository.GetUserByUsername(ctx, payload.Username)
+	userInfo, err = s.repository.GetUserByUsername(ctx, payload.Username)
 	if err != nil {
 		return model.LoginResponse{}, err
 	}
@@ -82,7 +100,12 @@ func (s *MembershipService) SubmitLogin(ctx context.Context, payload model.Login
 		return model.LoginResponse{}, errors.New("invalid username & password combination")
 	}
 
-	token, refresh, err := s.constructToken(ctx, s.authKeyPair.privKey, userInfo, s.config.Token.Expiry)
+	var (
+		token   string
+		refresh string
+	)
+
+	token, refresh, err = s.constructToken(ctx, s.authKeyPair.privKey, userInfo, s.config.Token.Expiry)
 	if err != nil {
 		return model.LoginResponse{
 				Message: err.Error(),

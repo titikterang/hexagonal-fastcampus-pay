@@ -1,0 +1,1 @@
+docker run -v <local-path>:/mnt/config -v /var/log:/var/log --link loki grafana/promtail:3.2.1 --config.file=/mnt/config/promtail-config.yaml

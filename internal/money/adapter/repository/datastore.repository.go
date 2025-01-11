@@ -6,22 +6,30 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/money/core/model"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/tracer"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"time"
 )
 
 // method to redis cache
 func (r *MoneyRepository) GetSnapshot(ctx context.Context, accountNumber string) (string, error) {
+	ctx, span := tracer.StartRepositorySpan(ctx, "MoneyRepository.GetSnapshot")
+	defer span.End()
 	key := fmt.Sprintf("money:snapshoot:%s", accountNumber)
 	return r.redisClient.Get(ctx, key).Result()
 }
 
 func (r *MoneyRepository) UpdateSnapshot(ctx context.Context, accountNumber, amount string) error {
+	ctx, span := tracer.StartRepositorySpan(ctx, "MoneyRepository.UpdateSnapshot")
+	defer span.End()
 	key := fmt.Sprintf("money:snapshoot:%s", accountNumber)
 	return r.redisClient.Set(ctx, key, amount, 1*time.Hour).Err()
 }
 
 func (r *MoneyRepository) GetCashMovementFromCache(ctx context.Context, accountNumber string) ([]model.CashMovementInfo, error) {
+	ctx, span := tracer.StartRepositorySpan(ctx, "MoneyRepository.GetCashMovementFromCache")
+	defer span.End()
+
 	key := fmt.Sprintf("money:movement:%s", accountNumber)
 	//ctx, fn := context.WithTimeout(ctx, 10*time.Second)
 	//defer fn()
@@ -47,6 +55,9 @@ func (r *MoneyRepository) GetCashMovementFromCache(ctx context.Context, accountN
 
 // hset
 func (r *MoneyRepository) AppendCashMovementInfoIntoCache(ctx context.Context, info model.CashMovementInfo) error {
+	ctx, span := tracer.StartRepositorySpan(ctx, "MoneyRepository.AppendCashMovementInfoIntoCache")
+	defer span.End()
+
 	key := fmt.Sprintf("money:movement:%s", info.AccountNumber)
 	return r.redisClient.HSet(ctx, key, map[string]interface{}{
 		info.RequestID: info.Amount.InexactFloat64(),
@@ -54,6 +65,9 @@ func (r *MoneyRepository) AppendCashMovementInfoIntoCache(ctx context.Context, i
 }
 
 func (r *MoneyRepository) ReqIDExists(ctx context.Context, accountNumber, reqID string) bool {
+	ctx, span := tracer.StartRepositorySpan(ctx, "MoneyRepository.ReqIDExists")
+	defer span.End()
+
 	key := fmt.Sprintf("money:reqid:%s:%s", accountNumber, reqID)
 	res, err := r.redisClient.Get(ctx, key).Result()
 	if err != nil {
@@ -65,6 +79,9 @@ func (r *MoneyRepository) ReqIDExists(ctx context.Context, accountNumber, reqID 
 
 // set to redis TTL 1jam
 func (r *MoneyRepository) SaveReqID(ctx context.Context, accountNumber, reqID string) {
+	ctx, span := tracer.StartRepositorySpan(ctx, "MoneyRepository.SaveReqID")
+	defer span.End()
+
 	key := fmt.Sprintf("money:reqid:%s:%s", accountNumber, reqID)
 	r.redisClient.SetEx(ctx, key, 1, 1*time.Hour)
 	return
@@ -72,6 +89,9 @@ func (r *MoneyRepository) SaveReqID(ctx context.Context, accountNumber, reqID st
 
 // method to db
 func (r *MoneyRepository) AppendCashMovementIntoDatastore(ctx context.Context, info model.CashMovementInfo) error {
+	ctx, span := tracer.StartRepositorySpan(ctx, "MoneyRepository.AppendCashMovementIntoDatastore")
+	defer span.End()
+
 	trx, err := r.dbClientMaster.Beginx()
 	if err != nil {
 		log.Err(err)
@@ -103,6 +123,9 @@ func (r *MoneyRepository) AppendCashMovementIntoDatastore(ctx context.Context, i
 
 // ConstructBalanceInfo - insert into mongo db
 func (r *MoneyRepository) ConstructBalanceInfo(ctx context.Context, info model.UserCashInfo) error {
+	ctx, span := tracer.StartRepositorySpan(ctx, "MoneyRepository.ConstructBalanceInfo")
+	defer span.End()
+
 	//money := common.DecimalToMoney(info.BalanceAmount)
 	filter := bson.D{{"account_no", info.AccountNumber}}
 

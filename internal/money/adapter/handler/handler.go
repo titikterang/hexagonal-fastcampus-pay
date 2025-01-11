@@ -5,7 +5,15 @@ import (
 	"errors"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/common"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/money"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/tracer"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
+
+func (h Handler) HealthCheck(context.Context, *emptypb.Empty) (*money.HealthResponse, error) {
+	return &money.HealthResponse{
+		Response: "ok",
+	}, nil
+}
 
 // GetUserBalance - oublic endpoint , get from redis snapshoot, return amount (string)
 func (h *Handler) GetUserBalance(ctx context.Context, data *money.UserBalancePayload) (*money.UserBalanceResponse, error) {
@@ -32,6 +40,9 @@ func (h *Handler) GetUserBalancePrivate(ctx context.Context, data *money.UserBal
 }
 
 func (h *Handler) UpdateUserBalance(ctx context.Context, data *money.UpdateBalancePayload) (*money.UpdateBalanceResponse, error) {
+	ctx, span := tracer.StartInitSpan(ctx, "UpdateUserBalance")
+	defer span.End()
+
 	err := h.moneyService.UpdateUserBalance(ctx, data.GetRequestId(), data.GetAccountNumber(), data.GetAmount())
 	if err != nil {
 		return &money.UpdateBalanceResponse{

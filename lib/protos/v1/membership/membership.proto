@@ -22,6 +22,23 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 };
 
 service MembershipService {
+  rpc HealthCheck(google.protobuf.Empty) returns (HealthResponse) {
+    option (google.api.http) = {
+      get: "/v1/health",
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Health Check";
+      operation_id: "HealthCheck";
+      tags: "membership";
+      responses: {
+        key: "200"
+        value: {
+          description: "OK";
+        }
+      };
+    };
+  }
+
   rpc GetUserInfo(UserInfoPayload) returns (UserInfoResponse) {
     option (google.api.http) = {
       get: "/v1/membership/info",
@@ -122,6 +139,10 @@ service MembershipService {
       };
     };
   }
+}
+
+message  HealthResponse {
+  string response = 1;
 }
 
 message UserInfoPayload {

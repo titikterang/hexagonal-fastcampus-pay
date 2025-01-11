@@ -11,10 +11,11 @@ import (
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/datastore/postgre"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/vault"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func initHandler(cfg *config.Config) (*handler.Handler, error) {
-	FetchConfigFromVault(cfg)
+func initHandler(cfg *config.Config, tp trace.TracerProvider) (*handler.Handler, error) {
+	//FetchConfigFromVault(cfg)
 
 	redisClient := InitRedis(cfg)
 	dbClient, err := InitDB(cfg)

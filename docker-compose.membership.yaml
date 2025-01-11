@@ -15,8 +15,6 @@ services:
     container_name: membership_redis
     ports:
       - 26379:6379
-    logging:
-      driver: none
   membership_backend:
     build:
       context: .
@@ -26,6 +24,10 @@ services:
       - ./files/config/config.membership.json:/files/config/config.membership.json
     ports:
       - 3002:3002
+    logging:
+      driver: "loki"
+      options:
+        loki-url: "http://host.docker.internal:3100/loki/api/v1/push"
     depends_on:
       - membership_db
       - membership_redis

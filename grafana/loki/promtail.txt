@@ -1,0 +1,1 @@
+docker run -d --name promtail -v $(pwd):/mnt/config -v ./files/log:/var/log --link loki grafana/promtail:2.8.0 --config.file=/mnt/config/promtail-config.yaml

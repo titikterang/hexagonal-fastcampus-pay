@@ -63,5 +63,11 @@
       "transaction_validate": "MoneyServiceReply",
       "dead_letter_queue": "MoneyServiceReplyDLQ"
     }
+  },
+  "grafana": {
+    "loki_host": "http://localhost:3100"
+  },
+  "open_telemetry": {
+    "host": "localhost:4317"
   }
 }

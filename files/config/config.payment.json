@@ -1,6 +1,7 @@
 {
   "app": {
     "address": "0.0.0.0:3006",
+    "health_address": "0.0.0.0:5006",
     "label": "payment"
   },
   "http": {

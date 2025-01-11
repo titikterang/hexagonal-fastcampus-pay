@@ -4,13 +4,19 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
+	"github.com/go-kratos/kratos/v2/middleware/metrics"
+	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	kmetrics "github.com/go-kratos/prometheus/metrics"
 	gorHdl "github.com/gorilla/handlers"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/config"
 	"github.com/titikterang/hexagonal-fastcampus-pay/lib/protos/v1/money"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/tracer"
 	"os"
 	"os/signal"
 	"syscall"
@@ -18,6 +24,15 @@ import (
 )
 
 func startService(cfg *config.Config) {
+	tracer := tracer.ClientTracer{
+		Insecure:     "1",
+		ServiceName:  cfg.App.Label,
+		CollectorURL: cfg.OpenTelemetry.Host,
+	}
+
+	cleanup, _ := tracer.InitTracer()
+	defer cleanup(context.Background())
+
 	handler, dbConn, err := initHandler(cfg)
 	if err != nil {
 		log.Fatal("failed initiate NewHandler: %v", err)
@@ -34,6 +49,8 @@ func startService(cfg *config.Config) {
 		grpc.Logger(log.GetLogger()),
 	}
 
+	counter := prometheus.NewCounterVec(prometheus.CounterOpts{Name: "kratos_counter"}, []string{"server", "qps"})
+
 	httpOpts := []http.ServerOption{
 		http.Timeout(cfg.Http.Timeout),
 		http.Address(cfg.App.Address),
@@ -47,6 +64,10 @@ func startService(cfg *config.Config) {
 		http.Middleware(
 			metadata.Server(),
 			logging.Server(log.GetLogger()),
+			middleware.Chain(
+				recovery.Recovery(),
+				metrics.Server(metrics.WithRequests(kmetrics.NewCounter(counter))),
+			),
 		),
 		http.Logger(log.GetLogger()),
 	}

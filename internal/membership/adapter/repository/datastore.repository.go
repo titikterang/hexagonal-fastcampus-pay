@@ -3,14 +3,21 @@ package repository
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog/log"
 	"github.com/titikterang/hexagonal-fastcampus-pay/internal/membership/core/model"
+	"github.com/titikterang/hexagonal-fastcampus-pay/lib/tracer"
+	"go.opentelemetry.io/otel/attribute"
 	"time"
 )
 
 // GetUserSessionFromCache  - get refresh token from cache
 func (r *DatastoreRepository) GetUserSessionFromCache(ctx context.Context, accountNo string) (string, error) {
+	ctx, span := tracer.StartRepositorySpan(ctx, "DatastoreRepository.GetUserSessionFromCache")
+	defer span.End()
+
 	redisKey := fmt.Sprintf(model.RedisKeyRefresh, accountNo)
 	return r.redisClient.Get(ctx, redisKey).Result()
 }
@@ -27,8 +34,17 @@ func (r *DatastoreRepository) DeleteUserSessionFromCache(ctx context.Context, ac
 }
 
 func (r *DatastoreRepository) InsertUserInfoIntoDB(ctx context.Context, payload model.RegistrationPayload) error {
+	ctx, span := tracer.StartRepositorySpan(ctx, "DatastoreRepository.InsertUserInfoIntoDB")
+	defer span.End()
+	var (
+		err error
+		trx *sqlx.Tx
+	)
+	span.SetAttributes(attribute.String("username", payload.Username))
+	defer span.RecordError(errors.New("erorr at db query"))
+
 	// begin query TX
-	trx, err := r.dbClient.Beginx()
+	trx, err = r.dbClient.Beginx()
 	if err != nil {
 		log.Err(err)
 		return err
@@ -79,6 +95,9 @@ func (r *DatastoreRepository) GetUserInfoFromDB(ctx context.Context, accountNumb
 }
 
 func (r *DatastoreRepository) GetUserByUsername(ctx context.Context, username string) (model.UserAuthInfo, error) {
+	ctx, span := tracer.StartRepositorySpan(ctx, "DatastoreRepository.GetUserByUsername")
+	defer span.End()
+
 	var (
 		err  error
 		data model.UserAuthInfo
